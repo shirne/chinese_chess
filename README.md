@@ -18,4 +18,6 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Log
 
+
 * 20210425 完成界面，走棋，吃子
+* 走子规则

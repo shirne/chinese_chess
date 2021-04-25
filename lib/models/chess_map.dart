@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 class ChessMap {
-  List<ChessItem> mapData = List.generate(10*9, ( idx ) => ChessItem(isBlank: true, x:0, y:0));
+  List<List<ChessItem>> mapData = [];
 
   ChessMap();
 
@@ -15,40 +15,57 @@ class ChessMap {
   load(String fen){
     List<String> sets = fen.split(' ');
     List<String> rows = sets[0].split('/');
-    int y = 0;
+    int y = 9;
     int x = 0;
     this.clear();
     rows.forEach((row) {
       row.split('').forEach( ( chr ){
         if ('abcrnkp'.indexOf(chr) > -1) {
-          mapData[XYKey(x,y).hashCode] = ChessItem(team: 'b', code: chr.toLowerCase(), x:x, y:y);
+          mapData[y][x] = ChessItem(team: 'b', code: chr.toLowerCase(), x:x, y:y);
         }else if ('ABCRNKP'.indexOf(chr) > -1) {
-          mapData[XYKey(x,y).hashCode] = ChessItem(team: 'r', code: chr.toLowerCase(), x:x, y:y);
+          mapData[y][x] = ChessItem(team: 'r', code: chr.toLowerCase(), x:x, y:y);
         }else if('123456789'.indexOf(chr) > -1){
           int blank = int.parse(chr);
           x += blank - 1;
         }
         x++;
       });
-      y ++;
+      y --;
       x = 0;
     });
+    print(mapData);
   }
 
   operator [](XYKey key){
-    return mapData[key.hashCode];
+    return mapData[key.y][key.x];
   }
 
   operator []=(XYKey key, ChessItem value){
-    mapData[key.hashCode] = value;
+    mapData[key.y][key.x] = value;
   }
 
   clear(){
-    mapData = List.generate(10*9, (idx) => ChessItem(isBlank: true, x:idx ~/ 10, y:idx % 10));
+    mapData = List.generate(10, ( y ) => List.generate(9,(x) => ChessItem(isBlank: true, x:x, y:y)));
   }
 
-  _move(int idxFrom, int idxTo){
-    if(idxFrom <0 || idxTo < 0) {
+  hasChessAt(XYKey point, {String team = ''}){
+    if(!mapData[point.y][point.x].isBlank){
+      if(team.isEmpty || team == mapData[point.y][point.x].team){
+        return true;
+      }
+    }
+    return false;
+  }
+  getChessAt(XYKey point){
+    return mapData[point.y][point.x];
+  }
+
+  _move(XYKey idxFrom, XYKey idxTo){
+    if(idxFrom.x < 0 || idxTo.x < 0 ||
+        idxFrom.y < 0 || idxTo.y < 0 ||
+        idxFrom.x > 8 || idxTo.x > 8 ||
+        idxFrom.y > 9 || idxTo.y > 9
+    ) {
       print(['_move error', idxFrom, idxTo]);
       return;
     }
@@ -57,32 +74,33 @@ class ChessMap {
       return;
     }
 
-    String position = mapData[idxTo].position;
-    mapData[idxTo].isBlank = true;
-    mapData[idxTo].position = mapData[idxFrom].position;
+    ChessItem swap = mapData[idxTo.y][idxTo.x];
+    mapData[idxTo.y][idxTo.x] = mapData[idxFrom.y][idxFrom.x];
+    mapData[idxTo.y][idxTo.x].position = idxTo.toCode();
 
-    mapData[idxFrom].position = position;
-
+    swap.isBlank = true;
+    mapData[idxFrom.y][idxFrom.x] = swap;
+    mapData[idxFrom.y][idxFrom.x].position = idxFrom.toCode();
   }
 
   moveByCode(String code){
     XYKey fromKey = XYKey.fromCode(code.substring(0, 2));
     XYKey toKey = XYKey.fromCode(code.substring(2, 4));
-    _move(fromKey.hashCode, toKey.hashCode);
+    _move(fromKey, toKey);
   }
 
   move(ChessItem piece, ChessItem blank){
-    _move(mapData.indexOf(piece), mapData.indexOf(blank));
+    _move(XYKey(piece.x, piece.y), XYKey(blank.x, blank.y));
   }
 
   eat(ChessItem piece,ChessItem piece2){
-    _move(mapData.indexOf(piece), mapData.indexOf(piece2));
+    _move(XYKey(piece.x, piece.y), XYKey(piece2.x, piece2.y));
   }
 
   forEach(void f(XYKey key,ChessItem item)){
     for(int y = 0;y < 10; y++){
       for(int x = 0; x < 9; x++){
-        f(XYKey(x, y), mapData[XYKey(x,y).hashCode]);
+        f(XYKey(x, y), mapData[y][x]);
       }
     }
   }
@@ -94,13 +112,26 @@ class XYKey {
   int y;
   XYKey(this.x, this.y);
 
+  XYKey.tlOrigin(int x, int y){
+    this.x = x;
+    this.y = 9 - y;
+  }
+
   XYKey.fromCode(String code){
     x = code.codeUnitAt(0) - 'a'.codeUnitAt(0);
-    y = 9 - int.tryParse(code[1]) ?? 0;
+    y = int.tryParse(code[1]) ?? 0;
   }
 
   @override
   int get hashCode => this.x * 10 + this.y;
+
+  String toCode(){
+    return String.fromCharCode(x + 'a'.codeUnitAt(0))+y.toString();
+  }
+
+  String toString(){
+    return 'x: $x, y: $y; '+toCode();
+  }
 
   operator ==(Object other){
     if(other is XYKey) {
@@ -126,7 +157,7 @@ class ChessItem{
     if(position.isNotEmpty) {
       this.position = position;
     }else if(x > -1 && y > -1) {
-      this.position = 'abcdefghijklmn'[y]+x.toString();
+      this.position = 'abcdefghi'[x]+y.toString();
     }
   }
 
@@ -138,16 +169,16 @@ class ChessItem{
   }
 
   int get x{
-    return int.parse(position[1]);
+    return position.codeUnitAt(0) - 'a'.codeUnitAt(0);
   }
   int get y{
-    return position.codeUnitAt(0) - 'a'.codeUnitAt(0);
+    return int.parse(position[1]);
   }
 
   String toString(){
     if(this.isBlank){
-      return 'ChessItem $position blank#$itemCode';
+      return 'ChessItem $x $y $position blank#$itemCode';
     }
-    return 'ChessItem $position $team$code#$itemCode';
+    return 'ChessItem $x $y $position $team$code#$itemCode';
   }
 }

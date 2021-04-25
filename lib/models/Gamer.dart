@@ -1,3 +1,4 @@
+import 'chess_rule.dart';
 import 'hand.dart';
 
 class Gamer{
@@ -5,7 +6,10 @@ class Gamer{
 
   List<Hand> hands = [];
 
+  ChessRule rule;
+
   Gamer(){
+    rule = ChessRule();
     hands.add(Hand('r'));
     hands.add(Hand('b'));
     curHand = 0;
