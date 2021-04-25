@@ -48,6 +48,31 @@ class ChessMap {
     mapData = List.generate(10, ( y ) => List.generate(9,(x) => ChessItem(isBlank: true, x:x, y:y)));
   }
 
+  String toFen(){
+    List<String> fens = [];
+    mapData.forEach((element) {
+      List<String> row = [];
+      int lastBlank = 0;
+      element.forEach((item) {
+        if(item.isBlank){
+          lastBlank += 1;
+        }else{
+          if(lastBlank > 0){
+            row.add(lastBlank.toString());
+            lastBlank = 0;
+          }
+          row.add(item.team == 'r'?item.code.toUpperCase():item.code);
+        }
+      });
+      if(lastBlank > 0){
+        row.add(lastBlank.toString());
+      }
+
+      fens.add(row.join(''));
+    });
+    return fens.join('/');
+  }
+
   hasChessAt(XYKey point, {String team = ''}){
     if(!mapData[point.y][point.x].isBlank){
       if(team.isEmpty || team == mapData[point.y][point.x].team){

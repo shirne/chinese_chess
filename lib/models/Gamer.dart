@@ -1,8 +1,11 @@
 import 'chess_rule.dart';
+import 'engine.dart';
 import 'hand.dart';
 
 class Gamer{
   int curHand = 0;
+
+  Engine engine;
 
   List<Hand> hands = [];
 
@@ -13,6 +16,12 @@ class Gamer{
     hands.add(Hand('r'));
     hands.add(Hand('b'));
     curHand = 0;
+    engine = Engine();
+    engine.init().then((process){
+      engine.onMessage((message){
+        print(message);
+      });
+    });
   }
 
   switchPlayer(){
@@ -26,4 +35,6 @@ class Gamer{
   get player{
     return hands[curHand];
   }
+
+
 }

@@ -16,8 +16,10 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 
+## 文献
+* [UCCI]https://www.xqbase.com/league/elephanteye.htm
+
 ## Log
 
-
+* 20210426 走子规则 走子动画
 * 20210425 完成界面，走棋，吃子
-* 走子规则
