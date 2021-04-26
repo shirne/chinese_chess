@@ -1,6 +1,5 @@
 
 import 'package:chinese_chess/game.dart';
-import 'package:chinese_chess/models/chess_rule.dart';
 import 'package:flutter/material.dart';
 
 import 'elements/board.dart';

@@ -52,6 +52,10 @@ class Gamer{
       case 'ucciok':
         engineOK = true;
         break;
+      case 'nobestmove':
+        break;
+      case 'bestmove':
+        break;
       case 'info':
         break;
       case 'id':
@@ -99,7 +103,8 @@ class Gamer{
     }
     print('切换选手:${player.team}');
 
-    engine.position(map.toFen()+(curHand>0?'b':'w')+' - - $unEatCount '+(steps.length ~/ 2).toString());
+    engine.stop();
+    engine.position(map.toFen()+' '+(curHand>0?'b':'w')+' - - $unEatCount '+(steps.length ~/ 2).toString());
     engine.go();
   }
 

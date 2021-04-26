@@ -11,11 +11,11 @@ class Engine{
   Future<Process> init(){
     ready = false;
     String path = Directory.current.path+'/assets/engines/$engine';
-    print(path);
     return Process.start(path, []).then((value){
       process = value;
       process.stdin.writeln('ucci');
       ready = true;
+      return process;
     });
   }
 
@@ -55,8 +55,16 @@ class Engine{
     sendCommand('banmoves ${moveList.join(' ')}');
   }
 
-  void go({int time = 3000, int increment = 0, String type = ''}){
-    sendCommand('go $type time $time increment $increment');
+  void go({int time = 0, int increment = 0, String type = '', int depth = 0, int nodes = 0}){
+    if(time > 0) {
+      sendCommand('go $type time $time increment $increment');
+    }else if(depth > 0){
+      sendCommand('go depth $depth');
+    }else if(depth < 0){
+      sendCommand('go depth infinite');
+    }else if(nodes > 0){
+      sendCommand('go nodes $depth');
+    }
   }
 
   void ponderhit(String type){
@@ -65,6 +73,10 @@ class Engine{
 
   void probe(String fen){
     sendCommand('probe $fen');
+  }
+
+  void stop(){
+    sendCommand('stop');
   }
 
   void quit(){

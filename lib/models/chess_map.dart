@@ -1,5 +1,4 @@
 
-import 'package:flutter/material.dart';
 
 class ChessMap {
   List<List<ChessItem>> mapData = [];
@@ -72,7 +71,7 @@ class ChessMap {
 
       fens.add(row.join(''));
     });
-    return fens.join('/');
+    return fens.reversed.join('/');
   }
 
   hasChessAt(XYKey point, {String team = ''}){
@@ -207,4 +206,7 @@ class ChessItem{
     }
     return 'ChessItem $x $y $position $team$code#$itemCode';
   }
+
+  @override
+  int get hashCode => this.itemCode;
 }
