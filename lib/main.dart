@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 
 import 'game.dart';
-import 'play.dart';
 
 void main() {
   runApp(MainApp());

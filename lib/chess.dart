@@ -7,16 +7,12 @@ import 'elements/board.dart';
 import 'models/Gamer.dart';
 import 'models/chess_map.dart';
 import 'elements/piece.dart';
-import 'models/chess_step.dart';
 
 class Chess extends StatefulWidget {
-  final String initFen;
   final String skin;
 
   const Chess(
       {Key key,
-      this.initFen =
-          'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1',
       this.skin = 'woods'})
       : super(key: key);
 
@@ -31,12 +27,6 @@ class ChessState extends State<Chess> {
   double cellSize = 64;
   double boardWidth = 521;
   double boardHeight = 577;
-
-  // 布局
-  ChessMap map = ChessMap();
-
-  // 走步历史
-  List<ChessStep> steps = [];
 
   // 当前激活子
   ChessItem activePiece;
@@ -55,16 +45,14 @@ class ChessState extends State<Chess> {
     super.initState();
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
-    map.load(widget.initFen);
   }
 
   addStep(ChessItem chess, ChessItem next){
-    steps.add(ChessStep(chess.code, chess.position+next.position, isEat: !next.isBlank));
-    print(steps[steps.length-1]);
+    gamer.addStep(chess, next);
   }
 
   fetchMovePoints(){
-    movePoints = gamer.rule.movePoints(activePiece,map);
+    movePoints = gamer.rule.movePoints(activePiece,gamer.map);
     print(['move points:', movePoints]);
   }
 
@@ -86,17 +74,19 @@ class ChessState extends State<Chess> {
       lastPosition = '';
     });
   }
-  void setActive(ChessItem newActive){
+  bool setActive(ChessItem newActive){
     // 没有激活的子，或者激活的子不是当前选手的
     if(activePiece == null || activePiece.team != gamer.player.team) {
       if(newActive.team != gamer.player.team){
-        return;
+        return false;
       }
       setState(() {
         activePiece = newActive;
         lastPosition = '';
+        movePoints = [];
       });
       fetchMovePoints();
+      return true;
       //置空选中的子
     }else if(activePiece == newActive){
       setState(() {
@@ -108,8 +98,8 @@ class ChessState extends State<Chess> {
       // 吃对方的子
       if(newActive.team != gamer.player.team){
         if(!movePoints.contains(newActive.position)){
-          print('can\'t eat ${newActive.team}${newActive.code} at ${newActive.position}');
-          return;
+          alert('can\'t eat ${newActive.team}${newActive.code} at ${newActive.position}');
+          return false;
         }
         addStep(activePiece, newActive);
         dieFlash = ChessItem(team:newActive.team,code:newActive.code,position: newActive.position);
@@ -118,7 +108,7 @@ class ChessState extends State<Chess> {
           setState(() {
             newActive.position = activePiece.position;
             activePiece.position = lastPosition;
-            map.eat(activePiece, newActive);
+            gamer.map.eat(activePiece, newActive);
           });
           // 吃子，切换选手
           gamer.switchPlayer();
@@ -132,9 +122,10 @@ class ChessState extends State<Chess> {
           movePoints = [];
         });
         fetchMovePoints();
+        return true;
       }
-
     }
+    return false;
   }
 
   void setNext(ChessItem next){
@@ -142,7 +133,7 @@ class ChessState extends State<Chess> {
     // 当前选中的子是当前选手的
     if(activePiece != null && activePiece.team == gamer.player.team){
       if(!movePoints.contains(next.position)){
-        print('can\'t move to ${next.position}');
+        alert('can\'t move to ${next.position}');
         return;
       }
       addStep(activePiece, next);
@@ -150,12 +141,17 @@ class ChessState extends State<Chess> {
         setState(() {
           next.position = activePiece.position;
           activePiece.position = lastPosition;
-          map.move(activePiece, next);
+          gamer.map.move(activePiece, next);
         });
         // 走棋，切换选手
         gamer.switchPlayer();
       });
     }
+  }
+
+  void alert(String message){
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -171,7 +167,7 @@ class ChessState extends State<Chess> {
         child: Piece(item: dieFlash, isActive: false, isAblePoint: false),
       ));
     }
-    map.forEach((XYKey key, ChessItem item) {
+    gamer.map.forEach((XYKey key, ChessItem item) {
       bool isActive = false;
       bool isAblePoint = false;
       if(movePoints.contains(item.position)){
@@ -191,7 +187,14 @@ class ChessState extends State<Chess> {
               (item.x * cellSize * 2 + 8) / boardWidth - 1,
               ( (9 - item.y) * cellSize * 2 + 2) / boardHeight - 1,
             ),
-            child: Piece(item:item, isActive: isActive, isAblePoint: isAblePoint),
+            child: AnimatedContainer(
+              width: pieceSize,
+              height: pieceSize,
+              transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105, 0.9, 0, -0.004, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
+              duration: Duration(milliseconds: 250),
+              curve: Curves.easeOutQuint,
+              child:  Piece(item:item, isActive: isActive, isAblePoint: isAblePoint,),
+            ),
           ));
           return;
         }

@@ -13,13 +13,30 @@ class GameWrapper extends StatefulWidget{
 }
 
 class GameWrapperState extends State<GameWrapper> {
-  Gamer gamer = Gamer();
+  Gamer gamer;
+  @override
+  void initState() {
+    super.initState();
+    if(gamer != null){
+      print('gamer inited');
+      gamer.destroy();
+    }
+    gamer = Gamer();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
         body:PlayPage()
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    print('gamer destroy');
+    gamer.destroy();
+    gamer = null;
   }
 }

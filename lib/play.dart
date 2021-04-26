@@ -22,7 +22,13 @@ class PlayPageState extends State<PlayPage> {
               child: Chess(),
             ),
             SizedBox(width: 10,),
-            Expanded(child: Text('infos'))
+            Expanded(
+                child: Column(
+                  children: [
+
+                  ],
+                )
+            )
           ],
         ),
       );

@@ -10,7 +10,7 @@ class Piece extends StatelessWidget {
   final bool isActive;
   final bool isAblePoint;
 
-  const Piece({Key key, this.item, this.isActive = false, this.isAblePoint})
+  const Piece({Key key, this.item, this.isActive = false, this.isAblePoint = false})
       : super(key: key);
 
   Widget ablePoint() {
@@ -72,12 +72,11 @@ class Piece extends StatelessWidget {
             child: Container(
               width: size,
               height: size,
-              transform: null,
               decoration: this.isActive
                   ? BoxDecoration(
-                  border: Border.all(color: Color.fromRGBO(255, 255, 255, .7), width: 2),
-                borderRadius: BorderRadius.all(Radius.circular(size / 2))
-              )
+                    border: Border.all(color: Color.fromRGBO(255, 255, 255, .7), width: 2),
+                    borderRadius: BorderRadius.all(Radius.circular(size / 2))
+                  )
                   : null,
               child: Stack(
                 children: [

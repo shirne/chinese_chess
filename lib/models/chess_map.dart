@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class ChessMap {
   List<List<ChessItem>> mapData = [];
 
-  ChessMap();
+  ChessMap(){
+    this.clear();
+  }
 
   ChessMap.fromFen(String fen){
     if(fen.isNotEmpty){
@@ -33,7 +35,7 @@ class ChessMap {
       y --;
       x = 0;
     });
-    print(mapData);
+    // print(mapData);
   }
 
   operator [](XYKey key){
@@ -123,13 +125,12 @@ class ChessMap {
   }
 
   forEach(void f(XYKey key,ChessItem item)){
-    for(int y = 0;y < 10; y++){
-      for(int x = 0; x < 9; x++){
+    for(int y = 0;y < mapData.length; y++){
+      for(int x = 0; x < mapData[y].length; x++){
         f(XYKey(x, y), mapData[y][x]);
       }
     }
   }
-
 }
 
 class XYKey {
