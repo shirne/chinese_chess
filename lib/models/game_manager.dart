@@ -12,7 +12,6 @@ import 'engine.dart';
 import 'hand.dart';
 
 class GameManager{
-  static const startFen = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1';
 
   String skin = 'woods';
 
@@ -22,6 +21,7 @@ class GameManager{
   // 算法引擎
   Engine engine;
   bool engineOK;
+  bool isStop = false;
 
   // 选手
   List<Hand> hands = [];
@@ -32,7 +32,14 @@ class GameManager{
 
   // 着法历史
   List<ChessStep> steps = [];
+
+  int currentStep = 0;
+
+  // 未吃子着数(半回合数)
   int unEatCount = 0;
+
+  // 回合数
+  int round = 0;
 
   String currentFen;
 
@@ -40,6 +47,7 @@ class GameManager{
   ValueNotifier<String> messageNotifier;
 
   ValueNotifier<int> playerNotifier;
+  ValueNotifier<int> gameNotifier;
 
   // 走子规则
   ChessRule rule;
@@ -49,10 +57,12 @@ class GameManager{
     hands.add(Hand('r', title: '红方'));
     hands.add(Hand('b', title: '黑方'));
     curHand = 0;
-    map = ChessMap.fromFen(startFen);
+    map = ChessMap.fromFen(ChessManual.startFen);
     stepNotifier = ValueNotifier<String>('==开始==');
     messageNotifier = ValueNotifier<String>('');
     playerNotifier = ValueNotifier(curHand);
+    gameNotifier = ValueNotifier(-1);
+
     engine = Engine();
     engineOK = false;
     engine.init().then((process){
@@ -63,11 +73,16 @@ class GameManager{
   parseMessage(String message){
     List<String> parts = message.split(' ');
     switch(parts[0]){
-
       case 'ucciok':
         engineOK = true;
+        messageNotifier.value = 'Engine is OK!';
         break;
       case 'nobestmove':
+        // 强行stop后的nobestmove忽略
+        if(isStop){
+          isStop = false;
+          return;
+        }
         break;
       case 'bestmove':
         break;
@@ -76,7 +91,7 @@ class GameManager{
       case 'id':
       case 'option':
       default:
-        print(message);
+        return;
     }
     messageNotifier.value = message;
   }
@@ -93,26 +108,62 @@ class GameManager{
     }
     manual = ChessManual.load(content);
     if(manual.fen.isEmpty){
-      map = ChessMap.fromFen(startFen);
+      map = ChessMap.fromFen(ChessManual.startFen);
     }else{
       map = ChessMap.fromFen(manual.fen);
     }
-    stepNotifier.value = 'clear';
-    messageNotifier.value = 'clear';
 
     // 加载步数
     if(manual.moves.length > 0){
-      steps = manual.moves.map<ChessStep>((e) => ChessStep('', e)).toList();
-      stepNotifier.value = steps.map<String>((e) => e.toString()).join('\n');
+      steps = manual.moves;
+      stepNotifier.value = steps.map<String>((e) => e.toChineseString()).join('\n');
     }
+
+    currentStep = 0;
+    gameNotifier.value = 0;
+    stepNotifier.value = 'clear';
+    messageNotifier.value = 'clear';
   }
 
   loadFen(String fen){
     map.load(fen);
   }
 
+  // 重载历史局面
+  loadHistory(int index){
+    if(index > steps.length){
+      print('History error');
+      return;
+    }
+    if(index == currentStep){
+      return;
+    }
+    currentStep = index;
+    loadFen(steps[currentStep].fen);
+
+    gameNotifier.value = currentStep;
+  }
+
   addStep(ChessItem chess, ChessItem next){
-    steps.add(ChessStep(chess.code, chess.position+next.position, isEat: !next.isBlank));
+    // 如果当前不是最后一步，移除后面着法
+    if(currentStep < steps.length - 1){
+      steps.removeRange(currentStep + 1, steps.length - 1);
+      gameNotifier.value = -1;
+    }
+    if(curHand == 0){
+      round ++;
+      steps.add(ChessStep(
+          curHand,
+          chess.code, chess.position + next.position, isEat: !next.isBlank,
+          round: round,
+          fen: map.toFen()));
+    }else {
+      steps.add(ChessStep(
+          curHand,
+          chess.code, chess.position + next.position, isEat: !next.isBlank,
+          fen: map.toFen()));
+    }
+    currentStep = steps.length - 1;
     if(next.isBlank){
       unEatCount ++;
     }else{
@@ -143,6 +194,8 @@ class GameManager{
     playerNotifier.value = curHand;
     print('切换选手:${player.team}');
 
+    messageNotifier.value = 'clear';
+    isStop = true;
     engine.stop();
     currentFen = map.toFen();
     engine.position(currentFen + ' ' + (curHand>0?'b':'w') + ' - - $unEatCount ' + (steps.length ~/ 2).toString());

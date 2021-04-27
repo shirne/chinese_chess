@@ -26,7 +26,7 @@ class Engine{
 
   void onMessage(f(String message)){
     if(!ready){
-      f('engine is not ready');
+      f('Engine is not ready');
       return;
     }
     process.stdout.listen((List<int> event){
@@ -42,13 +42,14 @@ class Engine{
 
   void sendCommand(String command){
     if(!ready){
-      print('engine is not ready');
+      print('Engine is not ready');
+      return;
     }
     print('command: $command');
     process.stdin.writeln(command);
   }
 
-  void setoption(String option){
+  void setOption(String option){
     sendCommand('setoption $option');
   }
 
@@ -56,7 +57,7 @@ class Engine{
     sendCommand('position fen $fen');
   }
 
-  void banmoves(List<String> moveList){
+  void banMoves(List<String> moveList){
     sendCommand('banmoves ${moveList.join(' ')}');
   }
 
@@ -72,7 +73,7 @@ class Engine{
     }
   }
 
-  void ponderhit(String type){
+  void ponderHit(String type){
     sendCommand('ponderhit $type');
   }
 
@@ -86,6 +87,10 @@ class Engine{
 
   void quit(){
     sendCommand('quit');
-    process.kill(ProcessSignal.sigquit);
+    if(ready) {
+      process.kill(ProcessSignal.sigquit);
+      process = null;
+      ready = false;
+    }
   }
 }

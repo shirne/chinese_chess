@@ -44,6 +44,18 @@ class ChessState extends State<Chess> {
     super.initState();
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
+    gamer.gameNotifier.addListener(reloadGame);
+  }
+
+  reloadGame(){
+    if(gamer.gameNotifier.value < 0){
+      return;
+    }
+    String position = gamer.steps[gamer.currentStep].move;
+    setState(() {
+      activePiece = gamer.map.getChessAt(XYKey.fromCode(position.substring(2,3)));
+      lastPosition = position.substring(0,1);
+    });
   }
 
   addStep(ChessItem chess, ChessItem next){
@@ -51,7 +63,7 @@ class ChessState extends State<Chess> {
   }
 
   fetchMovePoints(){
-    movePoints = gamer.rule.movePoints(activePiece,gamer.map);
+    movePoints = gamer.rule.movePoints(activePiece, gamer.map);
     print(['move points:', movePoints]);
   }
 
