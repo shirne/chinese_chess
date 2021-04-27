@@ -164,7 +164,7 @@ class XYKey {
   }
 
   String toString(){
-    return 'x: $x, y: $y; '+toCode();
+    return '$x.$y;'+toCode();
   }
 
   operator ==(Object other){

@@ -143,7 +143,7 @@ class ChessManual{
                 break;
             }
           }else{
-            print('analysis pgn failed at $idx');
+            print('Analysis pgn failed at $idx');
             break;
           }
           line = '';
@@ -211,8 +211,8 @@ class ChessManual{
     '相':'B',
     '马':'n',
     '车':'r',
-    '砲':'c',
-    '炮':'C',
+    '炮':'c',
+    '砲':'C',
     '卒':'p',
     '兵':'P'
   };
@@ -222,7 +222,7 @@ class ChessManual{
     'b':'相',
     'n':'马',
     'r':'车',
-    'c':'炮',
+    'c':'砲',
     'p':'兵',
   };
   static const nameBlackMap = {
@@ -231,12 +231,13 @@ class ChessManual{
     'b':'象',
     'n':'马',
     'r':'车',
-    'c':'砲',
+    'c':'炮',
     'p':'卒',
   };
   static const colRed = ['九','八','七','六','五','四','三','二','一'];
   static const colBlack = ['1','2','3','4','5','6','7','8','9'];
   static const nameIndex = ['一','二','三','四','五'];
+  static const stepIndex = ['','一','二','三','四','五','六','七','八','九'];
   static const posIndex = ['前','中','后'];
 
   static int posSort(key1, key2){
@@ -258,7 +259,7 @@ class ChessManual{
     List<String> fenRows = fenParts[0]
         .replaceAllMapped(RegExp(r'\d'),
             (match) => List<String>.filled(int.parse(match[0]), '0').join('')
-    ).split('/');
+    ).split('/').reversed.toList();
 
     XYKey posFrom = XYKey.fromCode(move.substring(0,2));
     XYKey posTo = XYKey.fromCode(move.substring(2,4));
@@ -267,16 +268,17 @@ class ChessManual{
 
     fenRows[posFrom.y] = fenRows[posFrom.y].replaceRange(posFrom.x, posFrom.x + 1, '0');
 
-    fenParts[0] = fenRows.join('/').replaceAllMapped(RegExp(r'0+'), (match) => match[0].length.toString());
+    fenParts[0] = fenRows.reversed.join('/').replaceAllMapped(RegExp(r'0+'), (match) => match[0].length.toString());
 
     return fenParts.join(' ');
   }
 
   static toPositionString(int team, String move, String fen){
-    List<String> fenRows = fen
+    List<String> fenParts = fen.split(' ');
+    List<String> fenRows = fenParts[0]
         .replaceAllMapped(RegExp(r'\d'),
             (match) => List<String>.filled(int.parse(match[0]), '0').join('')
-    ).split('/');
+    ).split('/').reversed.toList();
 
     String code;
     String matchCode;
@@ -292,7 +294,7 @@ class ChessManual{
     matchCode = team == 0 ? code.toUpperCase() : code;
 
     List<XYKey> items = [];
-    int rowNumber = 9;
+    int rowNumber = 0;
     fenRows.forEach((row) {
       int start = row.indexOf(matchCode);
       while(start > -1){
@@ -301,44 +303,41 @@ class ChessManual{
         start = row.indexOf(matchCode, start+1);
       }
 
-      rowNumber--;
+      rowNumber++;
     });
-
 
     XYKey curItem;
     // 这种情况只能是小兵
     if(nameIndex.contains(move[0])){
 
       // 筛选出有同列的兵
-      List<XYKey> nItems = items.takeWhile((item) => items.any((pawn) => pawn != item && pawn.x == item.x) ).toList();
+      List<XYKey> nItems = items.where((item) => items.any((pawn) => pawn != item && pawn.x == item.x) ).toList();
       nItems.sort(posSort);
       colIndex = nameIndex.indexOf(move[0]);
       curItem = team == 0 ? nItems[nItems.length - colIndex - 1] : nItems[colIndex];
       // 前中后
     }else if(posIndex.contains(move[0])){
-      code = nameMap[move[1]];
 
       // 筛选出有同列的兵
-      List<XYKey> nItems = items.takeWhile((item) => items.any((pawn) => pawn != item && pawn.x == item.x) ).toList();
+      List<XYKey> nItems = items.where((item) => items.any((pawn) => pawn != item && pawn.x == item.x) ).toList();
       nItems.sort(posSort);
       if(nItems.length > 2){
         colIndex = posIndex.indexOf(move[0]);
         curItem = team == 0 ? nItems[nItems.length - colIndex - 1] : nItems[colIndex];
       }else{
-        if( team == 0 && move[0] == '前'){
+        if( (team == 0 && move[0] == '前') || (team == 1 && move[0] == '后')){
           curItem = nItems[1];
         }else{
           curItem = nItems[0];
         }
       }
     }else{
-      code = nameMap[move[0]];
       colIndex = team == 0 ? colRed.indexOf(move[1]) : colBlack.indexOf(move[1]);
 
       List<XYKey> nItems = items.where((item) => item.x == colIndex ).toList();
       nItems.sort(posSort);
       if(nItems.length > 1){
-        if(team == 0 && move[2] == '进'){
+        if((team == 0 && move[2] == '进') || (team == 1 && move[2] == '退')){
           curItem = nItems[1];
         }else{
           curItem = nItems[0];
@@ -353,16 +352,16 @@ class ChessManual{
       if(move[2] == '平'){
         nextItem.y = curItem.y;
         nextItem.x = team == 0 ? colRed.indexOf(move[3]) : colBlack.indexOf(move[3]);
-      }else if(team == 0 && move[2] == '进'){
+      }else if( (team == 0 && move[2] == '进') || (team == 1 && move[2] == '退')){
         nextItem.x = curItem.x;
-        nextItem.y = curItem.y + int.parse(move[4]);
+        nextItem.y = curItem.y + (team == 0 ? stepIndex.indexOf(move[3]) : int.parse(move[3]));
       }else{
         nextItem.x = curItem.x;
-        nextItem.y = curItem.y - int.parse(move[4]);
+        nextItem.y = curItem.y - (team == 0 ? stepIndex.indexOf(move[3]) : int.parse(move[3]));
       }
     }else{
       nextItem.x = team == 0 ? colRed.indexOf(move[3]) : colBlack.indexOf(move[3]);
-      if(team == 0 && move[2] == '进'){
+      if( (team == 0 && move[2] == '进' ) || (team == 1 && move[2] == '退' )){
         if(code == 'n'){
           if( (nextItem.x - curItem.x).abs() == 2 ){
             nextItem.y = curItem.y + 1;
@@ -391,11 +390,11 @@ class ChessManual{
 
   static toChineseString(String move, String fen){
     String _chineseString;
-
-    List<String> fenRows = fen
+    List<String> fenParts = fen.split(' ');
+    List<String> fenRows = fenParts[0]
         .replaceAllMapped(RegExp(r'\d'),
             (match) => List<String>.filled(int.parse(match[0]), '0').join('')
-    ).split('/');
+    ).split('/').reversed.toList();
 
     XYKey posFrom = XYKey.fromCode(move.substring(0,2));
     XYKey posTo = XYKey.fromCode(move.substring(2,4));
@@ -413,7 +412,7 @@ class ChessManual{
 
     }else{
       int colCount = 0;
-      int rowNumber = 9;
+      int rowNumber = 0;
 
       List<int> rowIndexs = [];
 
@@ -423,7 +422,7 @@ class ChessManual{
 
           rowIndexs.add(rowNumber);
         }
-        rowNumber--;
+        rowNumber++;
       });
       if(colCount > 3) {
         int idx = rowIndexs.indexOf(posFrom.y);
@@ -435,7 +434,7 @@ class ChessManual{
       }else if(colCount > 2 || (colCount > 1 && code == 'p')){
         // 找出所有的兵
         List<XYKey> pawns = [];
-        rowNumber = 9;
+        rowNumber = 0;
         fenRows.forEach((row) {
           int start = row.indexOf(matchCode);
           while(start > -1){
@@ -444,10 +443,15 @@ class ChessManual{
             start = row.indexOf(matchCode, start+1);
           }
 
-          rowNumber--;
+          rowNumber++;
         });
+
         // 筛选出有同列的兵
-        List<XYKey> nPawns = pawns.takeWhile((item) => pawns.any((pawn) => pawn != item && pawn.x == item.x) ).toList();
+        List<XYKey> nPawns = pawns.where((item) =>
+            pawns.any((pawn) =>
+            (pawn != item && pawn.x == item.x)
+          )
+        ).toList();
         nPawns.sort(posSort);
 
         int idx = nPawns.indexOf(posFrom);
@@ -469,13 +473,14 @@ class ChessManual{
     if(posFrom.y == posTo.y){
       _chineseString += '平'+(team == 0 ? colRed[posTo.x] : colBlack[posTo.x]);
     }else{
-      if(team == 0 && posFrom.y < posTo.y) {
+      if( (team == 0 && posFrom.y < posTo.y) || (team == 1 && posFrom.y > posTo.y)) {
         _chineseString += '进';
       }else{
         _chineseString += '退';
       }
       if(['p','k','c','r'].contains(code)){
-        _chineseString += (posFrom.y - posTo.y).abs().toString();
+        int step = (posFrom.y - posTo.y).abs();
+        _chineseString += team == 0 ? stepIndex[step] : step.toString();
       }else{
         _chineseString += team == 0 ? colRed[posTo.x] : colBlack[posTo.x];
       }
