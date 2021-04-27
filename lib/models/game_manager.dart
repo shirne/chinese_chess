@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 import 'chess_manual.dart';
 import 'chess_map.dart';
 import 'chess_rule.dart';
@@ -9,9 +11,12 @@ import 'chess_step.dart';
 import 'engine.dart';
 import 'hand.dart';
 
-class Gamer{
+class GameManager{
+  static const startFen = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1';
+
   String skin = 'woods';
 
+  // 当前对局
   ChessManual manual;
   
   // 算法引擎
@@ -29,15 +34,25 @@ class Gamer{
   List<ChessStep> steps = [];
   int unEatCount = 0;
 
+  String currentFen;
+
+  ValueNotifier<String> stepNotifier;
+  ValueNotifier<String> messageNotifier;
+
+  ValueNotifier<int> playerNotifier;
+
   // 走子规则
   ChessRule rule;
 
-  Gamer(){
+  GameManager(){
     rule = ChessRule();
-    hands.add(Hand('r'));
-    hands.add(Hand('b'));
+    hands.add(Hand('r', title: '红方'));
+    hands.add(Hand('b', title: '黑方'));
     curHand = 0;
-    map = ChessMap.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
+    map = ChessMap.fromFen(startFen);
+    stepNotifier = ValueNotifier<String>('==开始==');
+    messageNotifier = ValueNotifier<String>('');
+    playerNotifier = ValueNotifier(curHand);
     engine = Engine();
     engineOK = false;
     engine.init().then((process){
@@ -63,6 +78,7 @@ class Gamer{
       default:
         print(message);
     }
+    messageNotifier.value = message;
   }
 
   loadPGN(String pgn){
@@ -76,7 +92,19 @@ class Gamer{
       content = pgn;
     }
     manual = ChessManual.load(content);
+    if(manual.fen.isEmpty){
+      map = ChessMap.fromFen(startFen);
+    }else{
+      map = ChessMap.fromFen(manual.fen);
+    }
+    stepNotifier.value = 'clear';
+    messageNotifier.value = 'clear';
 
+    // 加载步数
+    if(manual.moves.length > 0){
+      steps = manual.moves.map<ChessStep>((e) => ChessStep('', e)).toList();
+      stepNotifier.value = steps.map<String>((e) => e.toString()).join('\n');
+    }
   }
 
   loadFen(String fen){
@@ -90,10 +118,20 @@ class Gamer{
     }else{
       unEatCount = 0;
     }
+    stepNotifier.value = steps.last.toString();
+  }
+
+  getSteps(){
+    return steps.map<String>((cs){
+      return cs.toString();
+    }).toList();
   }
 
   destroy(){
+    engine.stop();
     engine.quit();
+    stepNotifier = null;
+    messageNotifier = null;
   }
 
   switchPlayer(){
@@ -101,16 +139,18 @@ class Gamer{
     if(curHand >= hands.length){
       curHand = 0;
     }
+
+    playerNotifier.value = curHand;
     print('切换选手:${player.team}');
 
     engine.stop();
-    engine.position(map.toFen()+' '+(curHand>0?'b':'w')+' - - $unEatCount '+(steps.length ~/ 2).toString());
-    engine.go();
+    currentFen = map.toFen();
+    engine.position(currentFen + ' ' + (curHand>0?'b':'w') + ' - - $unEatCount ' + (steps.length ~/ 2).toString());
+    engine.go(depth: 10);
   }
 
   get player{
     return hands[curHand];
   }
-
 
 }

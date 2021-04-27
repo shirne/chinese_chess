@@ -1,9 +1,13 @@
 
+import 'dart:io';
 
-
+import 'package:file_picker/file_picker.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gbk2utf8/gbk2utf8.dart';
 
-import 'models/Gamer.dart';
+import 'models/game_manager.dart';
 import 'play.dart';
 
 class GameWrapper extends StatefulWidget{
@@ -13,7 +17,8 @@ class GameWrapper extends StatefulWidget{
 }
 
 class GameWrapperState extends State<GameWrapper> {
-  Gamer gamer;
+  GameManager gamer;
+
   @override
   void initState() {
     super.initState();
@@ -21,7 +26,25 @@ class GameWrapperState extends State<GameWrapper> {
       print('gamer inited');
       gamer.destroy();
     }
-    gamer = Gamer();
+    gamer = GameManager();
+  }
+
+  Future<void> _showDialog(String message, List<Widget> buttons,{ String title = 'Alert', barrierDismissible = false}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: message.split('\n').map<Widget>((item)=>Text(item)),
+            ),
+          ),
+          actions: buttons,
+        );
+      },
+    );
   }
 
 
@@ -38,7 +61,25 @@ class GameWrapperState extends State<GameWrapper> {
 
           }),
           IconButton(icon: Icon(Icons.clear), color: Colors.red, onPressed: (){
-
+            this._showDialog('是否立即退出',
+                [
+                  TextButton(
+                    onPressed: (){
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('暂不退出'),
+                  ),
+                  TextButton(
+                      onPressed: (){
+                        if(!kIsWeb){
+                          Isolate.current.pause();
+                          exit(0);
+                        }
+                      },
+                      child: Text('立即退出',style: TextStyle(color:Colors.red)),
+                  )
+                ]
+            );
           })
         ],*/
       ),
@@ -77,6 +118,7 @@ class GameWrapperState extends State<GameWrapper> {
               title: Text('加载棋谱'),
               onTap: (){
                 print('new game');
+                kIsWeb ? requestFile() : loadFile();
               },
             ),
             ListTile(
@@ -96,15 +138,54 @@ class GameWrapperState extends State<GameWrapper> {
           ],
         ),
       ),
-        body:PlayPage()
+        body:Center(
+            child:PlayPage()
+        )
     );
   }
 
   @override
   void dispose() {
-    super.dispose();
     print('gamer destroy');
     gamer.destroy();
     gamer = null;
+    super.dispose();
+  }
+
+  void requestFile() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+        allowedExtensions: ['.pgn','.PGN']
+    );
+
+    if(result != null) {
+      print(result.files.single);
+      if(result.files.single.path != null) {
+        File file = File(result.files.single.path);
+        print(file);
+      }else{
+        String content = gbk.decode(result.files.single.bytes);
+        print(content);
+      }
+    } else {
+      // User canceled the picker
+    }
+  }
+
+  void loadFile() async {
+    String path = await FilesystemPicker.open(
+      title: '选择棋谱文件',
+      context: context,
+      rootDirectory: Directory('/'),
+      fsType: FilesystemType.file,
+      folderIconColor: Colors.teal,
+      allowedExtensions: ['.pgn','.PGN'],
+      fileTileSelectMode: FileTileSelectMode.wholeTile,
+    );
+
+    if(path != null) {
+      print(path);
+    } else {
+      // User canceled the picker
+    }
   }
 }

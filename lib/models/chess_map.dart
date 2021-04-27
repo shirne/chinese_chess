@@ -3,12 +3,15 @@
 class ChessMap {
   List<List<ChessItem>> mapData = [];
 
+  String currentFen = '';
+
   ChessMap(){
     this.clear();
   }
 
   ChessMap.fromFen(String fen){
     if(fen.isNotEmpty){
+      currentFen = fen;
       load(fen);
     }
   }
@@ -50,6 +53,9 @@ class ChessMap {
   }
 
   String toFen(){
+    if(currentFen.isNotEmpty){
+      return currentFen;
+    }
     List<String> fens = [];
     mapData.forEach((element) {
       List<String> row = [];
@@ -71,7 +77,8 @@ class ChessMap {
 
       fens.add(row.join(''));
     });
-    return fens.reversed.join('/');
+    currentFen = fens.reversed.join('/');
+    return currentFen;
   }
 
   hasChessAt(XYKey point, {String team = ''}){
@@ -107,6 +114,8 @@ class ChessMap {
     swap.isBlank = true;
     mapData[idxFrom.y][idxFrom.x] = swap;
     mapData[idxFrom.y][idxFrom.x].position = idxFrom.toCode();
+
+    currentFen = '';
   }
 
   moveByCode(String code){

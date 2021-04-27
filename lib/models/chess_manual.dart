@@ -1,6 +1,6 @@
 
 
-import 'package:chinese_chess/models/chess_step.dart';
+import 'chess_step.dart';
 
 class ChessManual{
   // 游戏类型

@@ -2,6 +2,8 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 class Engine{
   String engine = 'eleeye.exe';
   bool ready;
@@ -10,6 +12,9 @@ class Engine{
 
   Future<Process> init(){
     ready = false;
+    if(kIsWeb){
+      return Future.value(null);
+    }
     String path = Directory.current.path+'/assets/engines/$engine';
     return Process.start(path, []).then((value){
       process = value;
@@ -21,7 +26,8 @@ class Engine{
 
   void onMessage(f(String message)){
     if(!ready){
-      print('engine is not ready');
+      f('engine is not ready');
+      return;
     }
     process.stdout.listen((List<int> event){
       String lines = String.fromCharCodes(event).trim();
@@ -31,7 +37,6 @@ class Engine{
           f(line);
         }
       });
-
     });
   }
 

@@ -3,9 +3,9 @@ import 'package:chinese_chess/game.dart';
 import 'package:flutter/material.dart';
 
 import 'elements/board.dart';
-import 'models/Gamer.dart';
 import 'models/chess_map.dart';
 import 'elements/piece.dart';
+import 'models/game_manager.dart';
 
 class Chess extends StatefulWidget {
   final String skin;
@@ -37,7 +37,7 @@ class ChessState extends State<Chess> {
 
   // 可落点，包括吃子点
   List<String> movePoints=[];
-  Gamer gamer;
+  GameManager gamer;
 
   @override
   void initState() {

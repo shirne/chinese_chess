@@ -1,6 +1,12 @@
+import 'package:chinese_chess/play_player.dart';
+import 'package:chinese_chess/play_step.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess.dart';
+import 'game.dart';
+import 'models/game_manager.dart';
+import 'play_bot.dart';
 import 'widgets/tab_card.dart';
 
 class PlayPage extends StatefulWidget {
@@ -9,12 +15,27 @@ class PlayPage extends StatefulWidget {
 }
 
 class PlayPageState extends State<PlayPage> {
+  GameManager gamer;
+
+  @override
+  void initState() {
+    super.initState();
+    GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
+    gamer = gameWrapper.gamer;
+  }
+
+  @override
+  dispose(){
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
 
-    BoxDecoration decoration = BoxDecoration(border: Border.all(color: Colors.grey),borderRadius: BorderRadius.all(Radius.circular(2)));
+    BoxDecoration decoration = BoxDecoration(border: Border.all(color: Colors.grey, width: 0.5),borderRadius: BorderRadius.all(Radius.circular(2)));
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+      width: 981,
+      height: 600,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,46 +59,30 @@ class PlayPageState extends State<PlayPage> {
               )]
             ),
             child: Column(
+              mainAxisSize:MainAxisSize.max,
               children: [
                 Container(
                   height: 200,
                   decoration: decoration,
-                  child: Text('棋局信息'),
+                  child: TabCard(
+                      titlePadding:EdgeInsets.symmetric( vertical: 10, horizontal: 30),
+                      titles:[
+                        Text('当前信息'),
+                        Text('棋局信息')
+                      ],
+                      bodies:[
+                        Center(child:Text('暂无信息')),
+                        Center(child:Text('暂无棋局信息'))
+                      ]
+                  ),
                 ),
                 SizedBox(height: 10,),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 200,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.person),
-                              title: Text('黑方'),
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.person),
-                              title: Text('红方'),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 200,
-                        padding: EdgeInsets.all(10),
-                        decoration: decoration,
-                        child: ListView(
-                          children: [
-                            Text('着法1'),
-                            Text('着法2'),
-                            Text('着法3'),
-                            Text('着法4'),
-                          ],
-                        ),
-                      ),
+                      PlayPlayer(height: 200,),
+                      PlayStep(decoration:decoration,height: 200,),
                     ],
                   ),
                 ),
@@ -92,8 +97,10 @@ class PlayPageState extends State<PlayPage> {
                       Text('注解')
                     ],
                     bodies:[
-                      Text('推荐招法 body'),
-                      Text('注解 body')
+                      PlayBot(),
+                      Center(
+                          child:Text('暂无注解'),
+                      )
                     ]
                   ),
                 )

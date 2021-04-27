@@ -17,7 +17,7 @@ class TabCard extends StatefulWidget{
     this.direction = Axis.vertical,
     this.titleAlign = MainAxisAlignment.start,
     this.titlePadding,
-    this.titleDecoration = const BoxDecoration(color: Colors.black12),
+    this.titleDecoration = const BoxDecoration(color: Color.fromRGBO(0, 0, 0, .1)),
     this.titleActiveDecoration = const BoxDecoration(color: Colors.white)
   }) : super(key: key);
 
@@ -29,7 +29,6 @@ class TabCard extends StatefulWidget{
 class TabCardState extends State<TabCard> {
   int index = 0;
   List<Widget> titles;
-  BoxDecoration titleDecoration;
 
   ValueNotifier<int> onTabChange;
 
@@ -57,9 +56,12 @@ class TabCardState extends State<TabCard> {
     return Flex(
         direction: widget.direction,
         children: [
-          Row(
-            mainAxisAlignment: widget.titleAlign,
-            children: titles,
+          Container(
+            decoration: widget.titleDecoration,
+            child: Row(
+              mainAxisAlignment: widget.titleAlign,
+              children: titles,
+            ),
           ),
           Expanded(
               child: IndexedStack(
