@@ -3,6 +3,12 @@ import 'chess_map.dart';
 
 class ChessRule{
 
+  /// 检查是否被将军
+  bool checkCheckMate(team, fen){
+
+    return false;
+  }
+
   List<String> movePoints(ChessItem item, ChessMap map){
     print(item);
     if(item == null)return [];

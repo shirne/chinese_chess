@@ -1,5 +1,5 @@
 
-import 'chess_manual.dart';
+import 'chess_fen.dart';
 
 class ChessStep{
 
@@ -56,7 +56,7 @@ class ChessStep{
       return _chineseString;
     }
 
-    _chineseString = ChessManual.toChineseString(move, fen);
+    _chineseString = ChessFen(fen).toChineseString(move);
 
     return _chineseString;
   }

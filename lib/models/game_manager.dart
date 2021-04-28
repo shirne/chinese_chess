@@ -21,6 +21,8 @@ class GameManager{
   // 算法引擎
   Engine engine;
   bool engineOK;
+
+  // 是否重新请求招法时的强制stop
   bool isStop = false;
 
   // 选手
@@ -34,6 +36,8 @@ class GameManager{
   List<ChessStep> steps = [];
 
   int currentStep = 0;
+
+  bool isCheckMate = false;
 
   // 未吃子着数(半回合数)
   int unEatCount = 0;
@@ -169,7 +173,7 @@ class GameManager{
     }else{
       unEatCount = 0;
     }
-    stepNotifier.value = steps.last.toString();
+    stepNotifier.value = steps.last.toChineseString();
   }
 
   getSteps(){
@@ -193,6 +197,8 @@ class GameManager{
 
     playerNotifier.value = curHand;
     print('切换选手:${player.team}');
+
+    isCheckMate = rule.checkCheckMate(curHand, currentFen);
 
     messageNotifier.value = 'clear';
     isStop = true;
