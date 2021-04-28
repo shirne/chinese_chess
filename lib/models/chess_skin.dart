@@ -2,7 +2,9 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:html' as html;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_pos.dart';
@@ -40,15 +42,24 @@ class ChessSkin{
   ChessSkin(this.folder){
     readyNotifier = ValueNotifier(false);
     String jsonfile = "assets/skins/$folder/config.json";
-    File file = File(jsonfile);
-    file.exists().then((bool has){
-      if(has){
-        file.readAsString().then(loadJson);
-      }else{
-        print('$jsonfile not exists');
+    if(kIsWeb){
+      html.HttpRequest.getString(jsonfile).then((String fileContents) {
+        loadJson(fileContents);
+      }).catchError((error) {
+        print(error.toString());
         readyNotifier.value = true;
-      }
-    });
+      });
+    }else {
+      File file = File(jsonfile);
+      file.exists().then((bool has) {
+        if (has) {
+          file.readAsString().then(loadJson);
+        } else {
+          print('$jsonfile not exists');
+          readyNotifier.value = true;
+        }
+      });
+    }
   }
 
   loadJson(String content){
