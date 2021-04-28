@@ -2,7 +2,6 @@
 
 import 'package:chinese_chess/models/chess_fen.dart';
 
-import 'chess_map.dart';
 import 'chess_step.dart';
 
 class ChessManual{
@@ -46,13 +45,13 @@ class ChessManual{
   String result = '*';
 
   // 开局
-  String opening;
+  String opening = '';
 
   // 变例
-  String variation;
+  String variation = '';
 
   // 开局编号
-  String ecco;
+  String ecco = '';
 
   // 开始局面
   String fen;
@@ -62,15 +61,30 @@ class ChessManual{
   String format = 'Chinese';
 
   // 时限
-  String timeControl;
+  String timeControl = '';
 
   // 结论
-  String termination;
+  String termination = '';
   // Annotator、Mode、PlyCount
 
-  List<ChessStep> moves;
+  // 着法
+  List<ChessStep> moves = [];
 
-  ChessManual();
+  ChessManual({
+    this.fen = startFen,
+    this.red = 'Red',
+    this.black = 'Black',
+    this.redTeam = 'RedTeam',
+    this.blackTeam = 'BlackTeam',
+    this.event = '',
+    this.site = '',
+    this.date = '',
+    this.round = '1',
+    this.ecco = '',
+    this.timeControl = '',
+  }){
+    this.currentFen = ChessFen(this.fen.split(' ')[0]);
+  }
 
   ChessManual.load(content){
     int idx = 0;
@@ -165,7 +179,7 @@ class ChessManual{
               step = int.tryParse(line.substring(0, line.length - 2)) ?? 0;
               line = '';
             }else{
-              addMove(line, step: step, description: description);
+              addMove(line, description: description);
               description = '';
             }
           }
@@ -180,28 +194,46 @@ class ChessManual{
       idx ++;
       if(idx >= content.length){
         if(line.isNotEmpty){
-          addMove(line, step: step, description: description);
+          addMove(line, description: description);
         }
         break;
       }
     }
   }
 
-  addMove(String move, {String description, int step = 0}){
+  loadHistory(int index){
+    currentFen.fen = moves[index].fen;
+    currentFen.move(moves[index].move);
+  }
+
+  addMove(String move, {String description, int step = -1}){
     if(['1-0', '0-1', '1/2-1/2', '*'].contains(move)){
       result = move;
     }else {
+      if(step > -1){
+        moves = moves.take(step);
+      }
       int team = moves.length % 2;
-      move = parseMove(team, move);
 
-      moves.add(ChessStep(team, '', move, description:description, round: step, fen: currentFen));
+      // todo 自动解析所有格式
+      if(isChineseMove(move)) {
+        move = currentFen.toPositionString(team, move);
+      }
+
+      moves.add(ChessStep(team, '', move, description:description, round: (moves.length ~/ 2) + 1, fen: currentFen.toString()));
 
       currentFen.move(move);
     }
   }
 
-  parseMove(int team, String move){
-    return currentFen.toPositionString(team, move);
+  isNumberMove(String move){
+    return RegExp(r'[abcrnkpABCRNKP][0-9a-e][+\-\.][0-9]').hasMatch(move);
+  }
+  isPosMove(String move){
+    return RegExp(r'[a-iA-I][0-9]-?[a-iA-I][0-9]').hasMatch(move);
+  }
+  isChineseMove(String move){
+    return !isNumberMove(move) && !isPosMove(move);
   }
 
 }

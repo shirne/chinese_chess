@@ -17,10 +17,10 @@ class BoardState extends State<Board> {
   Widget build(BuildContext context) {
     ChessState chess = context.findAncestorStateOfType<ChessState>();
     return SizedBox(
-      width: chess.boardWidth,
-      height: chess.boardHeight,
+      width: chess.gamer.skin.width,
+      height: chess.gamer.skin.height,
       child: Image.asset(
-          'assets/skins/${chess.widget.skin}/board.jpg'
+          chess.gamer.skin.boardImage
       ),
     );
   }

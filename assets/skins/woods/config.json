@@ -1,0 +1,28 @@
+{
+  "width": 521,
+  "height": 577,
+  "size": 57,
+  "offset": {
+    "dx": 4,
+    "dy": 3
+  },
+  "board": "board.jpg",
+  "red": {
+    "K": "rk.gif",
+    "A": "ra.gif",
+    "B": "rb.gif",
+    "C": "rc.gif",
+    "N": "rn.gif",
+    "R": "rr.gif",
+    "P": "rp.gif"
+  },
+  "black": {
+    "k": "bk.gif",
+    "a": "ba.gif",
+    "b": "bb.gif",
+    "c": "bc.gif",
+    "n": "bn.gif",
+    "r": "br.gif",
+    "p": "bp.gif"
+  }
+}

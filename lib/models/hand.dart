@@ -1,7 +1,7 @@
 
 
 
-import 'chess_map.dart';
+import 'chess_item.dart';
 
 class Hand{
   ChessItem item;

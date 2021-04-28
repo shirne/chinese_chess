@@ -2,18 +2,20 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:chinese_chess/models/chess_skin.dart';
 import 'package:flutter/material.dart';
 
+import 'chess_fen.dart';
+import 'chess_item.dart';
 import 'chess_manual.dart';
-import 'chess_map.dart';
+import 'chess_pos.dart';
 import 'chess_rule.dart';
-import 'chess_step.dart';
 import 'engine.dart';
 import 'hand.dart';
 
 class GameManager{
 
-  String skin = 'woods';
+  ChessSkin skin;
 
   // 当前对局
   ChessManual manual;
@@ -30,13 +32,12 @@ class GameManager{
   int curHand = 0;
 
   // 布局
-  ChessMap map;
+  //ChessMap map;
 
-  // 着法历史
-  List<ChessStep> steps = [];
-
+  // 当前着法序号
   int currentStep = 0;
 
+  // 是否将军
   bool isCheckMate = false;
 
   // 未吃子着数(半回合数)
@@ -44,8 +45,6 @@ class GameManager{
 
   // 回合数
   int round = 0;
-
-  String currentFen;
 
   ValueNotifier<String> stepNotifier;
   ValueNotifier<String> messageNotifier;
@@ -57,11 +56,15 @@ class GameManager{
   ChessRule rule;
 
   GameManager(){
-    rule = ChessRule();
+    skin = ChessSkin("woods");
+    manual = ChessManual();
+    rule = ChessRule(manual.currentFen);
+
     hands.add(Hand('r', title: '红方'));
     hands.add(Hand('b', title: '黑方'));
     curHand = 0;
-    map = ChessMap.fromFen(ChessManual.startFen);
+    //map = ChessMap.fromFen(ChessManual.startFen);
+
     stepNotifier = ValueNotifier<String>('==开始==');
     messageNotifier = ValueNotifier<String>('');
     playerNotifier = ValueNotifier(curHand);
@@ -72,6 +75,14 @@ class GameManager{
     engine.init().then((process){
       engine.onMessage(parseMessage);
     });
+  }
+
+  ChessFen get fen{
+    return manual.currentFen;
+  }
+
+  String get lastMove{
+    return manual.moves[currentStep].move;
   }
 
   parseMessage(String message){
@@ -111,16 +122,10 @@ class GameManager{
       content = pgn;
     }
     manual = ChessManual.load(content);
-    if(manual.fen.isEmpty){
-      map = ChessMap.fromFen(ChessManual.startFen);
-    }else{
-      map = ChessMap.fromFen(manual.fen);
-    }
 
     // 加载步数
     if(manual.moves.length > 0){
-      steps = manual.moves;
-      stepNotifier.value = steps.map<String>((e) => e.toChineseString()).join('\n');
+      stepNotifier.value = manual.moves.map<String>((e) => e.toChineseString()).join('\n');
     }
 
     currentStep = 0;
@@ -130,12 +135,13 @@ class GameManager{
   }
 
   loadFen(String fen){
-    map.load(fen);
+    manual = ChessManual(fen: fen);
+    rule.fen = manual.currentFen;
   }
 
   // 重载历史局面
   loadHistory(int index){
-    if(index > steps.length){
+    if(index > manual.moves.length){
       print('History error');
       return;
     }
@@ -143,41 +149,34 @@ class GameManager{
       return;
     }
     currentStep = index;
-    loadFen(steps[currentStep].fen);
+    manual.loadHistory(index);
+    rule.fen = manual.currentFen;
 
     gameNotifier.value = currentStep;
   }
 
-  addStep(ChessItem chess, ChessItem next){
-    // 如果当前不是最后一步，移除后面着法
-    if(currentStep < steps.length - 1){
-      steps.removeRange(currentStep + 1, steps.length - 1);
-      gameNotifier.value = -1;
-    }
-    if(curHand == 0){
-      round ++;
-      steps.add(ChessStep(
-          curHand,
-          chess.code, chess.position + next.position, isEat: !next.isBlank,
-          round: round,
-          fen: map.toFen()));
-    }else {
-      steps.add(ChessStep(
-          curHand,
-          chess.code, chess.position + next.position, isEat: !next.isBlank,
-          fen: map.toFen()));
-    }
-    currentStep = steps.length - 1;
-    if(next.isBlank){
+  /// 落着 todo 检查出发点是否有子，检查落点是否对方子
+  addStep(ChessPos from, ChessPos next){
+    if(fen.hasItemAt(next)){
       unEatCount ++;
     }else{
       unEatCount = 0;
     }
-    stepNotifier.value = steps.last.toChineseString();
+
+    // 如果当前不是最后一步，移除后面着法
+    if(currentStep < manual.moves.length - 1){
+      gameNotifier.value = -1;
+      manual.addMove(from.toCode() + next.toCode(), step: currentStep + 1);
+    }else {
+      manual.addMove(from.toCode() + next.toCode());
+    }
+    currentStep = manual.moves.length - 1;
+
+    stepNotifier.value = manual.moves.last.toChineseString();
   }
 
   getSteps(){
-    return steps.map<String>((cs){
+    return manual.moves.map<String>((cs){
       return cs.toString();
     }).toList();
   }
@@ -198,13 +197,13 @@ class GameManager{
     playerNotifier.value = curHand;
     print('切换选手:${player.team}');
 
-    isCheckMate = rule.checkCheckMate(curHand, currentFen);
+    isCheckMate = rule.checkCheckMate(curHand);
 
     messageNotifier.value = 'clear';
     isStop = true;
     engine.stop();
-    currentFen = map.toFen();
-    engine.position(currentFen + ' ' + (curHand>0?'b':'w') + ' - - $unEatCount ' + (steps.length ~/ 2).toString());
+    //currentFen = map.toFen();
+    engine.position(manual.currentFen.fen + ' ' + (curHand>0?'b':'w') + ' - - $unEatCount ' + (manual.moves.length ~/ 2).toString());
     engine.go(depth: 10);
   }
 

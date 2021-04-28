@@ -30,6 +30,7 @@ class Engine{
       return;
     }
     process.stdout.listen((List<int> event){
+      if(!ready) return;
       String lines = String.fromCharCodes(event).trim();
       lines.split('\n').forEach((line) {
         line = line.trim();

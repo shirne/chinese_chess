@@ -1,5 +1,6 @@
 
 
+import 'chess_item.dart';
 import 'chess_pos.dart';
 
 class ChessFen{
@@ -77,20 +78,54 @@ class ChessFen{
         .map<ChessFenRow>((row) => ChessFenRow(row)).toList();
   }
 
-  move(String move){
+  bool move(String move){
     int fromX = move.codeUnitAt(0) - colIndexBase;
     int fromY = int.parse(move[1]);
     int toX = move.codeUnitAt(2) - colIndexBase;
     int toY = int.parse(move[3]);
-    _rows[fromY][fromX] = _rows[toY][toX];
-    _rows[toY][toX] = '0';
+    if(fromY > 9 || fromX > 8) {
+      print(['From pos error:', move]);
+      return false;
+    }
+    if(toY > 9 || toX > 8) {
+      print(['To pos error:', move]);
+      return false;
+    }
+    if(fromY == toY && fromX == toX){
+      print(['No movement:', move]);
+      return false;
+    }
+    if(_rows[fromY][fromX] == '0'){
+      print(['From pos is empty:', move]);
+      return false;
+    }
+    _rows[toY][toX] = _rows[fromY][fromX];
+    _rows[fromY][fromX] = '0';
     _fen = '';
+
+    return true;
   }
 
+  String itemAtPos(ChessPos pos){
+    return _rows[pos.y][pos.x];
+  }
   String itemAt(String pos){
-    int x = pos.codeUnitAt(0) - colIndexBase;
-    int y = int.parse(pos[1]);
-    return _rows[y][x];
+    return itemAtPos(ChessPos.fromCode(pos));
+  }
+
+  bool hasItemAt(ChessPos pos, {int team = -1}){
+    String item = _rows[pos.y][pos.x];
+    if(item == '0'){
+      return false;
+    }
+    if(team < 0){
+      return true;
+    }
+    if((team == 0 && item.codeUnitAt(0) < ChessFen.colIndexBase )||
+        (team == 1 && item.codeUnitAt(0) >= ChessFen.colIndexBase )){
+      return true;
+    }
+    return false;
   }
 
   List<ChessPos> findAll(String matchCode){
@@ -109,11 +144,22 @@ class ChessFen{
     return items;
   }
 
-  List<String> colItems(int colIndex){
+  List<ChessItem> getAll(){
+    List<ChessItem> items = [];
+    int rowNumber = 0;
+    _rows.forEach((row) {
+      int start = 0;
+      while(start < row.fenRow.length){
+        if(row[start] != '0') {
+          items.add(
+              ChessItem(row[start], position: ChessPos(start, rowNumber)));
+        }
+        start++;
+      }
 
-  }
-  List<String> rowItems(int colIndex){
-
+      rowNumber++;
+    });
+    return items;
   }
 
   @override
@@ -121,7 +167,7 @@ class ChessFen{
     return fen;
   }
 
-  static int posSort(key1, key2){
+  int posSort(key1, key2){
     if(key1.x > key2.x){
       return -1;
     }else if(key1.x < key2.x){

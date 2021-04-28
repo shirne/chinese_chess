@@ -1,10 +1,14 @@
 
+import 'package:chinese_chess/chess_pieces.dart';
+import 'package:chinese_chess/elements/mark_component.dart';
+import 'package:chinese_chess/elements/point_component.dart';
 import 'package:chinese_chess/game.dart';
 import 'package:flutter/material.dart';
 
 import 'elements/board.dart';
-import 'models/chess_map.dart';
+import 'models/chess_item.dart';
 import 'elements/piece.dart';
+import 'models/chess_pos.dart';
 import 'models/game_manager.dart';
 
 class Chess extends StatefulWidget {
@@ -20,15 +24,11 @@ class Chess extends StatefulWidget {
 }
 
 class ChessState extends State<Chess> {
-  String pieceSuffix = 'gif';
-  String boardSuffix = 'jpg';
-  double pieceSize = 57;
-  double cellSize = 64;
-  double boardWidth = 521;
-  double boardHeight = 577;
 
-  // 当前激活子
-  ChessItem activePiece;
+  // 当前激活的子
+  ChessItem activeItem;
+  double skewStepper = 0;
+
   // 被吃的子
   ChessItem dieFlash;
 
@@ -39,125 +39,140 @@ class ChessState extends State<Chess> {
   List<String> movePoints=[];
   GameManager gamer;
 
+  // 棋局初始化时所有的子力
+  List<ChessItem> items = [];
+
   @override
   void initState() {
     super.initState();
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
+    initItems();
+  }
+
+  @override
+  void dispose() {
+
+    super.dispose();
   }
 
   reloadGame(){
     if(gamer.gameNotifier.value < 0){
       return;
     }
-    String position = gamer.steps[gamer.currentStep].move;
+    String position = gamer.lastMove;
     setState(() {
-      activePiece = gamer.map.getChessAt(XYKey.fromCode(position.substring(2,3)));
+      ChessPos activePos = ChessPos.fromCode(position.substring(2,3));
+      initItems();
+
+      activeItem = items.firstWhere((item) => !item.isBlank && item.position == activePos, orElse:()=> ChessItem('0'));
       lastPosition = position.substring(0,1);
     });
   }
 
-  addStep(ChessItem chess, ChessItem next){
+  initItems(){
+    items = gamer.fen.getAll();
+  }
+
+  addStep(ChessPos chess, ChessPos next){
     gamer.addStep(chess, next);
   }
 
-  fetchMovePoints(){
-    movePoints = gamer.rule.movePoints(activePiece, gamer.map);
-    print(['move points:', movePoints]);
+  fetchMovePoints() async{
+
+    setState(() {
+      movePoints = gamer.rule.movePoints(activeItem.position);
+      print(['move points:', movePoints]);
+    });
+
   }
 
-  Future animateMove(ChessItem next) async{
+  Future animateMove(ChessPos nextPosition) async{
+
     setState(() {
       // 清掉落子点
       movePoints = [];
-      lastPosition = activePiece.position;
-      activePiece.position = next.position;
-      next.isBlank = true;
-      next.position = lastPosition;
+
+      lastPosition = activeItem.position.toCode();
+
+      activeItem.position = nextPosition.copy();
     });
     return Future.delayed(Duration(milliseconds: 300));
   }
 
   clearActive(){
     setState(() {
-      activePiece = null;
+      activeItem = null;
       lastPosition = '';
     });
   }
-  bool setActive(ChessItem newActive){
-    // 没有激活的子，或者激活的子不是当前选手的
-    if(activePiece == null || activePiece.team != gamer.player.team) {
-      if(newActive.team != gamer.player.team){
-        return false;
+  bool setActive(ChessPos toPosition){
+    ChessItem newActive = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
+    if((newActive == null || newActive.isBlank) ){
+      if(activeItem != null && activeItem.team == gamer.curHand) {
+        if (!movePoints.contains(toPosition.toCode())) {
+          alert('can\'t move to $toPosition');
+          return false;
+        }
+
+        addStep(activeItem.position, toPosition);
+        animateMove(toPosition).then((arg) {
+          // 走棋，切换选手
+          gamer.switchPlayer();
+        });
+        return true;
       }
+      return false;
+    }
+
+    // 置空当前选中状态
+    if(activeItem != null && activeItem.position == toPosition){
       setState(() {
-        activePiece = newActive;
+        activeItem = null;
+        lastPosition = '';
+        movePoints = [];
+      });
+    }else if(newActive.team == gamer.curHand ) {
+      // 切换选中的子
+      setState(() {
+        activeItem = newActive;
         lastPosition = '';
         movePoints = [];
       });
       fetchMovePoints();
       return true;
-      //置空选中的子
-    }else if(activePiece == newActive){
-      setState(() {
-        activePiece = null;
-        lastPosition = '';
-        movePoints = [];
-      });
     }else {
       // 吃对方的子
-      if(newActive.team != gamer.player.team){
-        if(!movePoints.contains(newActive.position)){
-          alert('can\'t eat ${newActive.team}${newActive.code} at ${newActive.position}');
+      if(activeItem != null && activeItem.team == gamer.curHand){
+        if(!movePoints.contains(toPosition.toCode())){
+          alert('can\'t eat ${newActive.code} at $toPosition');
           return false;
         }
-        addStep(activePiece, newActive);
-        dieFlash = ChessItem(team:newActive.team,code:newActive.code,position: newActive.position);
-        animateMove(newActive).then((arg){
-          dieFlash = null;
+        addStep(activeItem.position, toPosition);
+        setState(() {
+          dieFlash = ChessItem(newActive.code, position:toPosition);
+          newActive.code = '0';
+        });
+
+        animateMove(toPosition).then((arg){
           setState(() {
-            newActive.position = activePiece.position;
-            activePiece.position = lastPosition;
-            gamer.map.eat(activePiece, newActive);
+            dieFlash = null;
           });
+
           // 吃子，切换选手
           gamer.switchPlayer();
         });
-
-        // 切换选中的子
-      }else{
-        setState(() {
-          activePiece = newActive;
-          lastPosition = '';
-          movePoints = [];
-        });
-        fetchMovePoints();
         return true;
       }
     }
     return false;
   }
 
-  void setNext(ChessItem next){
-
-    // 当前选中的子是当前选手的
-    if(activePiece != null && activePiece.team == gamer.player.team){
-      if(!movePoints.contains(next.position)){
-        alert('can\'t move to ${next.position}');
-        return;
-      }
-      addStep(activePiece, next);
-      animateMove(next).then((arg) {
-        setState(() {
-          next.position = activePiece.position;
-          activePiece.position = lastPosition;
-          gamer.map.move(activePiece, next);
-        });
-        // 走棋，切换选手
-        gamer.switchPlayer();
-      });
-    }
+  ChessPos pointTrans(Offset tapPoint){
+    int x = (tapPoint.dx - gamer.skin.offset.dx) ~/ gamer.skin.size;
+    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy) ~/ gamer.skin.size;
+    return ChessPos(x, y);
   }
 
   void alert(String message){
@@ -169,65 +184,59 @@ class ChessState extends State<Chess> {
   Widget build(BuildContext context) {
     List<Widget> widgets = [Board()];
 
+    List<Widget> layer0 = [];
     if(dieFlash != null) {
-      widgets.add(Align(
-        alignment: Alignment(
-          (dieFlash.x * cellSize * 2 + 8) / boardWidth - 1,
-          ((9 - dieFlash.y) * cellSize * 2 + 2) / boardHeight - 1,
-        ),
+      layer0.add(Align(
+        alignment: gamer.skin.getAlign(dieFlash.position),
         child: Piece(item: dieFlash, isActive: false, isAblePoint: false),
       ));
     }
-    gamer.map.forEach((XYKey key, ChessItem item) {
-      bool isActive = false;
-      bool isAblePoint = false;
-      if(movePoints.contains(item.position)){
-        isAblePoint = true;
-      }
-      if(item.isBlank){
-        if(lastPosition == item.position){
-          isActive = true;
-        }
-      }else{
-        if(activePiece == item){
-          isActive = true;
-          widgets.add(AnimatedAlign(
-            duration: Duration(milliseconds: 250),
-            curve: Curves.easeOutQuint,
-            alignment: Alignment(
-              (item.x * cellSize * 2 + 8) / boardWidth - 1,
-              ( (9 - item.y) * cellSize * 2 + 2) / boardHeight - 1,
-            ),
-            child: AnimatedContainer(
-              width: pieceSize,
-              height: pieceSize,
-              transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105, 0.9, 0, -0.004, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
-              duration: Duration(milliseconds: 250),
-              curve: Curves.easeOutQuint,
-              child:  Piece(item:item, isActive: isActive, isAblePoint: isAblePoint,),
-            ),
-          ));
-          return;
-        }
-      }
-      widgets.add(Align(
-        alignment: Alignment(
-          (item.x * cellSize * 2 + 8) / boardWidth - 1,
-          ( (9 - item.y) * cellSize * 2 + 2) / boardHeight - 1,
-        ),
-        child: Piece(item:item, isActive: isActive, isAblePoint: isAblePoint),
+    if(lastPosition.isNotEmpty){
+      ChessItem emptyItem = ChessItem('0', position: ChessPos.fromCode(lastPosition));
+      layer0.add(Align(
+        alignment: gamer.skin.getAlign(emptyItem.position),
+        child: MarkComponent(size: gamer.skin.size,),
+      ));
+    }
+    widgets.add(Stack(
+      alignment: Alignment(0, 0),
+      fit: StackFit.expand,
+      children: layer0,
+    ));
+
+    widgets.add(ChessPieces(items: items,activeItem: activeItem,));
+
+    List<Widget> layer2 = [];
+    movePoints.forEach((element) {
+      ChessItem emptyItem = ChessItem('0', position: ChessPos.fromCode(element));
+      layer2.add(Align(
+        alignment: gamer.skin.getAlign(emptyItem.position),
+        child: PointComponent(size:gamer.skin.size),
       ));
     });
+    widgets.add(Stack(
+      alignment: Alignment(0, 0),
+      fit: StackFit.expand,
+      children: layer2,
+    ));
 
 
-    return Container(
-      width: boardWidth,
-      height: boardHeight,
-      child: Stack(
-        alignment: Alignment(0, 0),
-        fit: StackFit.expand,
-        children: widgets,
+    return GestureDetector(
+      onTapUp: (detail){
+        setState(() {
+          setActive(pointTrans(detail.localPosition));
+        });
+      },
+      child: Container(
+        width: gamer.skin.width,
+        height: gamer.skin.height,
+        child: Stack(
+          alignment: Alignment(0, 0),
+          fit: StackFit.expand,
+          children: widgets,
+        ),
       ),
-    );
+    ) ;
   }
+
 }

@@ -20,6 +20,10 @@ class ChessPos {
     return String.fromCharCode(x + 'a'.codeUnitAt(0))+y.toString();
   }
 
+  ChessPos copy(){
+    return ChessPos(x, y);
+  }
+
   String toString(){
     return '$x.$y;'+toCode();
   }
