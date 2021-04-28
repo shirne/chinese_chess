@@ -31,9 +31,6 @@ class GameManager{
   List<Hand> hands = [];
   int curHand = 0;
 
-  // 布局
-  //ChessMap map;
-
   // 当前着法序号
   int currentStep = 0;
 
@@ -56,7 +53,6 @@ class GameManager{
   ChessRule rule;
 
   GameManager(){
-    skin = ChessSkin("woods");
     manual = ChessManual();
     rule = ChessRule(manual.currentFen);
 
@@ -70,6 +66,11 @@ class GameManager{
     playerNotifier = ValueNotifier(curHand);
     gameNotifier = ValueNotifier(-1);
 
+    skin = ChessSkin("woods");
+    skin.readyNotifier.addListener(() {
+      gameNotifier.value = 0;
+    });
+
     engine = Engine();
     engineOK = false;
     engine.init().then((process){
@@ -82,6 +83,9 @@ class GameManager{
   }
 
   String get lastMove{
+    if(manual.moves.length < 1){
+      return '';
+    }
     return manual.moves[currentStep].move;
   }
 

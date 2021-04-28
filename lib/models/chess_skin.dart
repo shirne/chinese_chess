@@ -1,5 +1,8 @@
 
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'chess_pos.dart';
@@ -32,7 +35,52 @@ class ChessSkin{
     "p": "bp.gif"
   };
 
-  ChessSkin(this.folder);
+  ValueNotifier<bool> readyNotifier;
+
+  ChessSkin(this.folder){
+    readyNotifier = ValueNotifier(false);
+    String jsonfile = "assets/skins/$folder/config.json";
+    File file = File(jsonfile);
+    file.exists().then((bool has){
+      if(has){
+        file.readAsString().then(loadJson);
+      }else{
+        print('$jsonfile not exists');
+        readyNotifier.value = true;
+      }
+    });
+  }
+
+  loadJson(String content){
+    Map<String, dynamic> json = JsonDecoder().convert(content);
+    json.forEach((key, value) {
+      switch(key){
+        case 'width':
+          width = value.toDouble();
+          break;
+        case 'height':
+          height = value.toDouble();
+          break;
+        case 'size':
+          size = value.toDouble();
+          break;
+        case 'board':
+          board = value.toString();
+          break;
+        case 'offset':
+          offset = Offset(value['dx'].toDouble(), value['dy'].toDouble());
+          break;
+        case 'red':
+          redMap = value.cast<String, String>();
+          break;
+        case 'black':
+          blackMap = value.cast<String, String>();
+          break;
+
+      }
+    });
+    readyNotifier.value = true;
+  }
 
   String get boardImage{
     return "assets/skins/$folder/$board";
@@ -51,4 +99,5 @@ class ChessSkin{
       (((9 - pos.y) * size + offset.dy) * 2 ) / (height - size) - 1,
     );
   }
+
 }

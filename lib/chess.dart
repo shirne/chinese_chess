@@ -38,6 +38,7 @@ class ChessState extends State<Chess> {
   // 可落点，包括吃子点
   List<String> movePoints=[];
   GameManager gamer;
+  bool isLoading = true;
 
   // 棋局初始化时所有的子力
   List<ChessItem> items = [];
@@ -48,7 +49,6 @@ class ChessState extends State<Chess> {
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
-    initItems();
   }
 
   @override
@@ -59,16 +59,26 @@ class ChessState extends State<Chess> {
 
   reloadGame(){
     if(gamer.gameNotifier.value < 0){
+      if(!isLoading) {
+        setState(() {
+          isLoading = true;
+        });
+      }
       return;
     }
     String position = gamer.lastMove;
     setState(() {
-      ChessPos activePos = ChessPos.fromCode(position.substring(2,3));
       initItems();
-
-      activeItem = items.firstWhere((item) => !item.isBlank && item.position == activePos, orElse:()=> ChessItem('0'));
-      lastPosition = position.substring(0,1);
+      isLoading = false;
     });
+    if(position.isNotEmpty) {
+      setState(() {
+        ChessPos activePos = ChessPos.fromCode(position.substring(2, 3));
+        activeItem = items.firstWhere((item) => !item.isBlank &&
+            item.position == activePos, orElse: () => ChessItem('0'));
+        lastPosition = position.substring(0, 1);
+      });
+    }
   }
 
   initItems(){
@@ -182,6 +192,10 @@ class ChessState extends State<Chess> {
 
   @override
   Widget build(BuildContext context) {
+    if(isLoading){
+      return Center(child: CircularProgressIndicator(),);
+    }
+
     List<Widget> widgets = [Board()];
 
     List<Widget> layer0 = [];
