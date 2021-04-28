@@ -13,38 +13,75 @@ class ChessRule{
     fen = ChessFen(fenStr);
   }
 
-  /// 检查是否被将军
-  bool checkCheckMate(team){
+  bool isKingMeet(int team){
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    if(kPos == null){
+      // 老将没了
+      return true;
+    }
 
+    // 是否与对方老将同列，并且中间无子
+    ChessPos enemyKing = fen.find(team == 0 ? 'k' : 'K');
+    if(enemyKing != null && kPos.x == enemyKing.x){
+      List<ChessItem> items = fen.findByCol(kPos.x);
+
+      // 原则上没有小于2的情况，这里统一按照面计算
+      if(items.length <= 2){
+        return true;
+      }
+    }
     return false;
   }
 
-  /// 获取当前子力能移动的位置
-  List<String> movePoints(ChessPos activePos){
+  /// 检查是否被将军 todo 优化
+  int checkCheckMate(int team){
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    if(kPos == null){
+      // 老将没了
+      return 9999;
+    }
+
+    List<ChessItem> chesses = fen.getAll();
+    int checkTime = 0;
+    chesses.forEach((element) {
+      if(element.team != team && !['K','k','A','a','B','b'].contains(element.code)){
+        // 这里传入目标位置，返回的可行点有针对性
+        List<String> points = movePoints(element.position, kPos);
+        if(points.contains(kPos.toCode())){
+          checkTime ++;
+        }
+      }
+    });
+
+    return checkTime;
+  }
+
+  /// 获取当前子力能移动的位置 target 为目标位置，如果传入了目标位置，则会优化检测
+  List<String> movePoints(ChessPos activePos, [ChessPos target]){
     String code = fen[activePos.y][activePos.x];
     if(code.isEmpty || code =='0')return [];
     int team = code.codeUnitAt(0) < ChessFen.colIndexBase ? 0 : 1;
     code = code.toLowerCase();
     switch(code){
       case 'p':
-        return moveP(team, code, activePos);
+        return moveP(team, code, activePos, target);
       case 'c':
-        return moveC(team, code, activePos);
+        return moveC(team, code, activePos, target);
       case 'r':
-        return moveR(team, code, activePos);
+        return moveR(team, code, activePos, target);
       case 'n':
-        return moveN(team, code, activePos);
+        return moveN(team, code, activePos, target);
       case 'b':
-        return moveB(team, code, activePos);
+        return moveB(team, code, activePos, target);
       case 'a':
-        return moveA(team, code, activePos);
+        return moveA(team, code, activePos, target);
       case 'k':
-        return moveK(team, code, activePos);
+        return moveK(team, code, activePos, target);
       default:
         return [];
     }
   }
-  List<String> moveP(int team, String code, ChessPos activePos){
+  List<String> moveP(int team, String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [[1,0],[0,1],[-1,0],[0,-1]].forEach((m) {
@@ -68,6 +105,9 @@ class ChessRule{
         }
       }
       ChessPos newPoint = ChessPos(activePos.x + m[0], activePos.y + m[1]);
+      if(target != null && newPoint != target){
+        return;
+      }
       if(newPoint.x < 0 || newPoint.x > 8){
         return;
       }
@@ -82,7 +122,8 @@ class ChessRule{
     });
     return points;
   }
-  List<String> moveC(int team,String code, ChessPos activePos){
+
+  List<String> moveC(int team,String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [[-1,0],[1,0],[0,-1],[0,1]].forEach((step) {
@@ -114,7 +155,8 @@ class ChessRule{
     });
     return points;
   }
-  List<String> moveR(int team,String code, ChessPos activePos){
+
+  List<String> moveR(int team,String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [[-1,0],[1,0],[0,-1],[0,1]].forEach((step) {
@@ -138,7 +180,8 @@ class ChessRule{
     });
     return points;
   }
-  List<String> moveN(int team,String code, ChessPos activePos){
+
+  List<String> moveN(int team,String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [
@@ -152,6 +195,9 @@ class ChessRule{
       [1,-2]
     ].forEach((m) {
       ChessPos newPoint = ChessPos(activePos.x + m[0], activePos.y + m[1]);
+      if(target != null && newPoint != target){
+        return;
+      }
       if(newPoint.x < 0 || newPoint.x > 8){
         return;
       }
@@ -171,11 +217,15 @@ class ChessRule{
     });
     return points;
   }
-  List<String> moveB(int team,String code, ChessPos activePos){
+
+  List<String> moveB(int team,String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [[2,2],[-2,2],[-2,-2],[2,-2]].forEach((m) {
       ChessPos newPoint = ChessPos(activePos.x + m[0], activePos.y + m[1]);
+      if(target != null && newPoint != target){
+        return;
+      }
       if(newPoint.x < 0 || newPoint.x > 8){
         return;
       }
@@ -200,11 +250,15 @@ class ChessRule{
     });
     return points;
   }
-  List<String> moveA(int team,String code, ChessPos activePos){
+
+  List<String> moveA(int team,String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [[1,1],[-1,1],[-1,-1],[1,-1]].forEach((m) {
       ChessPos newPoint = ChessPos(activePos.x + m[0], activePos.y + m[1]);
+      if(target != null && newPoint != target){
+        return;
+      }
       if(newPoint.x < 3 || newPoint.x > 5){
         return;
       }
@@ -225,11 +279,15 @@ class ChessRule{
     });
     return points;
   }
-  List<String> moveK(int team,String code, ChessPos activePos){
+
+  List<String> moveK(int team,String code, ChessPos activePos, [ChessPos target]){
     List<String> points = [];
 
     [[1,0],[0,1],[-1,0],[0,-1]].forEach((m) {
       ChessPos newPoint = ChessPos(activePos.x + m[0], activePos.y + m[1]);
+      if(target != null && newPoint != target){
+        return;
+      }
       if(newPoint.x < 3 || newPoint.x > 5){
         return;
       }
@@ -247,6 +305,22 @@ class ChessRule{
       if(fen.hasItemAt(newPoint, team:team)){
         return;
       }
+      // 是否与对方老将同列，并且中间无子
+      ChessPos enemyKing = fen.find(team == 0 ? 'k' : 'K');
+      if(enemyKing != null && newPoint.x == enemyKing.x){
+        List<ChessItem> items = fen.findByCol(newPoint.x);
+
+        // 原则上没有小于1的情况，这里统一按只有对方老将一个
+        if(items.length <= 1){
+          return;
+        }
+
+        // 这里已经出错了
+        if(items.length == 2 && activePos.x == enemyKing.x){
+          return;
+        }
+      }
+
       points.add(newPoint.toCode());
     });
     return points;

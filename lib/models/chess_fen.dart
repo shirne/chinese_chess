@@ -78,6 +78,11 @@ class ChessFen{
         .map<ChessFenRow>((row) => ChessFenRow(row)).toList();
   }
 
+  /// 当前局面的副本
+  ChessFen copy(){
+    return ChessFen(fen);
+  }
+
   bool move(String move){
     int fromX = move.codeUnitAt(0) - colIndexBase;
     int fromY = int.parse(move[1]);
@@ -128,6 +133,11 @@ class ChessFen{
     return false;
   }
 
+  ChessPos find(String matchCode){
+    List<ChessPos> items = findAll(matchCode);
+    return items.length > 0 ? items[0] : null;
+  }
+
   List<ChessPos> findAll(String matchCode){
     List<ChessPos> items = [];
     int rowNumber = 0;
@@ -135,10 +145,21 @@ class ChessFen{
       int start = row.indexOf(matchCode);
       while(start > -1){
         items.add(ChessPos(start, rowNumber));
-
         start = row.indexOf(matchCode, start + 1);
       }
+      rowNumber++;
+    });
+    return items;
+  }
 
+  List<ChessItem> findByCol(int col){
+    List<ChessItem> items = [];
+    int rowNumber = 0;
+    _rows.forEach((row) {
+      if(row[col] != '0') {
+        items.add(
+            ChessItem(row[col], position: ChessPos(col, rowNumber)));
+      }
       rowNumber++;
     });
     return items;

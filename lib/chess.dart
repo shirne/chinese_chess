@@ -9,6 +9,7 @@ import 'elements/board.dart';
 import 'models/chess_item.dart';
 import 'elements/piece.dart';
 import 'models/chess_pos.dart';
+import 'models/chess_rule.dart';
 import 'models/game_manager.dart';
 
 class Chess extends StatefulWidget {
@@ -117,12 +118,34 @@ class ChessState extends State<Chess> {
       lastPosition = '';
     });
   }
+
+  bool canMove(String move){
+    ChessRule rule = ChessRule(gamer.fen.copy());
+    rule.fen.move(move);
+    if(rule.isKingMeet(gamer.curHand)){
+      alert('不能送将');
+      return false;
+    }
+    if(rule.checkCheckMate(gamer.curHand) > 0){
+      if(gamer.isCheckMate) {
+        alert('请应将');
+      }else{
+        alert('不能送将');
+      }
+      return false;
+    }
+    return true;
+  }
+
   bool setActive(ChessPos toPosition){
     ChessItem newActive = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
     if((newActive == null || newActive.isBlank) ){
       if(activeItem != null && activeItem.team == gamer.curHand) {
         if (!movePoints.contains(toPosition.toCode())) {
           alert('can\'t move to $toPosition');
+          return false;
+        }
+        if(!canMove(activeItem.position.toCode()+toPosition.toCode())){
           return false;
         }
 
@@ -157,6 +180,9 @@ class ChessState extends State<Chess> {
       if(activeItem != null && activeItem.team == gamer.curHand){
         if(!movePoints.contains(toPosition.toCode())){
           alert('can\'t eat ${newActive.code} at $toPosition');
+          return false;
+        }
+        if(!canMove(activeItem.position.toCode()+toPosition.toCode())){
           return false;
         }
         addStep(activeItem.position, toPosition);

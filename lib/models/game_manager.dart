@@ -201,7 +201,11 @@ class GameManager{
     playerNotifier.value = curHand;
     print('切换选手:${player.team}');
 
-    isCheckMate = rule.checkCheckMate(curHand);
+    isCheckMate = rule.checkCheckMate(curHand) > 0;
+    // todo 怎么判断能否应将
+    if(isCheckMate){
+
+    }
 
     messageNotifier.value = 'clear';
     isStop = true;
