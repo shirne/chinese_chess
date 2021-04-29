@@ -31,6 +31,7 @@ dependencies:
   file_picker: ^3.0.1
   filesystem_picker: ^1.0.4
   gbk2utf8: ^1.0.1
+  universal_html: ^1.2.1
 
 dev_dependencies:
   flutter_test:

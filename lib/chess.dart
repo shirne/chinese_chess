@@ -102,11 +102,6 @@ class ChessState extends State<Chess> {
   Future animateMove(ChessPos nextPosition) async{
 
     setState(() {
-      // 清掉落子点
-      movePoints = [];
-
-      lastPosition = activeItem.position.toCode();
-
       activeItem.position = nextPosition.copy();
     });
     return Future.delayed(Duration(milliseconds: 300));
@@ -119,7 +114,16 @@ class ChessState extends State<Chess> {
     });
   }
 
-  bool canMove(String move){
+  Future<bool> checkCanMove(String activePos, ChessPos toPosition, [ChessItem toItem]) async{
+    if (!movePoints.contains(toPosition.toCode())) {
+      if(toItem != null){
+        alert('can\'t eat ${toItem.code} at $toPosition');
+      }else {
+        alert('can\'t move to $toPosition');
+      }
+      return false;
+    }
+    String move = activePos+toPosition.toCode();
     ChessRule rule = ChessRule(gamer.fen.copy());
     rule.fen.move(move);
     if(rule.isKingMeet(gamer.curHand)){
@@ -141,21 +145,36 @@ class ChessState extends State<Chess> {
 
   bool setActive(ChessPos toPosition){
     ChessItem newActive = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
+
+    int ticker = DateTime.now().millisecondsSinceEpoch;
     if((newActive == null || newActive.isBlank) ){
       if(activeItem != null && activeItem.team == gamer.curHand) {
-        if (!movePoints.contains(toPosition.toCode())) {
-          alert('can\'t move to $toPosition');
-          return false;
-        }
-        if(!canMove(activeItem.position.toCode()+toPosition.toCode())){
-          return false;
-        }
+        String activePos = activeItem.position.toCode();
+        animateMove(toPosition);
+        checkCanMove(activePos, toPosition).then((canMove){
+          int delay = 250 - (DateTime.now().millisecondsSinceEpoch - ticker);
+          if(delay < 0){
+            delay = 0;
+          }
+          if(canMove){
+            // 立即更新的部分
+            setState(() {
+              // 清掉落子点
+              movePoints = [];
+              lastPosition = activePos;
+            });
 
-        addStep(activeItem.position, toPosition);
-        animateMove(toPosition).then((arg) {
-          // 走棋，切换选手
-          gamer.switchPlayer();
+            addStep(ChessPos.fromCode(activePos), toPosition);
+            gamer.switchPlayer();
+          }else{
+            Future.delayed(Duration(milliseconds: delay),(){
+              setState(() {
+                activeItem.position = ChessPos.fromCode(activePos);
+              });
+            });
+          }
         });
+
         return true;
       }
       return false;
@@ -180,26 +199,39 @@ class ChessState extends State<Chess> {
     }else {
       // 吃对方的子
       if(activeItem != null && activeItem.team == gamer.curHand){
-        if(!movePoints.contains(toPosition.toCode())){
-          alert('can\'t eat ${newActive.code} at $toPosition');
-          return false;
-        }
-        if(!canMove(activeItem.position.toCode()+toPosition.toCode())){
-          return false;
-        }
-        addStep(activeItem.position, toPosition);
-        setState(() {
-          dieFlash = ChessItem(newActive.code, position:toPosition);
-          newActive.code = '0';
-        });
+        String activePos = activeItem.position.toCode();
+        animateMove(toPosition);
+        checkCanMove(activePos, toPosition, newActive).then((canMove){
+          int delay = 250 - (DateTime.now().millisecondsSinceEpoch - ticker);
+          if(delay < 0){
+            delay = 0;
+          }
+          if(canMove){
+            addStep(ChessPos.fromCode(activePos), toPosition);
+            setState(() {
+              // 清掉落子点
+              movePoints = [];
+              lastPosition = activePos;
 
-        animateMove(toPosition).then((arg){
-          setState(() {
-            dieFlash = null;
-          });
+              // 被吃的子的快照
+              dieFlash = ChessItem(newActive.code, position:toPosition);
+              newActive.code = '0';
+            });
+            Future.delayed(Duration(milliseconds: delay),(){
+              setState(() {
+                dieFlash = null;
+              });
 
-          // 吃子，切换选手
-          gamer.switchPlayer();
+              // 吃子，切换选手
+              gamer.switchPlayer();
+            });
+          }else{
+            Future.delayed(Duration(milliseconds: delay),(){
+              setState(() {
+                activeItem.position = ChessPos.fromCode(activePos);
+              });
+            });
+          }
         });
         return true;
       }
