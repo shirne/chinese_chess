@@ -13,6 +13,36 @@ class ChessRule{
     fen = ChessFen(fenStr);
   }
 
+  /// 是否可以解杀 [调用前确保正在被将]
+  bool canParryKill(int team){
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    if(kPos == null){
+      // 老将没了
+      return false;
+    }
+
+    List<ChessItem> pieces = fen.getAll();
+    
+    return pieces.any((item) {
+      if(item.team == team){
+        List<String> points = movePoints(item.position);
+        return points.any((point){
+          ChessRule rule = ChessRule(fen.copy());
+          rule.fen.move(item.position.toCode()+point);
+          if(rule.isKingMeet(team)){
+            return false;
+          }
+          if(rule.isCheckMate(team)){
+            return true;
+          }
+          return false;
+        });
+      }
+      return false;
+    });
+  }
+
+  /// 老将是否照面
   bool isKingMeet(int team){
     ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
     if(kPos == null){
@@ -33,7 +63,29 @@ class ChessRule{
     return false;
   }
 
-  /// 检查是否被将军 todo 优化
+  /// 检查是否被将军
+  bool isCheckMate(int team){
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    if(kPos == null){
+      // 老将没了
+      return true;
+    }
+
+    List<ChessItem> pieces = fen.getAll();
+
+    return pieces.any((item) {
+      if(item.team != team && !['K','k','A','a','B','b'].contains(item.code)){
+        // 这里传入目标位置，返回的可行点有针对性
+        List<String> points = movePoints(item.position, kPos);
+        if(points.contains(kPos.toCode())){
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
+  /// 检查被将军次数 todo 优化
   int checkCheckMate(int team){
     ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
     if(kPos == null){
@@ -41,9 +93,9 @@ class ChessRule{
       return 9999;
     }
 
-    List<ChessItem> chesses = fen.getAll();
+    List<ChessItem> pieces = fen.getAll();
     int checkTime = 0;
-    chesses.forEach((element) {
+    pieces.forEach((element) {
       if(element.team != team && !['K','k','A','a','B','b'].contains(element.code)){
         // 这里传入目标位置，返回的可行点有针对性
         List<String> points = movePoints(element.position, kPos);

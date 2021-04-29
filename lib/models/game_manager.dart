@@ -6,7 +6,6 @@ import 'package:chinese_chess/models/chess_skin.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_fen.dart';
-import 'chess_item.dart';
 import 'chess_manual.dart';
 import 'chess_pos.dart';
 import 'chess_rule.dart';
@@ -201,11 +200,14 @@ class GameManager{
     playerNotifier.value = curHand;
     print('切换选手:${player.team}');
 
-    isCheckMate = rule.checkCheckMate(curHand) > 0;
-    // todo 怎么判断能否应将
+    isCheckMate = rule.isCheckMate(curHand);
+
+    // todo 判断输赢，包括能否应将，长将
     if(isCheckMate){
 
     }
+
+    // todo 判断和棋
 
     messageNotifier.value = 'clear';
     isStop = true;

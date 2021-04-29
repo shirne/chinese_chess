@@ -6,6 +6,7 @@ import 'chess_step.dart';
 
 class ChessManual{
   static const startFen = ChessFen.initFen + ' w - - 0 1';
+  static const results = ['1-0', '0-1', '1/2-1/2', '*'];
 
   // 游戏类型
   String game = 'Chinese Chess';
@@ -69,6 +70,7 @@ class ChessManual{
 
   // 着法
   List<ChessStep> moves = [];
+  int step = 0;
 
   ChessManual({
     this.fen = startFen,
@@ -88,7 +90,6 @@ class ChessManual{
 
   ChessManual.load(content){
     int idx = 0;
-    int step = 0;
     String line = '';
     String description = '';
     while(true){
@@ -176,7 +177,7 @@ class ChessManual{
         case '\r':
           if(line.isNotEmpty){
             if(line.endsWith('.')){
-              step = int.tryParse(line.substring(0, line.length - 2)) ?? 0;
+              // step = int.tryParse(line.substring(0, line.length - 2)) ?? 0;
               line = '';
             }else{
               addMove(line, description: description);
@@ -202,12 +203,45 @@ class ChessManual{
   }
 
   loadHistory(int index){
-    currentFen.fen = moves[index].fen;
-    currentFen.move(moves[index].move);
+    if(index < 1){
+      currentFen.fen = fen.split(' ')[0];
+    }else {
+      currentFen.fen = moves[index-1].fen;
+      currentFen.move(moves[index-1].move);
+    }
+    step = index;
+  }
+
+  bool get hasNext{
+    return step < moves.length;
+  }
+  String next(){
+    if(step < moves.length) {
+      step++;
+      String move = moves[step - 1].move;
+      String result = currentFen.toChineseString(move);
+      currentFen.move(move);
+      return result;
+    }else{
+      return currentFen.getChineseResult(result);
+    }
+  }
+
+  // 获取当前招法
+  ChessStep getMove(){
+    if(step < 1)return null;
+    if(step > moves.length) return null;
+    return moves[step-1];
+  }
+
+  addMoves(List<String> moves){
+    moves.forEach((move) {
+      addMove(move);
+    });
   }
 
   addMove(String move, {String description, int step = -1}){
-    if(['1-0', '0-1', '1/2-1/2', '*'].contains(move)){
+    if(results.contains(move)){
       result = move;
     }else {
       if(step > -1){
@@ -223,6 +257,8 @@ class ChessManual{
       moves.add(ChessStep(team, '', move, description:description, round: (moves.length ~/ 2) + 1, fen: currentFen.toString()));
 
       currentFen.move(move);
+
+      step = moves.length;
     }
   }
 

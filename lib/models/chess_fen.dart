@@ -1,5 +1,6 @@
 
 
+import 'chess_manual.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
 
@@ -301,7 +302,23 @@ class ChessFen{
     return '${curItem.toCode()}${nextItem.toCode()}';
   }
 
+  getChineseResult(String result){
+    switch(result){
+      case '1-0':
+        return '先胜';
+      case '0-1':
+        return '先负';
+      case '1/2-1/2':
+        return '先和';
+    }
+    return '未知';
+  }
+
   String toChineseString(String move){
+    if(ChessManual.results.contains(move)){
+      return getChineseResult(move);
+    }
+
     String _chineseString;
 
     ChessPos posFrom = ChessPos.fromCode(move.substring(0,2));
@@ -309,6 +326,10 @@ class ChessFen{
 
     // 找出子
     String matchCode = _rows[posFrom.y][posFrom.x];
+    if(matchCode == '0') {
+      print('着法错误 $fen $move');
+      return '';
+    }
     int team = matchCode.codeUnitAt(0) < 'a'.codeUnitAt(0) ? 0 : 1;
     String code = matchCode.toLowerCase();
 
@@ -334,6 +355,7 @@ class ChessFen{
       });
       if(colCount > 3) {
         int idx = rowIndexs.indexOf(posFrom.y);
+        print([colCount,idx]);
         if(team == 0) {
           _chineseString = nameIndex[idx] + name;
         }else{

@@ -126,7 +126,9 @@ class ChessState extends State<Chess> {
       alert('不能送将');
       return false;
     }
-    if(rule.checkCheckMate(gamer.curHand) > 0){
+
+    /// todo 这里送将和应将判断不准确
+    if(rule.isCheckMate(gamer.curHand)){
       if(gamer.isCheckMate) {
         alert('请应将');
       }else{

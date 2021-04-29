@@ -10,8 +10,96 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:chinese_chess/models/chess_manual.dart';
 import 'package:chinese_chess/models/chess_fen.dart';
 import 'package:chinese_chess/models/chess_pos.dart';
+import 'package:chinese_chess/models/chess_rule.dart';
 
 void main() {
+  test('test Manual', (){
+
+    ChessManual manual;
+    ChessRule rule;
+    /*manual = ChessManual(fen: '1Cbak2r1/4aR3/4b1n2/p1N1p4/2p6/3R2P2/P1P1c4/4B4/1r2A4/2B1KA3');
+    manual.addMoves(['f8e8','e9e8',
+      'd4d8','e8e9',
+      'd8d9','e9e8',
+      'd9d8','1-0']);*/
+
+    manual = ChessManual(fen: '4k4/4a4/2P5n/5N3/9/5R3/9/9/2p2p2r/C3K4');
+    manual.addMoves(['f6d7','e9d9',
+      'a0d0','c1d1',
+      'f4f9','e8e9',
+      'd7f8','1-0']);
+
+    manual.loadHistory(0);
+    expect(manual.currentFen.fen, manual.fen);
+    print('初始局面：${manual.currentFen.fen}');
+    int startMillionSec = DateTime.now().millisecondsSinceEpoch;
+
+    while(manual.hasNext) {
+      print(manual.next());
+      print('当前局面：${manual.currentFen.fen}');
+
+      // 局面判断
+      rule = ChessRule(manual.currentFen);
+      int eTeam = manual.getMove().hand == 0 ? 1 : 0;
+      if(rule.isCheckMate(eTeam)){
+        if(rule.canParryKill(eTeam)){
+          print('将军!');
+        }else{
+          print('绝杀!');
+        }
+      }
+      print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+      startMillionSec = DateTime.now().millisecondsSinceEpoch;
+    }
+    // 步数走完后可返回结果
+    print(manual.next());
+  });
+
+
+  test('test checkMate', (){
+    ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR');
+    bool isCheckMate = rule.isCheckMate(0);
+    bool canParryKill;
+    expect(isCheckMate, false);
+
+    var now = DateTime.now();
+    print(now.toLocal());
+    int startMillionSec = now.millisecondsSinceEpoch;
+
+    rule.fen.fen = '4k4/4a4/2P5n/5N3/9/5R3/9/9/2p2p2r/C3K4';
+    print('初始局面：${rule.fen}');
+    isCheckMate = rule.isCheckMate(1);
+    expect(isCheckMate, false);
+    print('判断当前局面未将军');
+    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    startMillionSec = DateTime.now().millisecondsSinceEpoch;
+
+    [
+      ['f6d7','e9d9'],
+      ['a0d0','c1d1'],
+      ['f4f9','e8e9'],
+      ['d7f8','1-0']
+    ].forEach((step) {
+      print(rule.fen.toChineseString(step[0]));
+      rule.fen.move(step[0]);
+      isCheckMate = rule.isCheckMate(1);
+      expect(isCheckMate, true);
+      canParryKill = rule.canParryKill(1);
+      if(step[1] == '1-0'){
+        expect(canParryKill, false);
+        print('判断当前局面已绝杀');
+      }else {
+        expect(canParryKill, true);
+        print('判断当前局面有将军且可解杀');
+        print(rule.fen.toChineseString(step[1]));
+        rule.fen.move(step[1]);
+      }
+      print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+      startMillionSec = DateTime.now().millisecondsSinceEpoch;
+    });
+
+  });
+
   test('test Pos', (){
     print(1 ~/ 2);
     print(1 ~/ 3);
@@ -34,6 +122,8 @@ void main() {
     from = ChessPos.fromCode('h9');
     print([from, to]);
   });
+
+
   test('test Fen', (){
     ChessFen fen = ChessFen();
 
