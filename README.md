@@ -1,4 +1,4 @@
-# chinese_chess
+# Chinese Chess
 
 中国象棋界面端. 提供完整的游戏规则处理，windows版带[elephanteye](https://www.xqbase.com/league/elephanteye.htm)引擎的招法提示<br />
 
@@ -23,6 +23,16 @@
 - [ ] IOS版适配
 - [ ] MacOS版适配
 - [ ] Linux版适配
+
+## 预览
+棋盘界面和棋子取自象棋小巫师的资源<br />
+[Web版在线预览](https://www.shirne.com/demo/chinesechess/) web版需要加载canvaskit，打开较慢
+|开局|将军|
+|:---:|:---:|
+|![开局](preview/01.jpg "开局")|![将军](preview/02.jpg "将军")|
+|加载|棋谱查看|
+|![加载](preview/03.png "加载")|![棋谱查看](preview/04.jpg "棋谱查看")|
+
 
 ## 使用Flutter开发
 

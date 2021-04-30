@@ -34,8 +34,8 @@ class PlayPageState extends State<PlayPage> {
 
     BoxDecoration decoration = BoxDecoration(border: Border.all(color: Colors.grey, width: 0.5),borderRadius: BorderRadius.all(Radius.circular(2)));
     return Container(
-      width: 981,
-      height: 600,
+      width: 980,
+      height: 577,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +46,7 @@ class PlayPageState extends State<PlayPage> {
             child: Chess(),
           ),
           Container(
-            width: 420,
+            width: 439,
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -62,7 +62,7 @@ class PlayPageState extends State<PlayPage> {
               mainAxisSize:MainAxisSize.max,
               children: [
                 Container(
-                  height: 200,
+                  height: 180,
                   decoration: decoration,
                   child: TabCard(
                       titlePadding:EdgeInsets.symmetric( vertical: 10, horizontal: 30),
@@ -88,7 +88,7 @@ class PlayPageState extends State<PlayPage> {
                 ),
                 SizedBox(height: 10,),
                 Container(
-                  height: 200,
+                  height: 180,
                   decoration: decoration,
                   child: TabCard(
                       titlePadding:EdgeInsets.symmetric( vertical: 10, horizontal: 30),
