@@ -134,6 +134,8 @@ void main() {
       'f4f9','e8e9',
       'd7f8','1-0'];
     print(steps.take(1));
+    steps.removeRange(1, steps.length);
+    print(steps);
 
   });
 

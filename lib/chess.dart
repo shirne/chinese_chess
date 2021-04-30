@@ -59,6 +59,9 @@ class ChessState extends State<Chess> {
   }
 
   reloadGame(){
+    if(gamer.gameNotifier.value < -1){
+      return;
+    }
     if(gamer.gameNotifier.value < 0){
       if(!isLoading) {
         setState(() {
@@ -101,12 +104,11 @@ class ChessState extends State<Chess> {
 
   }
 
-  Future animateMove(ChessPos nextPosition) async{
-
+  animateMove(ChessPos nextPosition){
+    print('$activeItem => $nextPosition');
     setState(() {
       activeItem.position = nextPosition.copy();
     });
-    return Future.delayed(Duration(milliseconds: 300));
   }
 
   clearActive(){

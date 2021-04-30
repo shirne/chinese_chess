@@ -79,6 +79,9 @@ class ChessSkin{
         case 'board':
           board = value.toString();
           break;
+        case 'blank':
+          blank = value.toString();
+          break;
         case 'offset':
           offset = Offset(value['dx'].toDouble(), value['dy'].toDouble());
           break;

@@ -96,7 +96,7 @@ class ChessFen {
     String fenStr = fen;
     String positionStr = fenStr.replaceAllMapped(
         RegExp(r'[^0-9\\/]'), (match) => String.fromCharCode(chr++));
-    print(positionStr);
+    // print(positionStr);
     return ChessFen(positionStr);
   }
 
@@ -397,7 +397,7 @@ class ChessFen {
       });
       if (colCount > 3) {
         int idx = rowIndexs.indexOf(posFrom.y);
-        print([colCount, idx]);
+        // print([colCount, idx]);
         if (team == 0) {
           _chineseString = nameIndex[idx] + name;
         } else {

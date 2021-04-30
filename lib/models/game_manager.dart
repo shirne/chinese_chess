@@ -155,11 +155,13 @@ class GameManager{
       return;
     }
     if(index == currentStep){
+      print('History no change');
       return;
     }
     currentStep = index;
     manual.loadHistory(index);
     rule.fen = manual.currentFen;
+    curHand = currentStep % 2;
 
     gameNotifier.value = currentStep;
     print('history $currentStep');
@@ -175,9 +177,11 @@ class GameManager{
 
     // 如果当前不是最后一步，移除后面着法
     if(currentStep < manual.moves.length){
-      gameNotifier.value = -1;
+      gameNotifier.value = -2;
+      stepNotifier.value = 'clear';
       manual.addMove(from.toCode() + next.toCode(), addStep: currentStep);
     }else {
+      gameNotifier.value = -2;
       manual.addMove(from.toCode() + next.toCode());
     }
 

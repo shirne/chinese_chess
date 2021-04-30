@@ -280,18 +280,27 @@ class ChessManual{
     return moves[step-1];
   }
 
+  clearMove([int fromStep = 0]){
+    if(fromStep < 1) {
+      moves.removeRange(fromStep, moves.length);
+    }else{
+      moves.clear();
+    }
+    print('clear moves $moves');
+  }
+
   addMoves(List<String> moves){
     moves.forEach((move) {
       addMove(move);
     });
   }
 
-  addMove(String move, {String description, int addStep = 0}){
+  addMove(String move, {String description, int addStep = -1}){
     if(results.contains(move)){
       result = move;
     }else {
-      if(addStep > 0){
-        moves = moves.take(addStep);
+      if(addStep > -1){
+        clearMove(addStep);
       }
       int team = moves.length % 2;
 
@@ -303,7 +312,8 @@ class ChessManual{
       moves.add(ChessStep(
           team,
           move,
-          description:description,
+          code: currentFen.itemAt(move),
+          description: description,
           round: (moves.length ~/ 2) + 1,
           fen: currentFen.fen,
           fenPosition: fenPosition.fen

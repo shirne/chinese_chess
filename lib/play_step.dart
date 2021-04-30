@@ -41,8 +41,12 @@ class PlayStepState extends State<PlayStep> {
   updateStep() {
     if (gamer.stepNotifier.value == 'clear') {
       setState(() {
-        steps = ['==开始=='];
-        currentStep = 0;
+        currentStep = gamer.currentStep;
+        if(gamer.currentStep == 0) {
+          steps = ['==开始=='];
+        }else{
+          steps.removeRange(currentStep+1, steps.length);
+        }
       });
     } else {
       setState(() {
@@ -80,9 +84,11 @@ class PlayStepState extends State<PlayStep> {
             child: Container(
               height: 23,
               padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-              decoration: currentStep == myIndex
-                  ? BoxDecoration(color: Colors.black26)
-                  : null,
+              decoration:
+                BoxDecoration(
+                    color: currentStep == myIndex ?
+                      Colors.black26 : Colors.transparent,
+                ),
               child: Row(
                 children: [
                   (step++ > 0 && step % 2 == 0)

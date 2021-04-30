@@ -29,12 +29,12 @@ class ChessStep{
 
   ChessStep(this.hand, this.move, {this.code = '', this.fen = '', this.fenPosition = '', this.description = '', this.isEat = false, this.round = 0}){
     if(this.code.isEmpty && fen.isNotEmpty){
-      List<String> rows = fen.split('/');
+      List<String> rows = fen.split('/').reversed.toList();
       String row = rows[int.parse(move[1])];
       row = row.replaceAllMapped(RegExp(r'\d'), (i){
         return List.filled(int.parse(i[0]), '0').join('');
       });
-      int col = move.codeUnitAt(0) - 'a'.codeUnitAt(0);
+      int col = move.codeUnitAt(0) - ChessFen.colIndexBase;
       this.code = row[col];
     }
   }
