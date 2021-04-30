@@ -1,4 +1,4 @@
-import 'package:chinese_chess/play_player.dart';
+
 import 'package:chinese_chess/play_step.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -1,5 +1,4 @@
 
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:chinese_chess/models/chess_skin.dart';
@@ -126,6 +125,7 @@ class GameManager{
   }
 
   newGame([String fen = ChessManual.startFen]){
+    gameNotifier.value = -1;
     isStop = true;
     engine.stop();
     currentStep = 0;
@@ -170,10 +170,11 @@ class GameManager{
 
     // 加载步数
     if(manual.moves.length > 0){
-      print(manual.moves);
+      // print(manual.moves);
       stepNotifier.value = manual.moves.map<String>((e) => e.toChineseString()).join('\n');
     }
     manual.loadHistory(0);
+    rule.fen = manual.currentFen;
     stepNotifier.value = 'step';
 
     curHand = manual.startHand;

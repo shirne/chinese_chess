@@ -289,8 +289,7 @@ class ChessFen {
       List<ChessPos> nItems =
           items.where((item) => item.x == colIndex).toList();
       nItems.sort(posSort);
-      print(fen);
-      print([items,nItems]);
+
       if (nItems.length > 1) {
         if ((team == 0 && move[2] == '进') || (team == 1 && move[2] == '退')) {
           curItem = nItems[1];

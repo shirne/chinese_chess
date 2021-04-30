@@ -13,21 +13,21 @@ class ChessManual{
   String game = 'Chinese Chess';
 
   // 比赛名
-  String event;
+  String event = '';
   // EventDate、EventSponsor、Section、Stage、Board、Time
 
   // 比赛地点
-  String site;
+  String site = '';
 
   // 比赛日期，格式统一为“yyyy.mm.dd”
-  String date;
+  String date = '';
 
   // 比赛轮次
-  String round;
+  String round = '';
 
   // 红方棋手
-  String red;
-  String redTeam;
+  String red = '';
+  String redTeam = '';
 
   // RedTitle、RedElo、RedType
 
@@ -40,8 +40,8 @@ class ChessManual{
   }
 
   // 黑方棋手
-  String black;
-  String blackTeam;
+  String black = '';
+  String blackTeam = '';
 
   // 比赛结果 1-0 0-1 1/2-1/2 *
   String result = '*';
@@ -56,7 +56,7 @@ class ChessManual{
   String ecco = '';
 
   // 开始局面
-  String fen;
+  String fen = '';
 
   int startHand = 0;
 
@@ -96,6 +96,22 @@ class ChessManual{
     initFen(this.fen);
   }
 
+  initDefault(){
+    fen = startFen;
+    red = 'Red';
+    black = 'Black';
+    redTeam = 'RedTeam';
+    blackTeam = 'BlackTeam';
+    event = '';
+    site = '';
+    date = '';
+    round = '1';
+    ecco = '';
+    timeControl = '';
+    currentFen = null;
+    fenPosition = null;
+  }
+
   initFen(String fenStr){
     List<String> fenParts = fenStr.split(' ');
     this.currentFen = ChessFen(fenParts[0]);
@@ -107,6 +123,7 @@ class ChessManual{
         startHand = 0;
       }
     }
+    print('clear items');
     _items=[];
   }
 
@@ -217,6 +234,12 @@ class ChessManual{
           return;
         default:
           line += chr;
+          if(this.currentFen == null){
+            if(fen == null || fen.isEmpty){
+              fen = startFen;
+            }
+            initFen(fen);
+          }
       }
 
       idx ++;
@@ -261,6 +284,7 @@ class ChessManual{
   List<ChessItem> _items = [];
   List<ChessItem> getChessItems(){
     ChessFen startFen = ChessFen(fen);
+
     if(_items.length < 1) {
       _items = startFen.getAll();
     }
