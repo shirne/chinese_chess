@@ -50,12 +50,35 @@ class ChessState extends State<Chess> {
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
+    gamer.resultNotifier.addListener(onResult);
   }
 
   @override
   void dispose() {
-
+    gamer.gameNotifier.removeListener(reloadGame);
+    gamer.resultNotifier.removeListener(onResult);
     super.dispose();
+  }
+
+  onResult(){
+    if(gamer.resultNotifier.value.isEmpty){
+      return;
+    }
+    List<String> parts = gamer.resultNotifier.value.split(' ');
+    switch(parts[0]){
+      case 'checkMate':
+        toast('将军');
+        break;
+      case '0-1':
+        alertResult('先负');
+        break;
+      case '1-0':
+        alertResult('先胜');
+        break;
+      case '1/2-1/2':
+        alertResult(parts.length > 1 ? parts[1] : '和棋');
+        break;
+    }
   }
 
   reloadGame(){
@@ -121,9 +144,9 @@ class ChessState extends State<Chess> {
   Future<bool> checkCanMove(String activePos, ChessPos toPosition, [ChessItem toItem]) async{
     if (!movePoints.contains(toPosition.toCode())) {
       if(toItem != null){
-        alert('can\'t eat ${toItem.code} at $toPosition');
+        toast('can\'t eat ${toItem.code} at $toPosition');
       }else {
-        alert('can\'t move to $toPosition');
+        toast('can\'t move to $toPosition');
       }
       return false;
     }
@@ -131,16 +154,16 @@ class ChessState extends State<Chess> {
     ChessRule rule = ChessRule(gamer.fen.copy());
     rule.fen.move(move);
     if(rule.isKingMeet(gamer.curHand)){
-      alert('不能送将');
+      toast('不能送将');
       return false;
     }
 
     /// todo 这里送将和应将判断不准确
     if(rule.isCheckMate(gamer.curHand)){
       if(gamer.isCheckMate) {
-        alert('请应将');
+        toast('请应将');
       }else{
-        alert('不能送将');
+        toast('不能送将');
       }
       return false;
     }
@@ -249,9 +272,39 @@ class ChessState extends State<Chess> {
     return ChessPos(x, y);
   }
 
-  void alert(String message){
+  void toast(String message){
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  alertResult(message){
+    alert(message, [
+      TextButton(onPressed: (){
+        gamer.newGame();
+        Navigator.pop(context);
+      }, child: Text('再来一局')),
+      TextButton(onPressed: (){
+        Navigator.pop(context);
+      }, child: Text('再看看')),
+    ]);
+  }
+
+  Future<void> alert(String message, List<Widget> buttons,{ String title = 'Alert', barrierDismissible = false}) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: message.split('\n').map<Widget>((item)=>Text(item)).toList(),
+            ),
+          ),
+          actions: buttons,
+        );
+      },
+    );
   }
 
   @override

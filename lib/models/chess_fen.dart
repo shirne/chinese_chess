@@ -40,6 +40,7 @@ class ChessFen {
     'p': '卒',
   };
   static const colRed = ['九', '八', '七', '六', '五', '四', '三', '二', '一'];
+  static const replaceNumber = ['０', '１', '２', '３', '４', '５', '６', '７', '８', '９'];
   static const colBlack = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
   static const nameIndex = ['一', '二', '三', '四', '五'];
   static const stepIndex = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];

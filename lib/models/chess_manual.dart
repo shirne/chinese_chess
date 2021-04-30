@@ -3,7 +3,6 @@
 import 'package:chinese_chess/models/chess_fen.dart';
 import 'package:chinese_chess/models/chess_item.dart';
 
-import 'chess_pos.dart';
 import 'chess_step.dart';
 
 class ChessManual{
@@ -59,6 +58,8 @@ class ChessManual{
   // 开始局面
   String fen;
 
+  int startHand = 0;
+
   // 子力位置图
   ChessFen fenPosition;
 
@@ -92,14 +93,31 @@ class ChessManual{
     this.ecco = '',
     this.timeControl = '',
   }){
-    this.currentFen = ChessFen(this.fen.split(' ')[0]);
-    this.fenPosition = this.currentFen.position();
+    initFen(this.fen);
   }
 
-  ChessManual.load(content){
+  initFen(String fenStr){
+    List<String> fenParts = fenStr.split(' ');
+    this.currentFen = ChessFen(fenParts[0]);
+    this.fenPosition = this.currentFen.position();
+    if(fenParts.length > 1){
+      if(fenParts[1] == 'b' || fenParts[1] == 'B'){
+        startHand = 1;
+      }else{
+        startHand = 0;
+      }
+    }
+    _items=[];
+  }
+
+  ChessManual.load(String content){
     int idx = 0;
     String line = '';
     String description = '';
+    content = content.replaceAllMapped(
+        RegExp('[${ChessFen.replaceNumber.join('')}]'),
+            (match) => ChessFen.replaceNumber.indexOf(match[0]).toString()
+    );
     while(true){
       String chr = content[idx];
       switch(chr){
@@ -155,8 +173,7 @@ class ChessManual{
                 break;
               case 'fen':
                 this.fen = value;
-                this.currentFen = ChessFen(fen.split(' ')[0]);
-                this.fenPosition = this.currentFen.position();
+                initFen(this.fen);
                 break;
               case 'format':
                 this.format = value;
@@ -191,6 +208,7 @@ class ChessManual{
             }else{
               addMove(line, description: description);
               description = '';
+              line = '';
             }
           }
           break;
@@ -282,11 +300,11 @@ class ChessManual{
 
   clearMove([int fromStep = 0]){
     if(fromStep < 1) {
-      moves.removeRange(fromStep, moves.length);
-    }else{
       moves.clear();
+    }else{
+      moves.removeRange(fromStep, moves.length);
     }
-    print('clear moves $moves');
+    print('Clear moves $fromStep $moves');
   }
 
   addMoves(List<String> moves){

@@ -39,27 +39,32 @@ class PlayStepState extends State<PlayStep> {
   }
 
   updateStep() {
-    if (gamer.stepNotifier.value == 'clear') {
+    String message = gamer.stepNotifier.value;
+    if (message == 'clear') {
       setState(() {
         currentStep = gamer.currentStep;
-        if(gamer.currentStep == 0) {
+        if (gamer.currentStep == 0) {
           steps = ['==开始=='];
-        }else{
-          steps.removeRange(currentStep+1, steps.length);
+        } else {
+          steps.removeRange(currentStep + 1, steps.length);
         }
+      });
+    }else if(message == 'step'){
+      setState(() {
+        currentStep = gamer.currentStep;
       });
     } else {
       setState(() {
-        gamer.stepNotifier.value.split('\n').forEach((element) {
-          steps.add(gamer.stepNotifier.value);
+        message.split('\n').forEach((element) {
+          steps.add(element);
         });
         currentStep = steps.length - 1;
       });
-      Future.delayed(Duration(milliseconds: 16)).then((value) {
-        _controller.animateTo(steps.length * 23.0,
-            duration: Duration(milliseconds: 100), curve: Curves.easeOut);
-      });
     }
+    Future.delayed(Duration(milliseconds: 16)).then((value) {
+      _controller.animateTo(currentStep * 23.0,
+          duration: Duration(milliseconds: 100), curve: Curves.easeOut);
+    });
   }
 
   @override

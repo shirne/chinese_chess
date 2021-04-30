@@ -33,9 +33,9 @@ class ChessRule{
             return false;
           }
           if(rule.isCheckMate(team)){
-            return true;
+            return false;
           }
-          return false;
+          return true;
         });
       }
       return false;

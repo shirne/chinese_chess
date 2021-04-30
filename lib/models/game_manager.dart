@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:chinese_chess/models/chess_skin.dart';
 import 'package:flutter/material.dart';
+import 'package:gbk2utf8/gbk2utf8.dart';
 
 import 'chess_fen.dart';
 import 'chess_manual.dart';
@@ -54,6 +55,9 @@ class GameManager{
   // 游戏加载事件
   ValueNotifier<int> gameNotifier;
 
+  // 结果事件 包含将军
+  ValueNotifier<String> resultNotifier;
+
   // 走子规则
   ChessRule rule;
 
@@ -70,6 +74,7 @@ class GameManager{
     messageNotifier = ValueNotifier<String>('');
     playerNotifier = ValueNotifier(curHand);
     gameNotifier = ValueNotifier(-1);
+    resultNotifier = ValueNotifier('');
 
     skin = ChessSkin("woods");
     skin.readyNotifier.addListener(() {
@@ -120,12 +125,43 @@ class GameManager{
     messageNotifier.value = message;
   }
 
+  newGame([String fen = ChessManual.startFen]){
+    isStop = true;
+    engine.stop();
+    currentStep = 0;
+    stepNotifier.value = 'clear';
+    messageNotifier.value = 'clear';
+    resultNotifier.value = '';
+
+    manual = ChessManual(fen:fen);
+    rule = ChessRule(manual.currentFen);
+    curHand = manual.startHand;
+
+    gameNotifier.value = 0;
+  }
+
   loadPGN(String pgn){
+    gameNotifier.value = -1;
+    currentStep = 0;
+    stepNotifier.value = 'clear';
+    messageNotifier.value = 'clear';
+    resultNotifier.value = '';
+
+    _loadPGN(pgn).then((result){
+      gameNotifier.value = 0;
+    });
+  }
+
+  _loadPGN(String pgn) async{
+    isStop = true;
+    engine.stop();
+
     String content = '';
     if(!pgn.contains('\n')) {
-      File file = File.fromUri(Uri(path:pgn));
+      File file = File(pgn);
       if (file != null) {
-        content = file.readAsStringSync(encoding: Encoding.getByName('gbk'));
+        //content = file.readAsStringSync(encoding: Encoding.getByName('gbk'));
+        content = gbk.decode(file.readAsBytesSync());
       }
     }else{
       content = pgn;
@@ -134,18 +170,18 @@ class GameManager{
 
     // 加载步数
     if(manual.moves.length > 0){
+      print(manual.moves);
       stepNotifier.value = manual.moves.map<String>((e) => e.toChineseString()).join('\n');
     }
+    manual.loadHistory(0);
+    stepNotifier.value = 'step';
 
-    currentStep = 0;
-    gameNotifier.value = 0;
-    stepNotifier.value = 'clear';
-    messageNotifier.value = 'clear';
+    curHand = manual.startHand;
+    return true;
   }
 
   loadFen(String fen){
-    manual = ChessManual(fen: fen);
-    rule.fen = manual.currentFen;
+    newGame(fen);
   }
 
   // 重载历史局面
@@ -188,6 +224,58 @@ class GameManager{
     currentStep = manual.moves.length;
 
     stepNotifier.value = manual.moves.last.toChineseString();
+
+    checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
+
+  }
+
+  checkResult(int hand, int curMove) async{
+    // 判断和棋
+    if(unEatCount >= 120){
+      resultNotifier.value = '1/2-1/2 60回合无吃子判和';
+    }
+
+    isCheckMate = rule.isCheckMate(hand);
+
+    // 判断输赢，包括能否应将，长将
+    if(isCheckMate){
+      manual.moves[curMove].isCheckMate = isCheckMate;
+
+      if(rule.canParryKill(hand)){
+        if(manual.moves.length > 6) {
+          String cmMove = manual.moves[curMove].move;
+          String parryMove = manual.moves[curMove - 1].move;
+          int hisMove = curMove - 2;
+          while(hisMove > 0){
+            if(cmMove != manual.moves[hisMove].move ||
+                parryMove != manual.moves[hisMove + 1].move){
+              break;
+            }
+            if(hisMove + 6 < curMove){
+              if(hand == 0) {
+                resultNotifier.value = '0-1 不变招长将作负';
+                manual.result = '0-1';
+              }else{
+                resultNotifier.value = '1-0 不变招长将作负';
+                manual.result = '1-0';
+              }
+              break;
+            }
+            hisMove -= 2;
+          }
+        }
+
+        resultNotifier.value = 'checkMate';
+      }else{
+        if(hand == 0) {
+          resultNotifier.value = '0-1';
+          manual.result = '0-1';
+        }else{
+          resultNotifier.value = '1-0';
+          manual.result = '1-0';
+        }
+      }
+    }
   }
 
   getSteps(){
@@ -212,14 +300,7 @@ class GameManager{
     playerNotifier.value = curHand;
     print('切换选手:${player.team}');
 
-    isCheckMate = rule.isCheckMate(curHand);
-
-    // todo 判断输赢，包括能否应将，长将
-    if(isCheckMate){
-
-    }
-
-    // todo 判断和棋
+    resultNotifier.value = '';
 
     messageNotifier.value = 'clear';
     isStop = true;

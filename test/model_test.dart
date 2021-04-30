@@ -62,6 +62,10 @@ void main() {
     bool canParryKill;
     expect(isCheckMate, false);
 
+    rule.fen.fen = '2b2k3/9/2N1b4/4CR3/p1p6/4N3p/P1P5P/1C7/9/R1BAKAB2';
+    print(rule.isCheckMate(1));
+    print(rule.canParryKill(1));
+
     var now = DateTime.now();
     print(now.toLocal());
     int startMillionSec = now.millisecondsSinceEpoch;

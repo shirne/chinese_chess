@@ -29,6 +29,13 @@ class GameWrapperState extends State<GameWrapper> {
     gamer = GameManager();
   }
 
+  alert(message, {String buttonText = 'OK'}){
+    _showDialog(message,[
+      TextButton(onPressed: (){
+        Navigator.pop(context);
+      }, child: Text(buttonText)),
+    ]);
+  }
   Future<void> _showDialog(String message, List<Widget> buttons,{ String title = 'Alert', barrierDismissible = false}) async {
     return showDialog<void>(
       context: context,
@@ -38,7 +45,7 @@ class GameWrapperState extends State<GameWrapper> {
           title: Text(title),
           content: SingleChildScrollView(
             child: ListBody(
-              children: message.split('\n').map<Widget>((item)=>Text(item)),
+              children: message.split('\n').map<Widget>((item)=>Text(item)).toList(),
             ),
           ),
           actions: buttons,
@@ -110,14 +117,15 @@ class GameWrapperState extends State<GameWrapper> {
               leading: Icon(Icons.add),
               title: Text('新对局'),
               onTap: (){
-                print('new game');
+                gamer.newGame();
+                Navigator.pop(context);
               },
             ),
             ListTile(
               leading: Icon(Icons.description),
               title: Text('加载棋谱'),
               onTap: (){
-                print('new game');
+                Navigator.pop(context);
                 kIsWeb ? requestFile() : loadFile();
               },
             ),
@@ -125,14 +133,16 @@ class GameWrapperState extends State<GameWrapper> {
               leading: Icon(Icons.save),
               title: Text('保存棋谱'),
               onTap: (){
-                print('new game');
+                alert('暂未支持');
+                Navigator.pop(context);
               },
             ),
             ListTile(
               leading: Icon(Icons.settings),
               title: Text('设置'),
               onTap: (){
-                print('new game');
+                alert('暂未支持');
+                Navigator.pop(context);
               },
             ),
           ],
@@ -165,6 +175,7 @@ class GameWrapperState extends State<GameWrapper> {
       }else{
         String content = gbk.decode(result.files.single.bytes);
         print(content);
+        gamer.loadPGN(content);
       }
     } else {
       // User canceled the picker
@@ -172,10 +183,11 @@ class GameWrapperState extends State<GameWrapper> {
   }
 
   void loadFile() async {
+
     String path = await FilesystemPicker.open(
       title: '选择棋谱文件',
       context: context,
-      rootDirectory: Directory('/'),
+      rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
       fsType: FilesystemType.file,
       folderIconColor: Colors.teal,
       allowedExtensions: ['.pgn','.PGN'],
@@ -184,8 +196,9 @@ class GameWrapperState extends State<GameWrapper> {
 
     if(path != null) {
       print(path);
+      gamer.loadPGN(path);
     } else {
-      // User canceled the picker
+      print(path);
     }
   }
 }

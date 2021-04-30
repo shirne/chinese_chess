@@ -81,10 +81,10 @@ packages:
   filesystem_picker:
     dependency: "direct main"
     description:
-      name: filesystem_picker
-      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub"
-    source: hosted
-    version: "1.0.4"
+      path: "../fluttersamples/filesystem_picker/package"
+      relative: true
+    source: path
+    version: "2.0.0-nullsafety.0"
   flutter:
     dependency: "direct main"
     description: flutter

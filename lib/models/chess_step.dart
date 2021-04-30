@@ -27,7 +27,10 @@ class ChessStep{
   // 该步是否吃子
   bool isEat = false;
 
-  ChessStep(this.hand, this.move, {this.code = '', this.fen = '', this.fenPosition = '', this.description = '', this.isEat = false, this.round = 0}){
+  // 该步是否将军
+  bool isCheckMate = false;
+
+  ChessStep(this.hand, this.move, {this.code = '', this.fen = '', this.fenPosition = '', this.description = '', this.isEat = false, this.isCheckMate = false, this.round = 0}){
     if(this.code.isEmpty && fen.isNotEmpty){
       List<String> rows = fen.split('/').reversed.toList();
       String row = rows[int.parse(move[1])];
