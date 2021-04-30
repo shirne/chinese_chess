@@ -55,6 +55,21 @@ void main() {
     print(manual.next());
   });
 
+  test('test isTrapped', (){
+    ChessRule rule = ChessRule.fromFen('3k5/4P4/9/9/9/9/9/9/9/4K4');
+
+    expect(rule.isTrapped(1), true);
+
+    expect(rule.isTrapped(0), false);
+
+
+    rule.fen.fen = '2bak4/1P2a4/4b4/4C4/9/9/9/9/9/5K3 w - - 0 1';
+
+    expect(rule.isTrapped(1), true);
+
+    expect(rule.isTrapped(0), false);
+  });
+
 
   test('test checkMate', (){
     ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR');

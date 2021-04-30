@@ -275,6 +275,16 @@ class GameManager{
           manual.result = '1-0';
         }
       }
+    }else{
+      if(rule.isTrapped(hand)){
+        if(hand == 0) {
+          resultNotifier.value = '0-1 困毙';
+          manual.result = '0-1';
+        }else{
+          resultNotifier.value = '1-0 困毙';
+          manual.result = '1-0';
+        }
+      }
     }
   }
 

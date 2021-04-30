@@ -6,6 +6,7 @@ class TabCard extends StatefulWidget{
   final List<Widget> titles;
   final List<Widget> bodies;
   final MainAxisAlignment titleAlign;
+  final FlexFit titleFit;
   final EdgeInsetsGeometry titlePadding;
   final BoxDecoration titleDecoration;
   final BoxDecoration titleActiveDecoration;
@@ -18,7 +19,8 @@ class TabCard extends StatefulWidget{
     this.titleAlign = MainAxisAlignment.start,
     this.titlePadding,
     this.titleDecoration = const BoxDecoration(color: Color.fromRGBO(0, 0, 0, .1)),
-    this.titleActiveDecoration = const BoxDecoration(color: Colors.white)
+    this.titleActiveDecoration = const BoxDecoration(color: Colors.white),
+    this.titleFit = FlexFit.loose
   }) : super(key: key);
 
 
@@ -39,7 +41,7 @@ class TabCardState extends State<TabCard> {
 
     titles = widget.titles.map<Widget>((e) {
       int curIndex =  widget.titles.indexOf(e);
-      return TabCardTitleItem(myIndex: curIndex, child: e,);
+      return Flexible(flex: widget.titleFit == FlexFit.tight ? 0 : 1, fit: widget.titleFit, child: TabCardTitleItem(myIndex: curIndex, child: e,)) ;
     }).toList();
   }
 
@@ -58,7 +60,9 @@ class TabCardState extends State<TabCard> {
         children: [
           Container(
             decoration: widget.titleDecoration,
-            child: Row(
+            child: Flex(
+              direction: widget.direction == Axis.horizontal ? Axis.vertical : Axis.horizontal,
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: widget.titleAlign,
               children: titles,
             ),
@@ -121,14 +125,14 @@ class TabCardTitleItemState extends State<TabCardTitleItem> {
             decoration: isActive ?
             tabCard.widget.titleActiveDecoration :
             tabCard.widget.titleDecoration,
-            child:widget.child
+            child:Center(child: widget.child)
         )
     );
   }
 
   @override
   void dispose() {
-    super.dispose();
     tabCard.onTabChange.removeListener(indexListener);
+    super.dispose();
   }
 }

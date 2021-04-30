@@ -13,6 +13,28 @@ class ChessRule{
     fen = ChessFen(fenStr);
   }
 
+  /// 是否困毙
+  bool isTrapped(int team){
+    List<ChessItem> pieces = fen.getAll();
+    return !pieces.any((item) {
+      if(item.team == team){
+        List<String> points = movePoints(item.position);
+        return points.any((point){
+          ChessRule rule = ChessRule(fen.copy());
+          rule.fen.move(item.position.toCode()+point);
+          if(rule.isKingMeet(team)){
+            return false;
+          }
+          if(rule.isCheckMate(team)){
+            return false;
+          }
+          return true;
+        });
+      }
+      return false;
+    });
+  }
+
   /// 是否可以解杀 [调用前确保正在被将]
   bool canParryKill(int team){
     ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
