@@ -1,8 +1,30 @@
 # chinese_chess
 
-象棋界面.
+中国象棋界面端. 提供完整的游戏规则处理，windows版带[elephanteye](https://www.xqbase.com/league/elephanteye.htm)引擎的招法提示<br />
 
-## Flutter
+## 功能
+
+- [x] 游戏规则处理。包括落子点提示，将军、应将提示，输赢检测
+- [x] 棋盘棋子皮肤加载
+- [x] 支持PGN格式加载，FEN格式导入
+- [ ] PGN格式导出, FEN格式局面复制
+- [ ] 多语言支持
+- [ ] 加入音效
+- [ ] 对局信息展示
+- [ ] 编辑局面
+- [ ] 加入随机落着的笨机器人
+- [ ] 局面时间控制
+
+## 界面
+- [ ] 版面美化(求免费美工，本项目目前没有任何赢利)
+- [x] Windows版适配
+- [x] Web版适配
+- [ ] Android版适配
+- [ ] IOS版适配
+- [ ] MacOS版适配
+- [ ] Linux版适配
+
+## 使用Flutter开发
 
 This project is a starting point for a Flutter application.
 
@@ -16,8 +38,11 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 
-## 文献
-* [UCCI]https://www.xqbase.com/league/elephanteye.htm
+## 参考文献
+* [UCCI]https://www.xqbase.com/protocol/cchess_ucci.htm
+* [着法表示]https://www.xqbase.com/protocol/cchess_move.htm
+* [FEN格式]https://www.xqbase.com/protocol/cchess_fen.htm
+* [PGN格式]https://www.xqbase.com/protocol/cchess_pgn.htm
 
 ## Log
 
