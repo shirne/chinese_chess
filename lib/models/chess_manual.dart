@@ -1,7 +1,9 @@
 
 
 import 'package:chinese_chess/models/chess_fen.dart';
+import 'package:chinese_chess/models/chess_item.dart';
 
+import 'chess_pos.dart';
 import 'chess_step.dart';
 
 class ChessManual{
@@ -56,6 +58,11 @@ class ChessManual{
 
   // 开始局面
   String fen;
+
+  // 子力位置图
+  ChessFen fenPosition;
+
+  // 当前
   ChessFen currentFen;
 
   // 记谱方法 Chinese(中文纵线格式)、WXF(WXF纵线格式)和ICCS(ICCS坐标格式)
@@ -86,6 +93,7 @@ class ChessManual{
     this.timeControl = '',
   }){
     this.currentFen = ChessFen(this.fen.split(' ')[0]);
+    this.fenPosition = this.currentFen.position();
   }
 
   ChessManual.load(content){
@@ -148,6 +156,7 @@ class ChessManual{
               case 'fen':
                 this.fen = value;
                 this.currentFen = ChessFen(fen.split(' ')[0]);
+                this.fenPosition = this.currentFen.position();
                 break;
               case 'format':
                 this.format = value;
@@ -205,9 +214,12 @@ class ChessManual{
   loadHistory(int index){
     if(index < 1){
       currentFen.fen = fen.split(' ')[0];
+      fenPosition = currentFen.position();
     }else {
       currentFen.fen = moves[index-1].fen;
+      fenPosition.fen = moves[index-1].fenPosition;
       currentFen.move(moves[index-1].move);
+      fenPosition.move(moves[index-1].move);
     }
     step = index;
   }
@@ -221,10 +233,44 @@ class ChessManual{
       String move = moves[step - 1].move;
       String result = currentFen.toChineseString(move);
       currentFen.move(move);
+      fenPosition.move(move);
       return result;
     }else{
       return currentFen.getChineseResult(result);
     }
+  }
+
+  List<ChessItem> _items = [];
+  List<ChessItem> getChessItems(){
+    ChessFen startFen = ChessFen(fen);
+    if(_items.length < 1) {
+      _items = startFen.getAll();
+    }
+
+    // 初始位置编码
+    String initPositions = startFen.position().getAllChr();
+    // 当前位置编码
+    String positions = fenPosition.getAllChr();
+    int index = 0;
+
+    _items.forEach((item) {
+      // 当前子对应的初始序号
+      String chr = initPositions[index];
+      // 序号当前的位置
+      int newIndex = positions.indexOf(chr);
+
+      if(newIndex > -1){
+        // print('${item.code}@${item.position.toCode()}: $chr @ $index => $newIndex');
+        item.position = fenPosition.find(chr);
+        item.isDie = false;
+      }else{
+        // print('${item.code}@${item.position.toCode()}: $chr @ $index --');
+        item.isDie = true;
+      }
+      index++;
+    });
+
+    return _items;
   }
 
   // 获取当前招法
@@ -240,12 +286,12 @@ class ChessManual{
     });
   }
 
-  addMove(String move, {String description, int step = -1}){
+  addMove(String move, {String description, int addStep = 0}){
     if(results.contains(move)){
       result = move;
     }else {
-      if(step > -1){
-        moves = moves.take(step);
+      if(addStep > 0){
+        moves = moves.take(addStep);
       }
       int team = moves.length % 2;
 
@@ -254,9 +300,17 @@ class ChessManual{
         move = currentFen.toPositionString(team, move);
       }
 
-      moves.add(ChessStep(team, '', move, description:description, round: (moves.length ~/ 2) + 1, fen: currentFen.toString()));
+      moves.add(ChessStep(
+          team,
+          move,
+          description:description,
+          round: (moves.length ~/ 2) + 1,
+          fen: currentFen.fen,
+          fenPosition: fenPosition.fen
+      ));
 
       currentFen.move(move);
+      fenPosition.move(move);
 
       step = moves.length;
     }

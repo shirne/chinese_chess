@@ -42,10 +42,16 @@ class GameManager{
   // 回合数
   int round = 0;
 
+  // 走子事件
   ValueNotifier<String> stepNotifier;
+
+  // 引擎消息事件
   ValueNotifier<String> messageNotifier;
 
+  // 玩家事件
   ValueNotifier<int> playerNotifier;
+
+  // 游戏加载事件
   ValueNotifier<int> gameNotifier;
 
   // 走子规则
@@ -82,10 +88,10 @@ class GameManager{
   }
 
   String get lastMove{
-    if(manual.moves.length < 1){
+    if(manual.moves.length < 1 || currentStep == 0){
       return '';
     }
-    return manual.moves[currentStep].move;
+    return manual.moves[currentStep - 1].move;
   }
 
   parseMessage(String message){
@@ -156,6 +162,7 @@ class GameManager{
     rule.fen = manual.currentFen;
 
     gameNotifier.value = currentStep;
+    print('history $currentStep');
   }
 
   /// 落着 todo 检查出发点是否有子，检查落点是否对方子
@@ -167,13 +174,14 @@ class GameManager{
     }
 
     // 如果当前不是最后一步，移除后面着法
-    if(currentStep < manual.moves.length - 1){
+    if(currentStep < manual.moves.length){
       gameNotifier.value = -1;
-      manual.addMove(from.toCode() + next.toCode(), step: currentStep + 1);
+      manual.addMove(from.toCode() + next.toCode(), addStep: currentStep);
     }else {
       manual.addMove(from.toCode() + next.toCode());
     }
-    currentStep = manual.moves.length - 1;
+
+    currentStep = manual.moves.length;
 
     stepNotifier.value = manual.moves.last.toChineseString();
   }

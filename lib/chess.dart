@@ -67,23 +67,25 @@ class ChessState extends State<Chess> {
       }
       return;
     }
-    String position = gamer.lastMove;
     setState(() {
-      initItems();
+      items = gamer.manual.getChessItems();
       isLoading = false;
+      lastPosition = '';
+      activeItem = null;
     });
+    String position = gamer.lastMove;
     if(position.isNotEmpty) {
-      setState(() {
-        ChessPos activePos = ChessPos.fromCode(position.substring(2, 3));
-        activeItem = items.firstWhere((item) => !item.isBlank &&
-            item.position == activePos, orElse: () => ChessItem('0'));
-        lastPosition = position.substring(0, 1);
+      print('last move $position');
+      Future.delayed(Duration(milliseconds: 32)).then((value){
+        setState(() {
+          lastPosition = position.substring(0, 2);
+          ChessPos activePos = ChessPos.fromCode(position.substring(2, 4));
+          activeItem = items.firstWhere((item) => !item.isBlank &&
+              item.position == ChessPos.fromCode(lastPosition), orElse: () => ChessItem('0'));
+          activeItem.position = activePos;
+        });
       });
     }
-  }
-
-  initItems(){
-    items = gamer.fen.getAll();
   }
 
   addStep(ChessPos chess, ChessPos next){
@@ -94,7 +96,7 @@ class ChessState extends State<Chess> {
 
     setState(() {
       movePoints = gamer.rule.movePoints(activeItem.position);
-      print(['move points:', movePoints]);
+      print('move points: $movePoints');
     });
 
   }
@@ -215,7 +217,7 @@ class ChessState extends State<Chess> {
 
               // 被吃的子的快照
               dieFlash = ChessItem(newActive.code, position:toPosition);
-              newActive.code = '0';
+              newActive.isDie = true;
             });
             Future.delayed(Duration(milliseconds: delay),(){
               setState(() {

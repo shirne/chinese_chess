@@ -18,6 +18,7 @@ class ChessSkin{
   Offset offset = Offset(4, 3);
 
   String board = "board.jpg";
+  String blank = "blank.gif";
   Map<String, String> redMap = {
     "K": "rk.gif",
     "A": "ra.gif",
@@ -98,9 +99,17 @@ class ChessSkin{
   }
 
   String getRedChess(String code){
+    if(!redMap.containsKey(code.toUpperCase())){
+      print('Code error: $code');
+      return "assets/skins/$folder/$blank";
+    }
     return "assets/skins/$folder/${redMap[code.toUpperCase()]}";
   }
   String getBlackChess(String code){
+    if(!blackMap.containsKey(code.toLowerCase())){
+      print('Code error: $code');
+      return "assets/skins/$folder/$blank";
+    }
     return "assets/skins/$folder/${blackMap[code.toLowerCase()]}";
   }
 

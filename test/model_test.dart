@@ -128,6 +128,12 @@ void main() {
     ChessFen fen = ChessFen();
 
     print(fen.fen);
+    
+    List<String> steps = ['f6d7','e9d9',
+      'a0d0','c1d1',
+      'f4f9','e8e9',
+      'd7f8','1-0'];
+    print(steps.take(1));
 
   });
 
