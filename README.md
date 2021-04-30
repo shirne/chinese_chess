@@ -21,6 +21,8 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Log
 
+* 20210430 结果提示，棋谱加载
+
 * 20210429 布局重构，走子算法改进；皮肤加载；将军及应将、送将判断
 
 * 20210426 走子规则 走子动画
