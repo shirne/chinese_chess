@@ -277,9 +277,9 @@ class ChessFen {
             team == 0 ? nItems[nItems.length - colIndex - 1] : nItems[colIndex];
       } else {
         if ((team == 0 && move[0] == '前') || (team == 1 && move[0] == '后')) {
-          curItem = nItems[1];
-        } else {
           curItem = nItems[0];
+        } else {
+          curItem = nItems[1];
         }
       }
     } else {
@@ -289,14 +289,19 @@ class ChessFen {
       List<ChessPos> nItems =
           items.where((item) => item.x == colIndex).toList();
       nItems.sort(posSort);
+      print(fen);
+      print([items,nItems]);
       if (nItems.length > 1) {
         if ((team == 0 && move[2] == '进') || (team == 1 && move[2] == '退')) {
           curItem = nItems[1];
         } else {
           curItem = nItems[0];
         }
-      } else {
+      } else if(nItems.length > 0) {
         curItem = nItems[0];
+      }else{
+        print('招法加载错误 $team $move');
+        return '';
       }
     }
 
@@ -416,10 +421,28 @@ class ChessFen {
         nPawns.sort(posSort);
 
         int idx = nPawns.indexOf(posFrom);
-        if (team == 0) {
-          _chineseString = nameIndex[idx] + name;
-        } else {
-          _chineseString = nameIndex[nPawns.length - idx - 1] + name;
+        if(nPawns.length == 2) {
+          if (team == 0) {
+            _chineseString = (idx == 0 ? '前' : '后') + name;
+          } else {
+            _chineseString = (idx == 1 ? '前' : '后') + name;
+          }
+        }else if(nPawns.length == 3){
+          if(idx == 1){
+            _chineseString = '中' + name;
+          }else {
+            if (team == 0) {
+              _chineseString = (idx == 0 ? '前' : '后') + name;
+            } else {
+              _chineseString = (idx == 2 ? '前' : '后') + name;
+            }
+          }
+        }else {
+          if (team == 0) {
+            _chineseString = nameIndex[idx] + name;
+          } else {
+            _chineseString = nameIndex[nPawns.length - idx - 1] + name;
+          }
         }
       } else if (colCount > 1) {
         if (team == 0) {

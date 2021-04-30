@@ -9,8 +9,10 @@ class ChessPos {
   }
 
   ChessPos.fromCode(String code){
-    x = code.codeUnitAt(0) - 'a'.codeUnitAt(0);
-    y = int.tryParse(code[1]) ?? 0;
+    if(code.length > 1) {
+      x = code.codeUnitAt(0) - 'a'.codeUnitAt(0);
+      y = int.tryParse(code[1]) ?? 0;
+    }
   }
 
   @override
