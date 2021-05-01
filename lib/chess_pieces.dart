@@ -20,11 +20,20 @@ class ChessPieces extends StatefulWidget {
 
 class _ChessPiecesState extends State<ChessPieces> {
   ChessState chess;
+  int curTeam = -1;
 
   @override
   void initState() {
     super.initState();
     chess = context.findAncestorStateOfType<ChessState>();
+    chess.gamer.playerNotifier.addListener(onChangePlayer);
+    curTeam = chess.gamer.curHand;
+  }
+
+  void onChangePlayer(){
+    setState(() {
+      curTeam = chess.gamer.playerNotifier.value;
+    });
   }
 
   @override
@@ -34,13 +43,18 @@ class _ChessPiecesState extends State<ChessPieces> {
       fit: StackFit.expand,
       children: widget.items.map<Widget>((ChessItem item) {
         bool isActive = false;
+        bool isHover = false;
         if (item.isBlank) {
           //return;
         } else if (widget.activeItem != null) {
           if (widget.activeItem.position == item.position) {
             isActive = true;
+            if(curTeam == item.team){
+              isHover = true;
+            }
           }
         }
+
         return AnimatedAlign(
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutQuint,
@@ -51,6 +65,7 @@ class _ChessPiecesState extends State<ChessPieces> {
             //transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105 * skewStepper, 1 - skewStepper*0.1, 0, -0.004 * skewStepper, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
             child: Piece(
               item: item,
+              isHover: isHover,
               isActive: isActive,
             ),
           ),

@@ -47,7 +47,7 @@ class Player{
     print('onmove');
     manager.moveNotifier.value = move;
 
-    Future.delayed(Duration(seconds: 1)).then((v){
+    Future.delayed(Duration(milliseconds: 500)).then((v){
       manager.moveNotifier.value = '';
       manager.switchPlayer();
     });

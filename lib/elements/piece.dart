@@ -10,8 +10,9 @@ class Piece extends StatelessWidget {
   final ChessItem item;
   final bool isActive;
   final bool isAblePoint;
+  final bool isHover;
 
-  const Piece({Key key, this.item, this.isActive = false, this.isAblePoint = false})
+  const Piece({Key key, this.item, this.isActive = false, this.isHover = false, this.isAblePoint = false})
       : super(key: key);
 
   Widget blankWidget(ChessState chess) {
@@ -28,6 +29,7 @@ class Piece extends StatelessWidget {
   Widget build(BuildContext context) {
     ChessState chess = context.findAncestorStateOfType<ChessState>();
     String team = item.team == 0 ? 'r' : 'b';
+
     return this.item.isBlank
         ? blankWidget(chess)
         :  AnimatedContainer(
@@ -35,9 +37,9 @@ class Piece extends StatelessWidget {
               height: chess.gamer.skin.size,
               duration: Duration(milliseconds: 300),
               curve: Curves.easeOutQuint,
-              transform: this.isActive ? (Matrix4.translationValues(-4, -4, -4)) : ( Matrix4.translationValues(0,0,0)),
+              transform: this.isHover ? (Matrix4.translationValues(-4, -4, -4)) : ( Matrix4.translationValues(0,0,0)),
               transformAlignment: Alignment.topCenter,
-              decoration: this.isActive
+              decoration: (this.isHover)
                   ? BoxDecoration(
                     boxShadow: [
                       BoxShadow(color: Color.fromRGBO(0, 0, 0, .1),offset: Offset(2,3), blurRadius: 1, spreadRadius: 0),
@@ -51,6 +53,7 @@ class Piece extends StatelessWidget {
                   BoxShadow(color: Color.fromRGBO(0, 0, 0, .2),offset: Offset(2,2), blurRadius: 1, spreadRadius: 0),
                   BoxShadow(color: Color.fromRGBO(0, 0, 0, .1),offset: Offset(3,3), blurRadius: 1, spreadRadius: 1),
                 ],
+                  border: isActive ? Border.all(color: Colors.white54, width: 2, style: BorderStyle.solid) : null,
                   borderRadius: BorderRadius.all(Radius.circular(chess.gamer.skin.size / 2))
               ),
               child: Stack(
