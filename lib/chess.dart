@@ -130,6 +130,7 @@ class ChessState extends State<Chess> {
     String move = gamer.moveNotifier.value;
     print('onmove $move');
     if(move.isEmpty)return;
+    if(move == 'giveup')return;
 
     ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
     ChessPos toPosition = ChessPos.fromCode(move.substring(2, 4));

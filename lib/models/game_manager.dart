@@ -238,12 +238,7 @@ class GameManager{
   /// 调用对应的玩家开始下一步
   next(){
     player.move().then((String move){
-      print('apply move $move');
-      if(move == 'giveup'){
-        resultNotifier.value = curHand == 0 ? '0-1 ${player.title}认输' : '1-0 ${player.title}认输';
-      }else {
-        addMove(move);
-      }
+      addMove(move);
     });
   }
 
@@ -254,6 +249,10 @@ class GameManager{
 
   addMove(String move){
     print('addmove $move');
+    if(move == 'giveup'){
+      resultNotifier.value = curHand == 0 ? '0-1 ${player.title}认输' : '1-0 ${player.title}认输';
+      return;
+    }
     if(fen.hasItemAt(ChessPos.fromCode(move.substring(2,4)))){
       unEatCount ++;
     }else{

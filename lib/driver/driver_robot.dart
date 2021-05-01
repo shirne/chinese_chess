@@ -73,15 +73,17 @@ class DriverRobot extends PlayerDriver{
     print('thinking');
     List<String> moves = await getAlbeMoves(player.manager.fen, player.team == 'r'?0:1);
     if(moves.length < 1 ){
-      return 'giveup';
+      completeMove('giveup');
+      return;
     }
+    print(moves);
     await Future.delayed(Duration(milliseconds: 100));
     List<List<String>> moveGroups = await checkMoves(player.manager.fen, player.team == 'r'?0:1, moves);
-
+    print(moveGroups);
     await Future.delayed(Duration(milliseconds: 100));
 
     String move = await pickMove(moveGroups);
-
+    print(move);
     completeMove(move);
   }
 
@@ -107,6 +109,9 @@ class DriverRobot extends PlayerDriver{
           }
           return true;
         }).toList();
+        if(curMoves.length > 0){
+          moves += curMoves;
+        }
       }
     });
 
