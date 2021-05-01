@@ -445,9 +445,9 @@ class ChessFen {
         }
       } else if (colCount > 1) {
         if (team == 0) {
-          _chineseString = (posFrom.y > rowIndexs[1] ? '前' : '后') + name;
+          _chineseString = (posFrom.y > rowIndexs[0] ? '前' : '后') + name;
         } else {
-          _chineseString = (posFrom.y < rowIndexs[0] ? '前' : '后') + name;
+          _chineseString = (posFrom.y < rowIndexs[1] ? '前' : '后') + name;
         }
       } else {
         _chineseString =
