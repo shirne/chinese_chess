@@ -321,7 +321,11 @@ class GameManager{
     engine.go(depth: 10);
   }
 
-  get player{
+  String get fenStr{
+    return '${manual.currentFen.fen} ${curHand>0?'b':'w'} - - 0 1';
+  }
+
+  Hand get player{
     return hands[curHand];
   }
 

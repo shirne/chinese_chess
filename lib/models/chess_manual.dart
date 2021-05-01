@@ -252,6 +252,37 @@ class ChessManual{
     }
   }
 
+  String export(){
+    List<String> lines = [];
+    lines.add('[Game "$game"]');
+    lines.add('[Event "$event"]');
+    lines.add('[Round "$round"]');
+    lines.add('[Date "$date"]');
+    lines.add('[Site "$site"]');
+    lines.add('[RedTeam "$redTeam"]');
+    lines.add('[Red "$red"]');
+    lines.add('[BlackTeam "$blackTeam"]');
+    lines.add('[Black "$black"]');
+    lines.add('[Result "$result"]');
+    lines.add('[ECCO "$ecco"]');
+    lines.add('[Opening "$opening"]');
+    lines.add('[Variation "$variation"]');
+    if(fen != startFen && fen != ChessFen.initFen){
+      lines.add('[FEN "$fen"]');
+    }
+
+    for(int myStep = 0; myStep<moves.length; myStep += 2){
+      lines.add('${(myStep ~/ 2) + 1}. ${moves[myStep].toChineseString()} '+(myStep < moves.length-1 ? moves[myStep+1].toChineseString() : result));
+    }
+    if(moves.length % 2 == 0){
+      lines.add(result);
+    }
+
+    lines.add('=========================');
+    lines.add('中国象棋 (https://www.shirne.com/demo/chinesechess/)');
+    return lines.join("\n");
+  }
+
   loadHistory(int index){
     if(index < 1){
       currentFen.fen = fen.split(' ')[0];
