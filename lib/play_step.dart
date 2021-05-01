@@ -80,7 +80,7 @@ class PlayStepState extends State<PlayStep> {
           int myIndex = step;
           return GestureDetector(
             onTap: () {
-              // print(myIndex);
+              if(!gamer.canBacktrace)return;
               gamer.loadHistory(myIndex);
               setState(() {
                 currentStep = myIndex;

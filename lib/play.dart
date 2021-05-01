@@ -7,6 +7,7 @@ import 'chess.dart';
 import 'game.dart';
 import 'models/game_manager.dart';
 import 'play_bot.dart';
+import 'play_player.dart';
 import 'widgets/tab_card.dart';
 
 class PlayPage extends StatefulWidget {
@@ -67,43 +68,7 @@ class PlayPageState extends State<PlayPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 209,
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: Icon(Icons.person),
-                              title: Text('黑方'),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            ListTile(
-                              leading: Icon(Icons.person),
-                              title: Text('红方'),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Container(
-                                decoration: decoration,
-                                child: TabCard(
-                                    titlePadding: EdgeInsets.only(top: 10,bottom: 10),
-                                    titles: [
-                                      Text('当前信息'),
-                                      Text('棋局信息')
-                                    ],
-                                    bodies: [
-                                      Center(child: Text('暂无信息')),
-                                      Center(child: Text('暂无棋局信息'))
-                                    ]),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-
+                      PlayPlayer(),
                       SizedBox(
                         width: 10,
                       ),

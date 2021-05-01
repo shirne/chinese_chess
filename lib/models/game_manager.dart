@@ -1,6 +1,7 @@
 
 import 'dart:io';
 
+import 'package:chinese_chess/driver/player_driver.dart';
 import 'package:chinese_chess/models/chess_skin.dart';
 import 'package:flutter/material.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
@@ -10,7 +11,8 @@ import 'chess_manual.dart';
 import 'chess_pos.dart';
 import 'chess_rule.dart';
 import 'engine.dart';
-import 'hand.dart';
+import 'player.dart';
+import 'player.dart';
 
 class GameManager{
 
@@ -27,7 +29,7 @@ class GameManager{
   bool isStop = false;
 
   // 选手
-  List<Hand> hands = [];
+  List<Player> hands = [];
   int curHand = 0;
 
   // 当前着法序号
@@ -57,6 +59,12 @@ class GameManager{
   // 结果事件 包含将军
   ValueNotifier<String> resultNotifier;
 
+  // 界面锁定通知
+  ValueNotifier<bool> lockNotifier;
+
+  // 走棋通知
+  ValueNotifier<String> moveNotifier;
+
   // 走子规则
   ChessRule rule;
 
@@ -64,8 +72,8 @@ class GameManager{
     manual = ChessManual();
     rule = ChessRule(manual.currentFen);
 
-    hands.add(Hand('r', title: '红方'));
-    hands.add(Hand('b', title: '黑方'));
+    hands.add(Player('r', this, title: '红方'));
+    hands.add(Player('b', this, title: '黑方'));
     curHand = 0;
     //map = ChessMap.fromFen(ChessManual.startFen);
 
@@ -74,10 +82,13 @@ class GameManager{
     playerNotifier = ValueNotifier(curHand);
     gameNotifier = ValueNotifier(-1);
     resultNotifier = ValueNotifier('');
+    lockNotifier = ValueNotifier(true);
+    moveNotifier = ValueNotifier('');
 
     skin = ChessSkin("woods");
     skin.readyNotifier.addListener(() {
       gameNotifier.value = 0;
+      next();
     });
 
     engine = Engine();
@@ -85,6 +96,13 @@ class GameManager{
     engine.init().then((process){
       engine.onMessage(parseMessage);
     });
+  }
+
+  bool get isLock{
+    return lockNotifier.value;
+  }
+  bool get canBacktrace{
+    return player.canBacktrace;
   }
 
   ChessFen get fen{
@@ -96,6 +114,13 @@ class GameManager{
       return '';
     }
     return manual.moves[currentStep - 1].move;
+  }
+
+  next(){
+    player.move().then((String move){
+      print('apply move $move');
+      addMove(move);
+    });
   }
 
   parseMessage(String message){
@@ -132,12 +157,14 @@ class GameManager{
     stepNotifier.value = 'clear';
     messageNotifier.value = 'clear';
     resultNotifier.value = '';
+    lockNotifier.value = true;
 
     manual = ChessManual(fen:fen);
     rule = ChessRule(manual.currentFen);
     curHand = manual.startHand;
 
     gameNotifier.value = 0;
+    next();
   }
 
   loadPGN(String pgn){
@@ -146,9 +173,11 @@ class GameManager{
     stepNotifier.value = 'clear';
     messageNotifier.value = 'clear';
     resultNotifier.value = '';
+    lockNotifier.value = true;
 
     _loadPGN(pgn).then((result){
       gameNotifier.value = 0;
+      next();
     });
   }
 
@@ -206,7 +235,11 @@ class GameManager{
 
   /// 落着 todo 检查出发点是否有子，检查落点是否对方子
   addStep(ChessPos from, ChessPos next){
-    if(fen.hasItemAt(next)){
+    addMove('${from.toCode()}${next.toCode()}');
+  }
+
+  addMove(String move){
+    if(fen.hasItemAt(ChessPos.fromCode(move.substring(2,4)))){
       unEatCount ++;
     }else{
       unEatCount = 0;
@@ -216,10 +249,10 @@ class GameManager{
     if(currentStep < manual.moves.length){
       gameNotifier.value = -2;
       stepNotifier.value = 'clear';
-      manual.addMove(from.toCode() + next.toCode(), addStep: currentStep);
+      manual.addMove(move, addStep: currentStep);
     }else {
       gameNotifier.value = -2;
-      manual.addMove(from.toCode() + next.toCode());
+      manual.addMove(move);
     }
 
     currentStep = manual.moves.length;
@@ -227,7 +260,6 @@ class GameManager{
     stepNotifier.value = manual.moves.last.toChineseString();
 
     checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
-
   }
 
   checkResult(int hand, int curMove) async{
@@ -309,9 +341,13 @@ class GameManager{
     }
 
     playerNotifier.value = curHand;
-    print('切换选手:${player.team}');
+    print('切换选手:${player.title} ${player.team} ${player.driver}');
 
     resultNotifier.value = '';
+    print(player.title);
+    player.move().then((move){
+      addMove(move);
+    });
 
     messageNotifier.value = 'clear';
     isStop = true;
@@ -325,7 +361,7 @@ class GameManager{
     return '${manual.currentFen.fen} ${curHand>0?'b':'w'} - - 0 1';
   }
 
-  Hand get player{
+  Player get player{
     return hands[curHand];
   }
 

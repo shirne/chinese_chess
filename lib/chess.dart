@@ -1,4 +1,3 @@
-
 import 'package:chinese_chess/chess_pieces.dart';
 import 'package:chinese_chess/elements/mark_component.dart';
 import 'package:chinese_chess/elements/point_component.dart';
@@ -15,17 +14,13 @@ import 'models/game_manager.dart';
 class Chess extends StatefulWidget {
   final String skin;
 
-  const Chess(
-      {Key key,
-      this.skin = 'woods'})
-      : super(key: key);
+  const Chess({Key key, this.skin = 'woods'}) : super(key: key);
 
   @override
   State<Chess> createState() => ChessState();
 }
 
 class ChessState extends State<Chess> {
-
   // 当前激活的子
   ChessItem activeItem;
   double skewStepper = 0;
@@ -37,7 +32,7 @@ class ChessState extends State<Chess> {
   String lastPosition = 'a0';
 
   // 可落点，包括吃子点
-  List<String> movePoints=[];
+  List<String> movePoints = [];
   GameManager gamer;
   bool isLoading = true;
 
@@ -47,25 +42,28 @@ class ChessState extends State<Chess> {
   @override
   void initState() {
     super.initState();
-    GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
+    GameWrapperState gameWrapper =
+        context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
     gamer.resultNotifier.addListener(onResult);
+    gamer.moveNotifier.addListener(onMove);
   }
 
   @override
   void dispose() {
     gamer.gameNotifier.removeListener(reloadGame);
     gamer.resultNotifier.removeListener(onResult);
+    gamer.moveNotifier.removeListener(onMove);
     super.dispose();
   }
 
-  onResult(){
-    if(gamer.resultNotifier.value.isEmpty){
+  onResult() {
+    if (gamer.resultNotifier.value.isEmpty) {
       return;
     }
     List<String> parts = gamer.resultNotifier.value.split(' ');
-    switch(parts[0]){
+    switch (parts[0]) {
       case 'checkMate':
         toast('将军');
         break;
@@ -81,12 +79,12 @@ class ChessState extends State<Chess> {
     }
   }
 
-  reloadGame(){
-    if(gamer.gameNotifier.value < -1){
+  reloadGame() {
+    if (gamer.gameNotifier.value < -1) {
       return;
     }
-    if(gamer.gameNotifier.value < 0){
-      if(!isLoading) {
+    if (gamer.gameNotifier.value < 0) {
+      if (!isLoading) {
         setState(() {
           isLoading = true;
         });
@@ -100,69 +98,91 @@ class ChessState extends State<Chess> {
       activeItem = null;
     });
     String position = gamer.lastMove;
-    if(position.isNotEmpty) {
+    if (position.isNotEmpty) {
       print('last move $position');
-      Future.delayed(Duration(milliseconds: 32)).then((value){
+      Future.delayed(Duration(milliseconds: 32)).then((value) {
         setState(() {
           lastPosition = position.substring(0, 2);
           ChessPos activePos = ChessPos.fromCode(position.substring(2, 4));
-          activeItem = items.firstWhere((item) => !item.isBlank &&
-              item.position == ChessPos.fromCode(lastPosition), orElse: () => ChessItem('0'));
+          activeItem = items.firstWhere(
+              (item) =>
+                  !item.isBlank &&
+                  item.position == ChessPos.fromCode(lastPosition),
+              orElse: () => ChessItem('0'));
           activeItem.position = activePos;
         });
       });
     }
   }
 
-  addStep(ChessPos chess, ChessPos next){
-    gamer.addStep(chess, next);
+  addStep(ChessPos chess, ChessPos next) {
+    gamer.player.completeMove(chess, next);
   }
 
-  fetchMovePoints() async{
-
+  fetchMovePoints() async {
     setState(() {
       movePoints = gamer.rule.movePoints(activeItem.position);
       print('move points: $movePoints');
     });
-
   }
 
-  animateMove(ChessPos nextPosition){
+  onMove(){
+    String move = gamer.moveNotifier.value;
+    print('onmove $move');
+    if(move.isEmpty)return;
+
+    ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
+    setState(() {
+      activeItem = items.firstWhere(
+              (item) => !item.isBlank && item.position == fromPos,
+          orElse: () => ChessItem('0'));
+
+      if(activeItem != null && !activeItem.isBlank) {
+        print('$activeItem => $move');
+        activeItem.position = ChessPos.fromCode( move.substring(2,4));
+        lastPosition = fromPos.toCode();
+      }else{
+        print('Remote move error $move');
+      }
+    });
+  }
+  animateMove(ChessPos nextPosition) {
     print('$activeItem => $nextPosition');
     setState(() {
       activeItem.position = nextPosition.copy();
     });
   }
 
-  clearActive(){
+  clearActive() {
     setState(() {
       activeItem = null;
       lastPosition = '';
     });
   }
 
-  Future<bool> checkCanMove(String activePos, ChessPos toPosition, [ChessItem toItem]) async{
+  Future<bool> checkCanMove(String activePos, ChessPos toPosition,
+      [ChessItem toItem]) async {
     if (!movePoints.contains(toPosition.toCode())) {
-      if(toItem != null){
+      if (toItem != null) {
         toast('can\'t eat ${toItem.code} at $toPosition');
-      }else {
+      } else {
         toast('can\'t move to $toPosition');
       }
       return false;
     }
-    String move = activePos+toPosition.toCode();
+    String move = activePos + toPosition.toCode();
     ChessRule rule = ChessRule(gamer.fen.copy());
     rule.fen.move(move);
-    if(rule.isKingMeet(gamer.curHand)){
+    if (rule.isKingMeet(gamer.curHand)) {
       toast('不能送将');
       return false;
     }
 
     /// todo 这里送将和应将判断不准确
-    if(rule.isCheckMate(gamer.curHand)){
-      if(gamer.isCheckMate) {
+    if (rule.isCheckMate(gamer.curHand)) {
+      if (gamer.isCheckMate) {
         toast('请应将');
-      }else{
+      } else {
         toast('不能送将');
       }
       return false;
@@ -170,20 +190,22 @@ class ChessState extends State<Chess> {
     return true;
   }
 
-  bool setActive(ChessPos toPosition){
-    ChessItem newActive = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
+  bool setActive(ChessPos toPosition) {
+    ChessItem newActive = items.firstWhere(
+        (item) => !item.isBlank && item.position == toPosition,
+        orElse: () => ChessItem('0'));
 
     int ticker = DateTime.now().millisecondsSinceEpoch;
-    if((newActive == null || newActive.isBlank) ){
-      if(activeItem != null && activeItem.team == gamer.curHand) {
+    if ((newActive == null || newActive.isBlank)) {
+      if (activeItem != null && activeItem.team == gamer.curHand) {
         String activePos = activeItem.position.toCode();
         animateMove(toPosition);
-        checkCanMove(activePos, toPosition).then((canMove){
+        checkCanMove(activePos, toPosition).then((canMove) {
           int delay = 250 - (DateTime.now().millisecondsSinceEpoch - ticker);
-          if(delay < 0){
+          if (delay < 0) {
             delay = 0;
           }
-          if(canMove){
+          if (canMove) {
             // 立即更新的部分
             setState(() {
               // 清掉落子点
@@ -193,8 +215,8 @@ class ChessState extends State<Chess> {
 
             addStep(ChessPos.fromCode(activePos), toPosition);
             gamer.switchPlayer();
-          }else{
-            Future.delayed(Duration(milliseconds: delay),(){
+          } else {
+            Future.delayed(Duration(milliseconds: delay), () {
               setState(() {
                 activeItem.position = ChessPos.fromCode(activePos);
               });
@@ -208,13 +230,13 @@ class ChessState extends State<Chess> {
     }
 
     // 置空当前选中状态
-    if(activeItem != null && activeItem.position == toPosition){
+    if (activeItem != null && activeItem.position == toPosition) {
       setState(() {
         activeItem = null;
         lastPosition = '';
         movePoints = [];
       });
-    }else if(newActive.team == gamer.curHand ) {
+    } else if (newActive.team == gamer.curHand) {
       // 切换选中的子
       setState(() {
         activeItem = newActive;
@@ -223,17 +245,17 @@ class ChessState extends State<Chess> {
       });
       fetchMovePoints();
       return true;
-    }else {
+    } else {
       // 吃对方的子
-      if(activeItem != null && activeItem.team == gamer.curHand){
+      if (activeItem != null && activeItem.team == gamer.curHand) {
         String activePos = activeItem.position.toCode();
         animateMove(toPosition);
-        checkCanMove(activePos, toPosition, newActive).then((canMove){
+        checkCanMove(activePos, toPosition, newActive).then((canMove) {
           int delay = 250 - (DateTime.now().millisecondsSinceEpoch - ticker);
-          if(delay < 0){
+          if (delay < 0) {
             delay = 0;
           }
-          if(canMove){
+          if (canMove) {
             addStep(ChessPos.fromCode(activePos), toPosition);
             setState(() {
               // 清掉落子点
@@ -241,10 +263,10 @@ class ChessState extends State<Chess> {
               lastPosition = activePos;
 
               // 被吃的子的快照
-              dieFlash = ChessItem(newActive.code, position:toPosition);
+              dieFlash = ChessItem(newActive.code, position: toPosition);
               newActive.isDie = true;
             });
-            Future.delayed(Duration(milliseconds: delay),(){
+            Future.delayed(Duration(milliseconds: delay), () {
               setState(() {
                 dieFlash = null;
               });
@@ -252,8 +274,8 @@ class ChessState extends State<Chess> {
               // 吃子，切换选手
               gamer.switchPlayer();
             });
-          }else{
-            Future.delayed(Duration(milliseconds: delay),(){
+          } else {
+            Future.delayed(Duration(milliseconds: delay), () {
               setState(() {
                 activeItem.position = ChessPos.fromCode(activePos);
               });
@@ -266,30 +288,36 @@ class ChessState extends State<Chess> {
     return false;
   }
 
-  ChessPos pointTrans(Offset tapPoint){
+  ChessPos pointTrans(Offset tapPoint) {
     int x = (tapPoint.dx - gamer.skin.offset.dx) ~/ gamer.skin.size;
     int y = 9 - (tapPoint.dy - gamer.skin.offset.dy) ~/ gamer.skin.size;
     return ChessPos(x, y);
   }
 
-  void toast(String message){
+  void toast(String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  alertResult(message){
+  alertResult(message) {
     alert(message, [
-      TextButton(onPressed: (){
-        gamer.newGame();
-        Navigator.pop(context);
-      }, child: Text('再来一局')),
-      TextButton(onPressed: (){
-        Navigator.pop(context);
-      }, child: Text('再看看')),
+      TextButton(
+          onPressed: () {
+            gamer.newGame();
+            Navigator.pop(context);
+          },
+          child: Text('再来一局')),
+      TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('再看看')),
     ]);
   }
 
-  Future<void> alert(String message, List<Widget> buttons,{ String title = 'Alert', barrierDismissible = false}) async {
+  Future<void> alert(String message, List<Widget> buttons,
+      {String title = 'Alert', barrierDismissible = false}) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: barrierDismissible,
@@ -298,7 +326,10 @@ class ChessState extends State<Chess> {
           title: Text(title),
           content: SingleChildScrollView(
             child: ListBody(
-              children: message.split('\n').map<Widget>((item)=>Text(item)).toList(),
+              children: message
+                  .split('\n')
+                  .map<Widget>((item) => Text(item))
+                  .toList(),
             ),
           ),
           actions: buttons,
@@ -309,24 +340,29 @@ class ChessState extends State<Chess> {
 
   @override
   Widget build(BuildContext context) {
-    if(isLoading){
-      return Center(child: CircularProgressIndicator(),);
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
     }
 
     List<Widget> widgets = [Board()];
 
     List<Widget> layer0 = [];
-    if(dieFlash != null) {
+    if (dieFlash != null) {
       layer0.add(Align(
         alignment: gamer.skin.getAlign(dieFlash.position),
         child: Piece(item: dieFlash, isActive: false, isAblePoint: false),
       ));
     }
-    if(lastPosition.isNotEmpty){
-      ChessItem emptyItem = ChessItem('0', position: ChessPos.fromCode(lastPosition));
+    if (lastPosition.isNotEmpty) {
+      ChessItem emptyItem =
+          ChessItem('0', position: ChessPos.fromCode(lastPosition));
       layer0.add(Align(
         alignment: gamer.skin.getAlign(emptyItem.position),
-        child: MarkComponent(size: gamer.skin.size,),
+        child: MarkComponent(
+          size: gamer.skin.size,
+        ),
       ));
     }
     widgets.add(Stack(
@@ -335,14 +371,18 @@ class ChessState extends State<Chess> {
       children: layer0,
     ));
 
-    widgets.add(ChessPieces(items: items,activeItem: activeItem,));
+    widgets.add(ChessPieces(
+      items: items,
+      activeItem: activeItem,
+    ));
 
     List<Widget> layer2 = [];
     movePoints.forEach((element) {
-      ChessItem emptyItem = ChessItem('0', position: ChessPos.fromCode(element));
+      ChessItem emptyItem =
+          ChessItem('0', position: ChessPos.fromCode(element));
       layer2.add(Align(
         alignment: gamer.skin.getAlign(emptyItem.position),
-        child: PointComponent(size:gamer.skin.size),
+        child: PointComponent(size: gamer.skin.size),
       ));
     });
     widgets.add(Stack(
@@ -351,9 +391,9 @@ class ChessState extends State<Chess> {
       children: layer2,
     ));
 
-
     return GestureDetector(
-      onTapUp: (detail){
+      onTapUp: (detail) {
+        if(gamer.isLock)return;
         setState(() {
           setActive(pointTrans(detail.localPosition));
         });
@@ -367,7 +407,6 @@ class ChessState extends State<Chess> {
           children: widgets,
         ),
       ),
-    ) ;
+    );
   }
-
 }
