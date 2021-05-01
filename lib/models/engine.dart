@@ -31,7 +31,10 @@ class Engine extends CustomNotifier<String>{
     String lines = String.fromCharCodes(event).trim();
     lines.split('\n').forEach((line) {
       line = line.trim();
-      if(line.isNotEmpty && this.hasListeners) {
+      if(line == 'bye'){
+        ready = false;
+        process = null;
+      }else if(line.isNotEmpty && this.hasListeners) {
         this.notifyListeners(line);
       }
     });
@@ -84,10 +87,6 @@ class Engine extends CustomNotifier<String>{
 
   void quit(){
     sendCommand('quit');
-    if(ready) {
-      process.kill(ProcessSignal.sigquit);
-      process = null;
-      ready = false;
-    }
+    ready = false;
   }
 }
