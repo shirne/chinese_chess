@@ -18,11 +18,14 @@ class Engine extends CustomNotifier<String>{
       return Future.value(null);
     }
     String path = Directory.current.path+'/assets/engines/$engine';
-    return Process.start(path, []).then((value){
+    if(!File(path).existsSync()){
+      path = Directory.current.path+'/data/flutter_assets/assets/engines/$engine';
+    }
+    return Process.start(path, [], mode: ProcessStartMode.normal).then((value){
       process = value;
-      process.stdin.writeln('ucci');
       ready = true;
       process.stdout.listen(onMessage);
+      process.stdin.writeln('ucci');
       return process;
     });
   }
