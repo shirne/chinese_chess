@@ -1,11 +1,12 @@
 
 
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 
-class Engine{
+import '../foundation/customer_notifier.dart';
+
+class Engine extends CustomNotifier<String>{
   String engine = 'eleeye.exe';
   bool ready;
 
@@ -21,24 +22,18 @@ class Engine{
       process = value;
       process.stdin.writeln('ucci');
       ready = true;
+      process.stdout.listen(onMessage);
       return process;
     });
   }
 
-  void onMessage(f(String message)){
-    if(!ready){
-      f('Engine is not ready');
-      return;
-    }
-    process.stdout.listen((List<int> event){
-      if(!ready) return;
-      String lines = String.fromCharCodes(event).trim();
-      lines.split('\n').forEach((line) {
-        line = line.trim();
-        if(line.isNotEmpty) {
-          f(line);
-        }
-      });
+  void onMessage(List<int> event){
+    String lines = String.fromCharCodes(event).trim();
+    lines.split('\n').forEach((line) {
+      line = line.trim();
+      if(line.isNotEmpty && this.hasListeners) {
+        this.notifyListeners(line);
+      }
     });
   }
 

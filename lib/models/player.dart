@@ -16,10 +16,26 @@ class Player{
   int totalTime = 0;
   int stepTime = 0;
 
+  DriverType _driverType;
   PlayerDriver driver;
 
-  Player(this.team, this.manager,{this.title = '', DriverType driverType = DriverType.user}){
-    this.driver = PlayerDriver.createDriver(this, driverType);
+  Player(this.team, this.manager,{this.title = '', DriverType type = DriverType.user}){
+    this.driverType = type;
+  }
+
+  set driverType(DriverType type){
+    _driverType = type;
+    this.driver = PlayerDriver.createDriver(this, _driverType);
+  }
+  DriverType get driverType{
+    return _driverType;
+  }
+
+  bool get isUser{
+    return _driverType == DriverType.user;
+  }
+  bool get isRobot{
+    return _driverType == DriverType.robot;
   }
 
   bool get canBacktrace{
@@ -27,17 +43,16 @@ class Player{
   }
 
   // 通知界面，从界面上过来的着法不需要调用
-  Future<String> onMove(String move) async{
+  Future<String> onMove(String move){
+    print('onmove');
     manager.moveNotifier.value = move;
 
-    await Future.delayed(Duration(milliseconds: 300));
-
-    Future.delayed(Duration(milliseconds: 500)).then((v){
+    Future.delayed(Duration(seconds: 1)).then((v){
       manager.moveNotifier.value = '';
       manager.switchPlayer();
     });
 
-    return move;
+    return Future.value(move);
   }
 
   Future<bool> onDraw(){

@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 
+import 'driver/player_driver.dart';
 import 'game.dart';
 import 'models/game_manager.dart';
 import 'widgets/tab_card.dart';
@@ -20,19 +21,51 @@ class PlayPlayer extends StatefulWidget{
 
 class PlayStepState extends State<PlayPlayer> {
   GameManager gamer;
+  int currentTeam = 0;
 
   @override
   void initState() {
     super.initState();
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
+    gamer.playerNotifier.addListener(onChangePlayer);
   }
 
   @override
   dispose(){
+    gamer.playerNotifier.removeListener(onChangePlayer);
     super.dispose();
   }
+  onChangePlayer(){
+    setState(() {
+      currentTeam = gamer.playerNotifier.value;
+    });
+  }
 
+  Widget switchRobot(int team){
+    if(gamer.hands[team].isUser){
+      return IconButton(
+        icon: Icon(Icons.android),
+        tooltip: '托管给机器人',
+        onPressed: () {
+          changePlayDriver(team, DriverType.robot);
+        },);
+    }else if(gamer.hands[team].isRobot) {
+      return IconButton(
+        icon: Icon(Icons.android, color: Colors.blueAccent,),
+        tooltip: '取消托管',
+        onPressed: () {
+          changePlayDriver(team, DriverType.user);
+        },);
+    }
+    return null;
+  }
+
+  void changePlayDriver(int team, DriverType driverType) {
+    setState(() {
+      gamer.switchDriver(team, driverType);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +77,19 @@ class PlayStepState extends State<PlayPlayer> {
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.person),
+            leading: Icon(Icons.person, color: currentTeam == 1 ? Colors.blueAccent : Colors.black12,),
             title: Text('黑方'),
+            subtitle: Text(currentTeam == 1?'思考中...':''),
+            trailing: switchRobot(1),
           ),
           SizedBox(
             width: 10,
           ),
           ListTile(
-            leading: Icon(Icons.person),
+            leading: Icon(Icons.person, color: currentTeam == 0 ? Colors.blueAccent : Colors.black12),
             title: Text('红方'),
+            subtitle: Text(currentTeam == 0?'思考中...':''),
+            trailing: switchRobot(0),
           ),
           SizedBox(
             width: 10,
@@ -76,4 +113,5 @@ class PlayStepState extends State<PlayPlayer> {
       ),
     );
   }
+
 }

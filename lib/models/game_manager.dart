@@ -12,7 +12,6 @@ import 'chess_pos.dart';
 import 'chess_rule.dart';
 import 'engine.dart';
 import 'player.dart';
-import 'player.dart';
 
 class GameManager{
 
@@ -93,9 +92,8 @@ class GameManager{
 
     engine = Engine();
     engineOK = false;
-    engine.init().then((process){
-      engine.onMessage(parseMessage);
-    });
+    engine.init();
+    engine.addListener(parseMessage);
   }
 
   bool get isLock{
@@ -116,14 +114,7 @@ class GameManager{
     return manual.moves[currentStep - 1].move;
   }
 
-  next(){
-    player.move().then((String move){
-      print('apply move $move');
-      addMove(move);
-    });
-  }
-
-  parseMessage(String message){
+  void parseMessage(String message){
     List<String> parts = message.split(' ');
     switch(parts[0]){
       case 'ucciok':
@@ -233,12 +224,36 @@ class GameManager{
     print('history $currentStep');
   }
 
+  /// 切换驱动
+  switchDriver(int team, DriverType driverType){
+    hands[team].driverType = driverType;
+    if(team == curHand && driverType == DriverType.robot){
+      lockNotifier.value = true;
+      next();
+    }else if(driverType == DriverType.user){
+      lockNotifier.value = false;
+    }
+  }
+
+  /// 调用对应的玩家开始下一步
+  next(){
+    player.move().then((String move){
+      print('apply move $move');
+      if(move == 'giveup'){
+        resultNotifier.value = curHand == 0 ? '0-1 ${player.title}认输' : '1-0 ${player.title}认输';
+      }else {
+        addMove(move);
+      }
+    });
+  }
+
   /// 落着 todo 检查出发点是否有子，检查落点是否对方子
   addStep(ChessPos from, ChessPos next){
     addMove('${from.toCode()}${next.toCode()}');
   }
 
   addMove(String move){
+    print('addmove $move');
     if(fen.hasItemAt(ChessPos.fromCode(move.substring(2,4)))){
       unEatCount ++;
     }else{
@@ -327,11 +342,14 @@ class GameManager{
     }).toList();
   }
 
-  destroy(){
+  dispose(){
     engine.stop();
     engine.quit();
     stepNotifier = null;
     messageNotifier = null;
+    resultNotifier = null;
+    gameNotifier = null;
+    playerNotifier = null;
   }
 
   switchPlayer(){

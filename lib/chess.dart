@@ -132,15 +132,32 @@ class ChessState extends State<Chess> {
     if(move.isEmpty)return;
 
     ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
+    ChessPos toPosition = ChessPos.fromCode(move.substring(2, 4));
+    activeItem = items.firstWhere(
+            (item) => !item.isBlank && item.position == fromPos,
+        orElse: () => ChessItem('0'));
+    ChessItem newActive = items.firstWhere(
+            (item) => !item.isBlank && item.position == toPosition,
+        orElse: () => ChessItem('0'));
     setState(() {
-      activeItem = items.firstWhere(
-              (item) => !item.isBlank && item.position == fromPos,
-          orElse: () => ChessItem('0'));
-
       if(activeItem != null && !activeItem.isBlank) {
         print('$activeItem => $move');
+
         activeItem.position = ChessPos.fromCode( move.substring(2,4));
         lastPosition = fromPos.toCode();
+
+
+        if(newActive != null && !newActive.isBlank) {
+          print('eat $newActive');
+          // 被吃的子的快照
+          dieFlash = ChessItem(newActive.code, position: toPosition);
+          newActive.isDie = true;
+          Future.delayed(Duration(milliseconds: 250), () {
+            setState(() {
+              dieFlash = null;
+            });
+          });
+        }
       }else{
         print('Remote move error $move');
       }

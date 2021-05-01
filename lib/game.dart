@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -26,7 +25,7 @@ class GameWrapperState extends State<GameWrapper> {
     super.initState();
     if (gamer != null) {
       print('gamer inited');
-      gamer.destroy();
+      gamer.dispose();
     }
     gamer = GameManager();
   }
@@ -133,9 +132,24 @@ class GameWrapperState extends State<GameWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () {
+        print('gamer destroy');
+        gamer.dispose();
+        gamer = null;
+        return Future.value(true);
+      },
+      child: Scaffold(
         appBar: AppBar(
           title: Text('中国象棋'),
+          leading: Builder(builder: (BuildContext context){
+            return IconButton(
+                icon: Icon(Icons.menu),
+                tooltip: '菜单',
+                onPressed: (){
+                  Scaffold.of(context).openDrawer();
+                });
+          },) ,
           /*actions: [
           IconButton(icon: Icon(Icons.minimize), onPressed: (){
 
@@ -167,6 +181,7 @@ class GameWrapperState extends State<GameWrapper> {
         ],*/
         ),
         drawer: Drawer(
+          semanticLabel: '菜单',
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
@@ -176,17 +191,17 @@ class GameWrapperState extends State<GameWrapper> {
                   ),
                   child: Center(
                       child: Column(
-                    children: [
-                      Image.asset('assets/images/logo.png'),
-                      Text(
-                        '中国象棋',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                        ),
-                      ),
-                    ],
-                  ))),
+                        children: [
+                          Image.asset('assets/images/logo.png'),
+                          Text(
+                            '中国象棋',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                            ),
+                          ),
+                        ],
+                      ))),
               ListTile(
                 leading: Icon(Icons.add),
                 title: Text('新对局'),
@@ -230,13 +245,14 @@ class GameWrapperState extends State<GameWrapper> {
             ],
           ),
         ),
-        body: Center(child: PlayPage()));
+        body: Center(child: PlayPage())),
+    ) ;
   }
 
   @override
   void dispose() {
     print('gamer destroy');
-    gamer.destroy();
+    gamer.dispose();
     gamer = null;
     super.dispose();
   }

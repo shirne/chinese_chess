@@ -13,6 +13,16 @@ import 'package:chinese_chess/models/chess_pos.dart';
 import 'package:chinese_chess/models/chess_rule.dart';
 
 void main() {
+  test('test Future', () async{
+    print(DateTime.now().millisecondsSinceEpoch);
+    await Future.delayed(Duration(seconds: 5));
+    print(DateTime.now().millisecondsSinceEpoch);
+
+    Future.delayed(Duration(seconds: 5)).then((value) {
+    print(DateTime.now().millisecondsSinceEpoch);
+    });
+  });
+
   test('test Manual', (){
 
     ChessManual manual;
