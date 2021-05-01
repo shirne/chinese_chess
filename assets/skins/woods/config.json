@@ -8,21 +8,21 @@
   },
   "board": "board.jpg",
   "red": {
-    "K": "rk.gif",
-    "A": "ra.gif",
-    "B": "rb.gif",
-    "C": "rc.gif",
-    "N": "rn.gif",
-    "R": "rr.gif",
-    "P": "rp.gif"
+    "K": "rk.png",
+    "A": "ra.png",
+    "B": "rb.png",
+    "C": "rc.png",
+    "N": "rn.png",
+    "R": "rr.png",
+    "P": "rp.png"
   },
   "black": {
-    "k": "bk.gif",
-    "a": "ba.gif",
-    "b": "bb.gif",
-    "c": "bc.gif",
-    "n": "bn.gif",
-    "r": "br.gif",
-    "p": "bp.gif"
+    "k": "bk.png",
+    "a": "ba.png",
+    "b": "bb.png",
+    "c": "bc.png",
+    "n": "bn.png",
+    "r": "br.png",
+    "p": "bp.png"
   }
 }

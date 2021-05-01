@@ -344,11 +344,6 @@ class GameManager{
   dispose(){
     engine.stop();
     engine.quit();
-    stepNotifier = null;
-    messageNotifier = null;
-    resultNotifier = null;
-    gameNotifier = null;
-    playerNotifier = null;
   }
 
   switchPlayer(){

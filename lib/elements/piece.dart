@@ -1,5 +1,6 @@
 
 
+
 import 'package:flutter/material.dart';
 
 import '../chess.dart';
@@ -34,13 +35,24 @@ class Piece extends StatelessWidget {
               height: chess.gamer.skin.size,
               duration: Duration(milliseconds: 300),
               curve: Curves.easeOutQuint,
-
+              transform: this.isActive ? (Matrix4.translationValues(-4, -4, -4)) : ( Matrix4.translationValues(0,0,0)),
+              transformAlignment: Alignment.topCenter,
               decoration: this.isActive
                   ? BoxDecoration(
-                    border: Border.all(color: Color.fromRGBO(255, 255, 255, .7), width: 2),
+                    boxShadow: [
+                      BoxShadow(color: Color.fromRGBO(0, 0, 0, .1),offset: Offset(2,3), blurRadius: 1, spreadRadius: 0),
+                      BoxShadow(color: Color.fromRGBO(0, 0, 0, .1),offset: Offset(4,6), blurRadius: 2, spreadRadius: 2)
+                    ],
+                    //border: Border.all(color: Color.fromRGBO(255, 255, 255, .7), width: 2),
                     borderRadius: BorderRadius.all(Radius.circular(chess.gamer.skin.size / 2))
                   )
-                  : null,
+                  : BoxDecoration(
+                boxShadow: [
+                  BoxShadow(color: Color.fromRGBO(0, 0, 0, .2),offset: Offset(2,2), blurRadius: 1, spreadRadius: 0),
+                  BoxShadow(color: Color.fromRGBO(0, 0, 0, .1),offset: Offset(3,3), blurRadius: 1, spreadRadius: 1),
+                ],
+                  borderRadius: BorderRadius.all(Radius.circular(chess.gamer.skin.size / 2))
+              ),
               child: Stack(
                 children: [
                   Image.asset(

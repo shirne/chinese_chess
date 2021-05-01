@@ -1,8 +1,7 @@
 
 
 import 'dart:convert';
-import 'dart:io';
-import 'package:universal_html/html.dart' as html;
+import 'package:flutter/services.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -18,24 +17,24 @@ class ChessSkin{
   Offset offset = Offset(4, 3);
 
   String board = "board.jpg";
-  String blank = "blank.gif";
+  String blank = "blank.png";
   Map<String, String> redMap = {
     "K": "rk.gif",
-    "A": "ra.gif",
-    "B": "rb.gif",
-    "C": "rc.gif",
-    "N": "rn.gif",
-    "R": "rr.gif",
-    "P": "rp.gif"
+    "A": "ra.png",
+    "B": "rb.png",
+    "C": "rc.png",
+    "N": "rn.png",
+    "R": "rr.png",
+    "P": "rp.png"
   };
   Map<String, String> blackMap = {
-    "k": "bk.gif",
-    "a": "ba.gif",
-    "b": "bb.gif",
-    "c": "bc.gif",
-    "n": "bn.gif",
-    "r": "br.gif",
-    "p": "bp.gif"
+    "k": "bk.png",
+    "a": "ba.png",
+    "b": "bb.png",
+    "c": "bc.png",
+    "n": "bn.png",
+    "r": "br.png",
+    "p": "bp.png"
   };
 
   ValueNotifier<bool> readyNotifier;
@@ -43,24 +42,12 @@ class ChessSkin{
   ChessSkin(this.folder){
     readyNotifier = ValueNotifier(false);
     String jsonfile = "assets/skins/$folder/config.json";
-    if(kIsWeb){
-      html.HttpRequest.getString(jsonfile).then((String fileContents) {
-        loadJson(fileContents);
-      }).catchError((error) {
-        print(error.toString());
-        readyNotifier.value = true;
-      });
-    }else {
-      File file = File(jsonfile);
-      file.exists().then((bool has) {
-        if (has) {
-          file.readAsString().then(loadJson);
-        } else {
-          print('$jsonfile not exists');
-          readyNotifier.value = true;
-        }
-      });
-    }
+    rootBundle.loadString(jsonfile).then((String fileContents) {
+      loadJson(fileContents);
+    }).catchError((error) {
+      print(error.toString());
+      readyNotifier.value = true;
+    });
   }
 
   loadJson(String content){
