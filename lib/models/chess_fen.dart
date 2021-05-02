@@ -211,6 +211,22 @@ class ChessFen {
     return items;
   }
 
+  List<ChessItem> getDies(){
+    List<ChessItem> items = [];
+    String fullChrs = initFen.replaceAll(RegExp(r'[1-9/]'), '');
+    String currentChrs = getAllChr();
+    if(fullChrs.length > currentChrs.length){
+      currentChrs.split('').forEach((chr) {
+        fullChrs = fullChrs.replaceFirst(chr, '');
+      });
+      fullChrs.split('').forEach((chr) {
+        items.add(ChessItem(chr));
+      });
+    }
+
+    return items;
+  }
+
   String getAllChr() {
     return fen.split('/').reversed.join('/').replaceAll(RegExp(r'[1-9/]'), '');
   }
@@ -359,6 +375,16 @@ class ChessFen {
         return '先和';
     }
     return '未知';
+  }
+
+  List<String> toChineseTree(List<String> moves){
+    ChessFen start = copy();
+    List<String> results = [];
+    moves.forEach((move) {
+      results.add(start.toChineseString(move));
+      start.move(move);
+    });
+    return results;
   }
 
   String toChineseString(String move) {

@@ -67,14 +67,16 @@ class GameManager{
   // 走子规则
   ChessRule rule;
 
-  GameManager(){
+  GameManager();
+
+  Future<bool> init() async{
     manual = ChessManual();
     rule = ChessRule(manual.currentFen);
 
     hands.add(Player('r', this, title: manual.red));
     hands.add(Player('b', this, title: manual.black));
     curHand = 0;
-    //map = ChessMap.fromFen(ChessManual.startFen);
+    // map = ChessMap.fromFen(ChessManual.startFen);
 
     stepNotifier = ValueNotifier<String>('==开始==');
     messageNotifier = ValueNotifier<String>('');
@@ -94,6 +96,7 @@ class GameManager{
     engineOK = false;
     engine.init();
     engine.addListener(parseMessage);
+    return true;
   }
 
   bool get isLock{
@@ -116,7 +119,8 @@ class GameManager{
 
   void parseMessage(String message){
     List<String> parts = message.split(' ');
-    switch(parts[0]){
+    String instruct = parts.removeAt(0);
+    switch(instruct){
       case 'ucciok':
         engineOK = true;
         messageNotifier.value = 'Engine is OK!';
@@ -129,8 +133,12 @@ class GameManager{
         }
         break;
       case 'bestmove':
+        print(message);
+        message = parseBaseMove(parts);
         break;
       case 'info':
+        print(message);
+        message = parseInfo(parts);
         break;
       case 'id':
       case 'option':
@@ -138,6 +146,41 @@ class GameManager{
         return;
     }
     messageNotifier.value = message;
+  }
+  String parseBaseMove(List<String> infos){
+    return "推荐着法: ${fen.toChineseString(infos[0])}"+(infos.length>2 ? ' 猜测对方: ${fen.toChineseString(infos[2])}' : '');
+  }
+  String parseInfo(List<String> infos){
+    String first = infos.removeAt(0);
+    switch(first){
+      case 'depth':
+        String msg = infos[0];
+        if(infos.length > 0) {
+          String sub = infos.removeAt(0);
+          while (sub.isNotEmpty) {
+            if(sub == 'score'){
+              String score = infos.removeAt(0);
+              msg += '(${score.contains('-')?'':'+'}$score)';
+            }else if(sub == 'pv'){
+              msg += fen.toChineseTree(infos).join(' ');
+              break;
+            }
+            if (infos.length < 1) break;
+            sub = infos.removeAt(0);
+          }
+        }
+        return msg;
+        break;
+      case 'time':
+        return '耗时：${infos[0]}(ms)'+(infos.length>2?(' 节点数'+infos[2]):'');
+        break;
+      case 'currmove':
+        return '当前招法: ${fen.toChineseTree(infos).join(' ')}';
+        break;
+      case 'message':
+      default:
+        return infos.join(' ');
+    }
   }
 
   newGame([String fen = ChessManual.startFen]){
@@ -301,10 +344,11 @@ class GameManager{
   }
 
   setResult(String result, [String description = '']){
-    if(ChessManual.results.contains(result)){
-      print('结果不合法');
+    if(!ChessManual.results.contains(result)){
+      print('结果不合法 $result');
       return;
     }
+    print('本局结果：$result');
     resultNotifier.value = '$result $description';
     manual.result = result;
   }
@@ -380,6 +424,9 @@ class GameManager{
     });
 
     messageNotifier.value = 'clear';
+  }
+
+  requestHelp(){
     isStop = true;
     engine.stop();
     //currentFen = map.toFen();

@@ -9,7 +9,7 @@ import 'player_driver.dart';
 class DriverUser extends PlayerDriver{
   Completer<String> requestMove;
 
-  DriverUser(Player manager) : super(manager);
+  DriverUser(Player player) : super(player);
 
   Future<bool> tryDraw(){
     return Future.value(true);
@@ -19,6 +19,10 @@ class DriverUser extends PlayerDriver{
   Future<String> move() {
     requestMove = Completer<String>();
     player.manager.lockNotifier.value = false;
+
+    // 招法提示
+    player.manager.requestHelp();
+
     return requestMove.future;
   }
 
