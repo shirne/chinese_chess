@@ -15,7 +15,6 @@ import 'player_driver.dart';
 class DriverRobot extends PlayerDriver{
   DriverRobot(Player player) : super(player);
   Completer<String> requestMove;
-  Engine engine;
 
   Future<bool> tryDraw(){
     return Future.value(true);
@@ -37,36 +36,35 @@ class DriverRobot extends PlayerDriver{
     return requestMove.future;
   }
   getMoveFromEngine() async{
-    if(engine == null) {
-      engine = Engine();
-      engine.addListener((String message) {
-        List<String> parts = message.split(' ');
-        switch (parts[0]) {
-          case 'ucciok':
-            break;
-          case 'nobestmove':
-            if (!requestMove.isCompleted) {
-              getMove();
-            }
-            break;
-          case 'bestmove':
-            engine.quit();
-            completeMove(parts[1]);
-            break;
-          case 'info':
-            break;
-          case 'id':
-          case 'option':
-          default:
-            return;
-        }
-      });
-    }
-    engine.init().then((value) {
-      engine.position(player.manager.fenStr);
-      engine.go(depth: 10);
+    player.manager.startEngine().then((v){
+      player.manager.engine.addListener(onEngineMessage);
+      player.manager.engine.position(player.manager.fenStr);
+      player.manager.engine.go(depth: 10);
     });
+  }
 
+  onEngineMessage(String message){
+    List<String> parts = message.split(' ');
+    switch (parts[0]) {
+      case 'ucciok':
+        break;
+      case 'nobestmove':
+        if (!requestMove.isCompleted) {
+          player.manager.engine.removeListener(onEngineMessage);
+          getMove();
+        }
+        break;
+      case 'bestmove':
+        player.manager.engine.removeListener(onEngineMessage);
+        completeMove(parts[1]);
+        break;
+      case 'info':
+        break;
+      case 'id':
+      case 'option':
+      default:
+        return;
+    }
   }
 
   getMove() async{

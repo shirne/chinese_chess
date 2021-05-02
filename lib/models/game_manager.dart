@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:chinese_chess/driver/player_driver.dart';
@@ -92,10 +93,7 @@ class GameManager{
       next();
     });
 
-    engine = Engine();
-    engineOK = false;
-    engine.init();
-    engine.addListener(parseMessage);
+
     return true;
   }
 
@@ -404,8 +402,11 @@ class GameManager{
   }
 
   dispose(){
-    engine.stop();
-    engine.quit();
+    if(engine != null) {
+      engine.stop();
+      engine.quit();
+      engine = null;
+    }
   }
 
   switchPlayer(){
@@ -426,12 +427,38 @@ class GameManager{
     messageNotifier.value = 'clear';
   }
 
+  Future<bool> startEngine(){
+    if(engine != null) {
+      return Future.delayed(Duration(milliseconds: 500));
+    }
+    Completer<bool> engineFuture = Completer<bool>();
+    engine = Engine();
+    engineOK = false;
+    engine.init().then((v){
+      engineFuture.complete(true);
+    });
+    engine.addListener(parseMessage);
+    return engineFuture.future;
+  }
+
   requestHelp(){
-    isStop = true;
-    engine.stop();
-    //currentFen = map.toFen();
-    engine.position(manual.currentFen.fen + ' ' + (curHand>0?'b':'w') + ' - - $unEatCount ' + (manual.moves.length ~/ 2).toString());
-    engine.go(depth: 10);
+    if(engine == null){
+      startEngine().then((v){
+        requestHelp();
+      });
+    }else {
+      if(engineOK) {
+        isStop = true;
+        engine.stop();
+        //currentFen = map.toFen();
+        engine.position(
+            manual.currentFen.fen + ' ' + (curHand > 0 ? 'b' : 'w') +
+                ' - - $unEatCount ' + (manual.moves.length ~/ 2).toString());
+        engine.go(depth: 10);
+      }else{
+        print('engine is not ok');
+      }
+    }
   }
 
   String get fenStr{
