@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:chinese_chess/models/chess_manual.dart';
+import 'package:chinese_chess/widgets/customer_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'elements/board.dart';
@@ -14,7 +15,7 @@ import 'chess_pieces.dart';
 import 'driver/player_driver.dart';
 import 'elements/mark_component.dart';
 import 'elements/point_component.dart';
-import 'game.dart';
+import 'widgets/game_wrapper.dart';
 
 class Chess extends StatefulWidget {
   final String skin;
@@ -53,6 +54,8 @@ class ChessState extends State<Chess> {
     gamer.gameNotifier.addListener(reloadGame);
     gamer.resultNotifier.addListener(onResult);
     gamer.moveNotifier.addListener(onMove);
+
+    reloadGame();
   }
 
   @override
@@ -360,63 +363,18 @@ class ChessState extends State<Chess> {
   }
 
   alertResult(message) {
-    alert(message, [
-      TextButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Text('再看看'),
-      ),
-      ElevatedButton(
-          onPressed: () {
-            gamer.newGame();
-            Navigator.pop(context);
-          },
-          child: Text('再来一局'),
-      ),
-    ]);
+    confirm(message, '再来一局', '再看看').then((isConfirm){
+      if(isConfirm){
+        gamer.newGame();
+      }
+    });
   }
   Future<bool> confirm(String message, String agreeText, String cancelText) {
-    Completer<bool> complete = Completer<bool>();
-    alert(message, [
-      TextButton(
-        onPressed: () {
-          Navigator.pop(context);
-          complete.complete(false);
-        },
-        child: Text(cancelText),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
-          complete.complete(true);
-        },
-        child: Text(agreeText),
-      ),
-    ]);
-    return complete.future;
+    return CustomerDialog.of(context).confirm(message, buttonText: agreeText,  cancelText: cancelText);
   }
 
-  Future<void> alert(String message, List<Widget> buttons,
-      {String title = 'Alert', barrierDismissible = false}) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: barrierDismissible,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: message
-                  .split('\n')
-                  .map<Widget>((item) => Text(item))
-                  .toList(),
-            ),
-          ),
-          actions: buttons,
-        );
-      },
-    );
+  Future<void> alert(String message) async {
+    return CustomerDialog.of(context).alert(message);
   }
 
   @override

@@ -172,10 +172,10 @@ class GameManager{
         return msg;
         break;
       case 'time':
-        return '耗时：${infos[0]}(ms)'+(infos.length>2?(' 节点数'+infos[2]):'');
+        return '耗时：${infos[0]}(ms)' + (infos.length>2 ? ' 节点数 ${infos[2]}' : '');
         break;
       case 'currmove':
-        return '当前招法: ${fen.toChineseTree(infos).join(' ')}';
+        return '当前招法: ${fen.toChineseString(infos[0])}' + (infos.length>2?' ${infos[2]}':'');
         break;
       case 'message':
       default:

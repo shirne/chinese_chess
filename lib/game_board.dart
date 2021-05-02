@@ -9,137 +9,39 @@ import 'package:flutter/services.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:universal_html/html.dart' as html;
 
+import 'widgets/customer_dialog.dart';
+import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play.dart';
+import 'edit_fen.dart';
 
-class GameWrapper extends StatefulWidget {
+class GameBoard extends StatefulWidget {
   @override
-  State<GameWrapper> createState() => GameWrapperState();
+  State<GameBoard> createState() => _GameBoardState();
 }
 
-class GameWrapperState extends State<GameWrapper> {
+class _GameBoardState extends State<GameBoard> {
   GameManager gamer;
 
   @override
   void initState() {
     super.initState();
-    if (gamer != null) {
-      print('gamer inited');
-      gamer.dispose();
-    }
-    gamer = GameManager();
+    gamer = context.findAncestorStateOfType<GameWrapperState>().gamer;
   }
 
-  Future<void> alert(message,
-      {String buttonText = 'OK', String title = 'Alert'}) {
-    Completer complete = Completer<void>();
-    if (message is Widget) {
-      _showDialog(
-          '',
-          [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  complete.complete();
-                },
-                child: Text(buttonText)),
-          ],
-          title: title,
-          body: message);
-    } else {
-      _showDialog(
-        message,
-        [
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                complete.complete();
-              },
-              child: Text(buttonText)),
-        ],
-        title: title,
-      );
-    }
-    return complete.future;
+  Future<bool> confirm(message,{String buttonText = 'OK',
+    String title = 'Alert',
+    String cancelText = 'Cancel'}){
+    return CustomerDialog.of(context).confirm(message);
   }
 
-  Future<bool> confirm(message,
-      {String buttonText = 'OK',
-      Function onOK,
-      String title = 'Alert',
-      String cancelText = 'Cancel'}) {
-    Completer complete = Completer<bool>();
-    if (message is Widget) {
-      _showDialog(
-          '',
-          [
-            TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  complete.complete(false);
-                },
-                child: Text(cancelText)),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  complete.complete(true);
-                },
-                child: Text(buttonText)),
-          ],
-          title: title,
-          body: message);
-    } else {
-      _showDialog(
-        message,
-        [
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                if (onOK != null) onOK();
-              },
-              child: Text(buttonText)),
-        ],
-        title: title,
-      );
-    }
-    return complete.future;
-  }
-
-  Future<void> _showDialog(String message, List<Widget> buttons,
-      {Widget body, String title = 'Alert', barrierDismissible = false}) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: barrierDismissible,
-      builder: (BuildContext context) {
-        List<Widget> conts = message.isEmpty
-            ? []
-            : message.split('\n').map<Widget>((item) => Text(item)).toList();
-        if (body != null) {
-          conts.add(body);
-        }
-        return AlertDialog(
-          title: Text(title),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: conts,
-            ),
-          ),
-          actions: buttons,
-        );
-      },
-    );
+  alert(message){
+    CustomerDialog.of(context).alert(message);
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        print('gamer destroy');
-        gamer.dispose();
-        gamer = null;
-        return Future.value(true);
-      },
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text('中国象棋'),
           leading: Builder(builder: (BuildContext context){
@@ -150,8 +52,23 @@ class GameWrapperState extends State<GameWrapper> {
                   Scaffold.of(context).openDrawer();
                 });
           },) ,
-          /*actions: [
-          IconButton(icon: Icon(Icons.minimize), onPressed: (){
+          actions: [
+            IconButton(icon: Icon(Icons.copy),
+                tooltip: '复制局面代码',
+                onPressed: (){
+                  copyFen();
+            }),
+            IconButton(icon: Icon(Icons.airplay),
+                tooltip: '粘贴局面代码',
+                onPressed: (){
+                  applyFen();
+                }),
+            IconButton(icon: Icon(Icons.airplay),
+                tooltip: '编辑局面',
+                onPressed: (){
+                  editFen();
+                }),
+          /*IconButton(icon: Icon(Icons.minimize), onPressed: (){
 
           }),
           IconButton(icon: Icon(Icons.zoom_out_map), onPressed: (){
@@ -177,8 +94,8 @@ class GameWrapperState extends State<GameWrapper> {
                   )
                 ]
             );
-          })
-        ],*/
+          })*/
+        ],
         ),
         drawer: Drawer(
           semanticLabel: '菜单',
@@ -245,18 +162,44 @@ class GameWrapperState extends State<GameWrapper> {
             ],
           ),
         ),
-        body: Center(child: PlayPage())),
+        body: Center(child: PlayPage(),
+      ),
     ) ;
   }
 
-  @override
-  void dispose() {
-    print('gamer destroy');
-    gamer.dispose();
-    gamer = null;
-    super.dispose();
+  editFen(){
+    Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (BuildContext context) {
+        return EditFen(
+          fen: gamer.fenStr
+        );
+      }),
+    ).then((fenStr){
+      if(fenStr != null && fenStr.isNotEmpty){
+        gamer.newGame(fenStr);
+      }
+    });
   }
-
+  applyFen() async{
+    ClipboardData cData = await Clipboard.getData('text');
+    String fenStr = cData.text;
+    TextEditingController filenameController =
+    TextEditingController(text: fenStr);
+    filenameController.addListener(() {
+      fenStr = filenameController.text;
+    });
+    confirm(
+        TextField(
+          controller: filenameController,
+        ),
+        buttonText: '应用',
+        title: '局面代码')
+        .then((v) {
+      if (v) {
+        gamer.newGame(fenStr);
+      }
+    });
+  }
   copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
     alert('复制成功');

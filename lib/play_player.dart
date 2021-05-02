@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'driver/player_driver.dart';
-import 'game.dart';
+import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'widgets/tab_card.dart';
 

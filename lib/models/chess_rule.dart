@@ -57,6 +57,7 @@ class ChessRule{
           if(rule.isCheckMate(team)){
             return false;
           }
+          // print('$item $point');
           return true;
         });
       }
@@ -100,6 +101,7 @@ class ChessRule{
         // 这里传入目标位置，返回的可行点有针对性
         List<String> points = movePoints(item.position, kPos);
         if(points.contains(kPos.toCode())){
+          // print('$item $kPos');
           return true;
         }
       }

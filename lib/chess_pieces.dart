@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-import 'chess.dart';
+import 'models/game_manager.dart';
 import 'elements/piece.dart';
+import 'widgets/game_wrapper.dart';
 import 'models/chess_item.dart';
 
 class ChessPieces extends StatefulWidget {
@@ -19,20 +20,28 @@ class ChessPieces extends StatefulWidget {
 }
 
 class _ChessPiecesState extends State<ChessPieces> {
-  ChessState chess;
+  GameManager gamer;
   int curTeam = -1;
 
   @override
   void initState() {
     super.initState();
-    chess = context.findAncestorStateOfType<ChessState>();
-    chess.gamer.playerNotifier.addListener(onChangePlayer);
-    curTeam = chess.gamer.curHand;
+    GameWrapperState gameWrapper =
+    context.findAncestorStateOfType<GameWrapperState>();
+    gamer = gameWrapper.gamer;
+    gamer.playerNotifier.addListener(onChangePlayer);
+    curTeam = gamer.curHand;
+  }
+
+  @override
+  void dispose() {
+    gamer.playerNotifier.removeListener(onChangePlayer);
+    super.dispose();
   }
 
   void onChangePlayer(){
     setState(() {
-      curTeam = chess.gamer.playerNotifier.value;
+      curTeam = gamer.playerNotifier.value;
     });
   }
 
@@ -58,10 +67,10 @@ class _ChessPiecesState extends State<ChessPieces> {
         return AnimatedAlign(
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutQuint,
-          alignment: chess.gamer.skin.getAlign(item.position),
+          alignment: gamer.skin.getAlign(item.position),
           child: Container(
-            width: chess.gamer.skin.size,
-            height: chess.gamer.skin.size,
+            width: gamer.skin.size,
+            height: gamer.skin.size,
             //transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105 * skewStepper, 1 - skewStepper*0.1, 0, -0.004 * skewStepper, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
             child: Piece(
               item: item,

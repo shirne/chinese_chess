@@ -82,10 +82,16 @@ void main() {
 
 
   test('test checkMate', (){
+
+
     ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR');
     bool isCheckMate = rule.isCheckMate(0);
     bool canParryKill;
     expect(isCheckMate, false);
+
+    rule.fen.fen = 'R2akCb2/9/2N3n2/8p/4p4/6p2/P3c3P/4C1r2/4A4/1cBrK1BR1 w - - 0 1';
+    print(rule.isCheckMate(0));
+    print(rule.canParryKill(0));
 
     rule.fen.fen = '2b2k3/9/2N1b4/4CR3/p1p6/4N3p/P1P5P/1C7/9/R1BAKAB2';
     print(rule.isCheckMate(1));

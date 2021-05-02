@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess.dart';
-import 'game.dart';
+import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play_bot.dart';
 import 'play_player.dart';

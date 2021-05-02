@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'game.dart';
+import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 
 class PlayStep extends StatefulWidget {
