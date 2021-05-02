@@ -29,45 +29,51 @@ class _GameBoardState extends State<GameBoard> {
     gamer = context.findAncestorStateOfType<GameWrapperState>().gamer;
   }
 
-  Future<bool> confirm(message,{String buttonText = 'OK',
-    String title = 'Alert',
-    String cancelText = 'Cancel'}){
+  Future<bool> confirm(message,
+      {String buttonText = 'OK',
+      String title = 'Alert',
+      String cancelText = 'Cancel'}) {
     return CustomerDialog.of(context).confirm(message);
   }
 
-  alert(message){
+  alert(message) {
     CustomerDialog.of(context).alert(message);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('中国象棋'),
-          leading: Builder(builder: (BuildContext context){
+      appBar: AppBar(
+        title: Text('中国象棋'),
+        leading: Builder(
+          builder: (BuildContext context) {
             return IconButton(
                 icon: Icon(Icons.menu),
                 tooltip: '菜单',
-                onPressed: (){
+                onPressed: () {
                   Scaffold.of(context).openDrawer();
                 });
-          },) ,
-          actions: [
-            IconButton(icon: Icon(Icons.copy),
-                tooltip: '复制局面代码',
-                onPressed: (){
-                  copyFen();
-            }),
-            IconButton(icon: Icon(Icons.airplay),
-                tooltip: '粘贴局面代码',
-                onPressed: (){
-                  applyFen();
-                }),
-            IconButton(icon: Icon(Icons.airplay),
-                tooltip: '编辑局面',
-                onPressed: (){
-                  editFen();
-                }),
+          },
+        ),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.copy),
+              tooltip: '复制局面代码',
+              onPressed: () {
+                copyFen();
+              }),
+          IconButton(
+              icon: Icon(Icons.airplay),
+              tooltip: '粘贴局面代码',
+              onPressed: () {
+                applyFen();
+              }),
+          IconButton(
+              icon: Icon(Icons.airplay),
+              tooltip: '编辑局面',
+              onPressed: () {
+                editFen();
+              }),
           /*IconButton(icon: Icon(Icons.minimize), onPressed: (){
 
           }),
@@ -96,110 +102,115 @@ class _GameBoardState extends State<GameBoard> {
             );
           })*/
         ],
-        ),
-        drawer: Drawer(
-          semanticLabel: '菜单',
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                  child: Center(
-                      child: Column(
-                        children: [
-                          Image.asset('assets/images/logo.png'),
-                          Text(
-                            '中国象棋',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                            ),
-                          ),
-                        ],
-                      ))),
-              ListTile(
-                leading: Icon(Icons.add),
-                title: Text('新对局'),
-                onTap: () {
-                  gamer.newGame();
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.description),
-                title: Text('加载棋谱'),
-                onTap: () {
-                  Navigator.pop(context);
-                  kIsWeb ? requestFile() : loadFile();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.save),
-                title: Text('保存棋谱'),
-                onTap: () {
-                  Navigator.pop(context);
-                  saveManual();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.copy),
-                title: Text('复制局面代码'),
-                onTap: () {
-                  Navigator.pop(context);
-                  copyFen();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('设置'),
-                onTap: () {
-                  alert('暂未支持');
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
-        body: Center(child: PlayPage(),
       ),
-    ) ;
+      drawer: Drawer(
+        semanticLabel: '菜单',
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Center(
+                    child: Column(
+                  children: [
+                    Image.asset('assets/images/logo.png'),
+                    Text(
+                      '中国象棋',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ],
+                ))),
+            ListTile(
+              leading: Icon(Icons.add),
+              title: Text('新对局'),
+              onTap: () {
+                gamer.newGame();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.description),
+              title: Text('加载棋谱'),
+              onTap: () {
+                Navigator.pop(context);
+                kIsWeb ? requestFile() : loadFile();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.save),
+              title: Text('保存棋谱'),
+              onTap: () {
+                Navigator.pop(context);
+                saveManual();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.copy),
+              title: Text('复制局面代码'),
+              onTap: () {
+                Navigator.pop(context);
+                copyFen();
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('设置'),
+              onTap: () {
+                alert('暂未支持');
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Center(
+        child: PlayPage(),
+      ),
+    );
   }
 
-  editFen(){
+  editFen() {
     Navigator.of(context).push<String>(
       MaterialPageRoute(builder: (BuildContext context) {
-        return EditFen(
-          fen: gamer.fenStr
-        );
+        return GameWrapper(child: EditFen(fen: gamer.fenStr));
       }),
-    ).then((fenStr){
-      if(fenStr != null && fenStr.isNotEmpty){
+    ).then((fenStr) {
+      if (fenStr != null && fenStr.isNotEmpty) {
         gamer.newGame(fenStr);
       }
     });
   }
-  applyFen() async{
-    ClipboardData cData = await Clipboard.getData('text');
+
+  applyFen() async {
+    ClipboardData cData = await Clipboard.getData(Clipboard.kTextPlain);
     String fenStr = cData.text;
     TextEditingController filenameController =
-    TextEditingController(text: fenStr);
+        TextEditingController(text: fenStr);
     filenameController.addListener(() {
       fenStr = filenameController.text;
     });
     confirm(
-        TextField(
-          controller: filenameController,
-        ),
-        buttonText: '应用',
-        title: '局面代码')
+            TextField(
+              controller: filenameController,
+            ),
+            buttonText: '应用',
+            title: '局面代码')
         .then((v) {
       if (v) {
-        gamer.newGame(fenStr);
+        if(RegExp(r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d\s\d)?$').hasMatch(fenStr)) {
+          gamer.newGame(fenStr);
+        }else{
+          alert('无效代码');
+        }
       }
     });
   }
+
   copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
     alert('复制成功');
