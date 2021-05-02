@@ -7,7 +7,11 @@ import 'chess_step.dart';
 
 class ChessManual{
   static const startFen = ChessFen.initFen + ' w - - 0 1';
-  static const results = ['1-0', '0-1', '1/2-1/2', '*'];
+  static const resultFstWin = '1-0';
+  static const resultFstLoose = '0-1';
+  static const resultFstDraw = '1/2-1/2';
+  static const resultUnknown = '*';
+  static const results = [resultFstWin, resultFstLoose, resultFstDraw, resultUnknown];
 
   // 游戏类型
   String game = 'Chinese Chess';
@@ -399,13 +403,13 @@ class ChessManual{
     }
   }
 
-  isNumberMove(String move){
+  static isNumberMove(String move){
     return RegExp(r'[abcrnkpABCRNKP][0-9a-e][+\-\.][0-9]').hasMatch(move);
   }
-  isPosMove(String move){
+  static isPosMove(String move){
     return RegExp(r'[a-iA-I][0-9]-?[a-iA-I][0-9]').hasMatch(move);
   }
-  isChineseMove(String move){
+  static isChineseMove(String move){
     return !isNumberMove(move) && !isPosMove(move);
   }
 

@@ -242,17 +242,38 @@ class GameManager{
     });
   }
 
-  /// 落着 todo 检查出发点是否有子，检查落点是否对方子
+  /// 从用户落着 todo 检查出发点是否有子，检查落点是否对方子
   addStep(ChessPos from, ChessPos next){
     addMove('${from.toCode()}${next.toCode()}');
   }
 
   addMove(String move){
     print('addmove $move');
-    if(move == 'giveup'){
-      resultNotifier.value = curHand == 0 ? '0-1 ${player.title}认输' : '1-0 ${player.title}认输';
+    if(PlayerDriver.isAction(move)){
+      if(move == PlayerDriver.rstGiveUp){
+        setResult(curHand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '认输');
+      }
+      if(move == PlayerDriver.rstDraw){
+        setResult(ChessManual.resultFstDraw);
+      }
+      if(move == PlayerDriver.rstRetract){
+        // todo 悔棋
+      }
+      if(move.contains(PlayerDriver.rstRqstDraw)) {
+        move = move.replaceAll(PlayerDriver.rstRqstDraw,'').trim();
+        if(move.isEmpty) {
+          return;
+        }
+      }else{
+        return;
+      }
+    }
+
+    if(!ChessManual.isPosMove(move)){
+      print('着法错误 $move');
       return;
     }
+
     if(fen.hasItemAt(ChessPos.fromCode(move.substring(2,4)))){
       unEatCount ++;
     }else{
@@ -276,10 +297,21 @@ class GameManager{
     checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
   }
 
+  setResult(String result, [String description = '']){
+    if(ChessManual.results.contains(result)){
+      print('结果不合法');
+      return;
+    }
+    resultNotifier.value = '$result $description';
+    manual.result = result;
+  }
+
+  /// 棋局结果判断
   checkResult(int hand, int curMove) async{
     // 判断和棋
     if(unEatCount >= 120){
-      resultNotifier.value = '1/2-1/2 60回合无吃子判和';
+      setResult(ChessManual.resultFstDraw, '60回合无吃子判和');
+      return;
     }
 
     isCheckMate = rule.isCheckMate(hand);
@@ -289,6 +321,7 @@ class GameManager{
       manual.moves[curMove].isCheckMate = isCheckMate;
 
       if(rule.canParryKill(hand)){
+        // todo 改进算法
         if(manual.moves.length > 6) {
           String cmMove = manual.moves[curMove].move;
           String parryMove = manual.moves[curMove - 1].move;
@@ -299,14 +332,8 @@ class GameManager{
               break;
             }
             if(hisMove + 6 < curMove){
-              if(hand == 0) {
-                resultNotifier.value = '0-1 不变招长将作负';
-                manual.result = '0-1';
-              }else{
-                resultNotifier.value = '1-0 不变招长将作负';
-                manual.result = '1-0';
-              }
-              break;
+              setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '不变招长将作负');
+              return;
             }
             hisMove -= 2;
           }
@@ -314,23 +341,11 @@ class GameManager{
 
         resultNotifier.value = 'checkMate';
       }else{
-        if(hand == 0) {
-          resultNotifier.value = '0-1';
-          manual.result = '0-1';
-        }else{
-          resultNotifier.value = '1-0';
-          manual.result = '1-0';
-        }
+        setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin);
       }
     }else{
       if(rule.isTrapped(hand)){
-        if(hand == 0) {
-          resultNotifier.value = '0-1 困毙';
-          manual.result = '0-1';
-        }else{
-          resultNotifier.value = '1-0 困毙';
-          manual.result = '1-0';
-        }
+        setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '困毙');
       }
     }
   }

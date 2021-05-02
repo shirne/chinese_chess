@@ -10,6 +10,23 @@ abstract class PlayerDriver{
   final Player player;
   bool canBacktrace = true;
 
+  // 认输
+  static const rstGiveUp = 'giveup';
+  // 提和
+  static const rstRqstDraw = 'rqstrdraw';
+  // 悔棋
+  static const rstRqstRetract = 'rqstretract';
+  // 同意提和
+  static const rstDraw = 'draw';
+  // 同意悔棋
+  static const rstRetract = 'retract';
+
+  static const rstActions = [rstGiveUp, rstRqstDraw, rstRqstRetract, rstDraw, rstRetract];
+
+  static bool isAction(String move){
+    return rstActions.contains(move) || move.contains(rstRqstDraw);
+  }
+
   PlayerDriver(this.player);
 
 

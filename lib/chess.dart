@@ -1,7 +1,7 @@
-import 'package:chinese_chess/chess_pieces.dart';
-import 'package:chinese_chess/elements/mark_component.dart';
-import 'package:chinese_chess/elements/point_component.dart';
-import 'package:chinese_chess/game.dart';
+
+import 'dart:async';
+
+import 'package:chinese_chess/models/chess_manual.dart';
 import 'package:flutter/material.dart';
 
 import 'elements/board.dart';
@@ -10,6 +10,11 @@ import 'elements/piece.dart';
 import 'models/chess_pos.dart';
 import 'models/chess_rule.dart';
 import 'models/game_manager.dart';
+import 'chess_pieces.dart';
+import 'driver/player_driver.dart';
+import 'elements/mark_component.dart';
+import 'elements/point_component.dart';
+import 'game.dart';
 
 class Chess extends StatefulWidget {
   final String skin;
@@ -67,14 +72,16 @@ class ChessState extends State<Chess> {
       case 'checkMate':
         toast('将军');
         break;
-      case '0-1':
-        alertResult('先负');
+      case ChessManual.resultFstLoose:
+        alertResult(parts[0].length>0 ? parts[1]:'先负');
         break;
-      case '1-0':
-        alertResult('先胜');
+      case ChessManual.resultFstWin:
+        alertResult(parts[0].length>0 ? parts[1]:'先胜');
         break;
-      case '1/2-1/2':
+      case ChessManual.resultFstDraw:
         alertResult(parts.length > 1 ? parts[1] : '和棋');
+        break;
+      default:
         break;
     }
   }
@@ -116,7 +123,7 @@ class ChessState extends State<Chess> {
   }
 
   addStep(ChessPos chess, ChessPos next) {
-    gamer.player.completeMove(chess, next);
+    gamer.player.completeMove('${chess.toCode()}${next.toCode()}');
   }
 
   fetchMovePoints() async {
@@ -126,11 +133,39 @@ class ChessState extends State<Chess> {
     });
   }
 
+  /// 从外部过来的指令
   onMove(){
     String move = gamer.moveNotifier.value;
     print('onmove $move');
     if(move.isEmpty)return;
-    if(move == 'giveup')return;
+    if(move == PlayerDriver.rstGiveUp)return;
+    if(move.contains(PlayerDriver.rstRqstDraw)){
+      confirm('对方请求和棋','同意和棋','忽略').then(
+          (bool isAgree) {
+            if(isAgree) {
+              gamer.player.completeMove(PlayerDriver.rstDraw);
+            }
+          }
+      );
+      toast('对方请求和棋', SnackBarAction(
+        label: '同意和棋',
+        onPressed: (){
+          gamer.player.completeMove(PlayerDriver.rstDraw);
+        },
+      ), 5);
+      move = move.replaceAll(PlayerDriver.rstRqstDraw,'').trim();
+      if(move.isEmpty) {
+        return;
+      }
+    }
+    if(move == PlayerDriver.rstRqstRetract){
+      confirm('对方请求悔棋','同意悔棋','拒绝悔棋').then(
+              (bool isAgree) {
+            gamer.player.completeMove(isAgree ? PlayerDriver.rstRetract : '');
+          }
+      );
+      return;
+    }
 
     ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
     ChessPos toPosition = ChessPos.fromCode(move.substring(2, 4));
@@ -178,6 +213,7 @@ class ChessState extends State<Chess> {
     });
   }
 
+  /// 检测用户的输入位置是否有效
   Future<bool> checkCanMove(String activePos, ChessPos toPosition,
       [ChessItem toItem]) async {
     if (!movePoints.contains(toPosition.toCode())) {
@@ -208,7 +244,8 @@ class ChessState extends State<Chess> {
     return true;
   }
 
-  bool setActive(ChessPos toPosition) {
+  /// 用户点击棋盘位置的反馈 包括选中子，走子，吃子，无反馈
+  bool onPointer(ChessPos toPosition) {
     ChessItem newActive = items.firstWhere(
         (item) => !item.isBlank && item.position == toPosition,
         orElse: () => ChessItem('0'));
@@ -312,26 +349,52 @@ class ChessState extends State<Chess> {
     return ChessPos(x, y);
   }
 
-  void toast(String message) {
+  void toast(String message, [SnackBarAction action, int duration = 3]) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+        .showSnackBar(SnackBar(
+        duration:Duration(seconds: duration),
+        content: Text(message),
+        action: action
+    ));
   }
 
   alertResult(message) {
     alert(message, [
       TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text('再看看'),
+      ),
+      ElevatedButton(
           onPressed: () {
             gamer.newGame();
             Navigator.pop(context);
           },
-          child: Text('再来一局')),
-      TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('再看看')),
+          child: Text('再来一局'),
+      ),
     ]);
+  }
+  Future<bool> confirm(String message, String agreeText, String cancelText) {
+    Completer<bool> complete = Completer<bool>();
+    alert(message, [
+      TextButton(
+        onPressed: () {
+          Navigator.pop(context);
+          complete.complete(false);
+        },
+        child: Text(cancelText),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          Navigator.pop(context);
+          complete.complete(true);
+        },
+        child: Text(agreeText),
+      ),
+    ]);
+    return complete.future;
   }
 
   Future<void> alert(String message, List<Widget> buttons,
@@ -413,7 +476,7 @@ class ChessState extends State<Chess> {
       onTapUp: (detail) {
         if(gamer.isLock)return;
         setState(() {
-          setActive(pointTrans(detail.localPosition));
+          onPointer(pointTrans(detail.localPosition));
         });
       },
       child: Container(

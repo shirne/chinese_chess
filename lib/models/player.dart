@@ -47,10 +47,12 @@ class Player{
     print('onmove');
     manager.moveNotifier.value = move;
 
-    Future.delayed(Duration(milliseconds: 500)).then((v){
-      manager.moveNotifier.value = '';
-      manager.switchPlayer();
-    });
+    if(move.isNotEmpty && move != PlayerDriver.rstDraw) {
+      Future.delayed(Duration(milliseconds: 500)).then((v) {
+        manager.moveNotifier.value = '';
+        manager.switchPlayer();
+      });
+    }
 
     return Future.value(move);
   }
@@ -63,7 +65,7 @@ class Player{
     return driver.move();
   }
 
-  completeMove(ChessPos from, ChessPos next){
-    driver.completeMove('${from.toCode()}${next.toCode()}');
+  completeMove(String move){
+    driver.completeMove(move);
   }
 }
