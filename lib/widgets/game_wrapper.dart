@@ -7,8 +7,9 @@ import 'customer_dialog.dart';
 
 class GameWrapper extends StatefulWidget {
   final Widget child;
+  final bool isMain;
 
-  const GameWrapper({Key key, this.child}) : super(key: key);
+  const GameWrapper({Key key, this.child, this.isMain = false}) : super(key: key);
 
   static GameWrapperState of(BuildContext context) {
     return context.findAncestorStateOfType<GameWrapperState>();
@@ -41,19 +42,24 @@ class GameWrapperState extends State<GameWrapper> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Completer<bool> complete = Completer<bool>();
-        CustomerDialog.of(context)
-            .confirm('确定退出游戏？', buttonText: '退出', cancelText: '再想想')
-            .then((bool sure) {
-          if (sure) {
-            print('gamer destroy');
-            gamer.dispose();
-            gamer = null;
-            complete.complete(true);
-          }
-        });
-
-        return complete.future;
+        Completer<bool> completer = Completer<bool>();
+        if(widget.isMain) {
+          CustomerDialog.of(context)
+              .confirm('确定退出游戏？', buttonText: '退出', cancelText: '再想想')
+              .then((bool sure) {
+            if (sure) {
+              print('gamer destroy');
+              gamer.dispose();
+              gamer = null;
+              completer.complete(true);
+            }
+          });
+        }else{
+          Future.delayed(Duration(milliseconds: 1)).then((v){
+            completer.complete(true);
+          });
+        }
+        return completer.future;
       },
       child: inited ? widget.child : Center(child: CircularProgressIndicator()),
     );

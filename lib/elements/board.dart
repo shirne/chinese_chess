@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-import '../chess.dart';
+import '../models/game_manager.dart';
+import '../widgets/game_wrapper.dart';
 
 class Board extends StatefulWidget{
 
@@ -15,12 +16,12 @@ class Board extends StatefulWidget{
 class BoardState extends State<Board> {
   @override
   Widget build(BuildContext context) {
-    ChessState chess = context.findAncestorStateOfType<ChessState>();
+    GameManager gamer = context.findAncestorStateOfType<GameWrapperState>().gamer;
     return SizedBox(
-      width: chess.gamer.skin.width,
-      height: chess.gamer.skin.height,
+      width: gamer.skin.width,
+      height: gamer.skin.height,
       child: Image.asset(
-          chess.gamer.skin.boardImage
+          gamer.skin.boardImage
       ),
     );
   }

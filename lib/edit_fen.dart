@@ -1,15 +1,14 @@
 
-
-import 'package:chinese_chess/chess_pieces.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_box.dart';
+import 'chess_pieces.dart';
 import 'elements/board.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'models/chess_fen.dart';
 
-class EditFen extends StatefulWidget{
+class EditFen extends StatefulWidget {
   final String fen;
 
   const EditFen({Key key, this.fen}) : super(key: key);
@@ -23,32 +22,45 @@ class _EditFenState extends State<EditFen> {
   GameManager gamer;
 
   @override
-  initState(){
+  initState() {
     super.initState();
     fen = ChessFen(widget.fen);
-    GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>();
-    gamer = gameWrapper.gamer;
   }
 
-  editOK(){
+  @override
+  dispose() {
+    super.dispose();
+  }
+
+  editOK() {
     Navigator.of(context).pop<String>(fen.fen);
   }
 
   @override
   Widget build(BuildContext context) {
+    if(gamer == null) {
+      GameWrapperState gameWrapper =
+      context.findAncestorStateOfType<GameWrapperState>();
+      gamer = gameWrapper.gamer;
+    }
+
     return Scaffold(
-        appBar:AppBar(
-          title: Text('编辑局面'),
-          actions: [
-            TextButton(onPressed: (){
+      appBar: AppBar(
+        title: Text('编辑局面'),
+        actions: [
+          TextButton(
+            onPressed: () {
               editOK();
-            }, child: Text('确定',style: TextStyle(color: Colors.white),),
-            )
-          ],
-        ),
+            },
+            child: Text(
+              '确定',
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
+      ),
       body: Center(
-        child:Container(
+        child: Container(
           child: Row(
             children: [
               Container(
@@ -56,19 +68,16 @@ class _EditFenState extends State<EditFen> {
                 height: gamer.skin.height,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: [
-                    Board(),
-                    ChessPieces(items: fen.getAll())
-                  ],
+                  children: [Board(), ChessPieces(items: fen.getAll())],
                 ),
               ),
-              SizedBox(width: 10,),
-              ChessBox(
-                  items: fen.getDies()
-              )
+              SizedBox(
+                width: 10,
+              ),
+              ChessBox(items: fen.getDies())
             ],
           ),
-        )
+        ),
       ),
     );
   }

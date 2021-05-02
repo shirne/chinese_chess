@@ -26,8 +26,14 @@ class _ChessPiecesState extends State<ChessPieces> {
   @override
   void initState() {
     super.initState();
+    initGamer();
+  }
+
+  initGamer(){
+    if(gamer != null)return;
     GameWrapperState gameWrapper =
     context.findAncestorStateOfType<GameWrapperState>();
+    if(gameWrapper == null)return;
     gamer = gameWrapper.gamer;
     gamer.playerNotifier.addListener(onChangePlayer);
     curTeam = gamer.curHand;
@@ -47,6 +53,7 @@ class _ChessPiecesState extends State<ChessPieces> {
 
   @override
   Widget build(BuildContext context) {
+    initGamer();
     return Stack(
       alignment: Alignment(0, 0),
       fit: StackFit.expand,

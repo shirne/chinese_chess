@@ -48,8 +48,13 @@ class ChessState extends State<Chess> {
   @override
   void initState() {
     super.initState();
+    initGamer();
+  }
+  initGamer(){
+    if(gamer != null)return;
     GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>();
+    if(gameWrapper == null)return;
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
     gamer.resultNotifier.addListener(onResult);
@@ -379,6 +384,7 @@ class ChessState extends State<Chess> {
 
   @override
   Widget build(BuildContext context) {
+    initGamer();
     if (isLoading) {
       return Center(
         child: CircularProgressIndicator(),
