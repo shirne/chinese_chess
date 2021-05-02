@@ -4,7 +4,6 @@ import 'package:chinese_chess/models/game_manager.dart';
 
 import '../driver/player_driver.dart';
 import 'chess_item.dart';
-import 'chess_pos.dart';
 
 class Player{
   ChessItem item;

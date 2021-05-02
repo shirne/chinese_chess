@@ -70,6 +70,7 @@ class TabCardState extends State<TabCard> {
           Expanded(
               child: IndexedStack(
                 index: index,
+                alignment: Alignment.center,
                 sizing: StackFit.expand,
                 children: widget.bodies,
               )

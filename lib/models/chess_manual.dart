@@ -49,6 +49,9 @@ class ChessManual{
 
   // 比赛结果 1-0 0-1 1/2-1/2 *
   String result = '*';
+  String get chineseResult{
+    return ChessFen.getChineseResult(result);
+  }
 
   // 开局
   String opening = '';
@@ -312,7 +315,7 @@ class ChessManual{
       fenPosition.move(move);
       return result;
     }else{
-      return currentFen.getChineseResult(result);
+      return ChessFen.getChineseResult(result);
     }
   }
 

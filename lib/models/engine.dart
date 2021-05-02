@@ -17,6 +17,7 @@ class Engine extends CustomNotifier<String>{
     if(kIsWeb){
       return Future.value(null);
     }
+
     String path = Directory.current.path+'/assets/engines/$engine';
     if(!File(path).existsSync()){
       path = Directory.current.path+'/data/flutter_assets/assets/engines/$engine';

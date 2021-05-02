@@ -349,7 +349,7 @@ class ChessFen {
     return '${curItem.toCode()}${nextItem.toCode()}';
   }
 
-  getChineseResult(String result) {
+  static getChineseResult(String result) {
     switch (result) {
       case '1-0':
         return '先胜';

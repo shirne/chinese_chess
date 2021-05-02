@@ -71,8 +71,8 @@ class GameManager{
     manual = ChessManual();
     rule = ChessRule(manual.currentFen);
 
-    hands.add(Player('r', this, title: '红方'));
-    hands.add(Player('b', this, title: '黑方'));
+    hands.add(Player('r', this, title: manual.red));
+    hands.add(Player('b', this, title: manual.black));
     curHand = 0;
     //map = ChessMap.fromFen(ChessManual.startFen);
 
@@ -152,6 +152,8 @@ class GameManager{
 
     manual = ChessManual(fen:fen);
     rule = ChessRule(manual.currentFen);
+    hands[0].title = manual.red;
+    hands[1].title = manual.black;
     curHand = manual.startHand;
 
     gameNotifier.value = 0;
@@ -187,7 +189,8 @@ class GameManager{
       content = pgn;
     }
     manual = ChessManual.load(content);
-
+    hands[0].title = manual.red;
+    hands[1].title = manual.black;
     // 加载步数
     if(manual.moves.length > 0){
       // print(manual.moves);
@@ -390,6 +393,10 @@ class GameManager{
 
   Player get player{
     return hands[curHand];
+  }
+
+  Player getPlayer(int hand){
+    return hands[hand];
   }
 
 }
