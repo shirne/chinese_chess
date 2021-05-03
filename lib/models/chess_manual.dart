@@ -88,6 +88,9 @@ class ChessManual{
   List<ChessStep> moves = [];
   int step = 0;
 
+  ChessPos diePosition;
+  Map<String,ChessPos> diePositions;
+
   ChessManual({
     this.fen = startFen,
     this.red = 'Red',
@@ -394,6 +397,11 @@ class ChessManual{
         item.isDie = false;
       }else{
         // print('${item.code}@${item.position.toCode()}: $chr @ $index --');
+        if(diePositions != null && diePositions.containsKey(item.code)){
+          item.position = diePositions[item.code].copy();
+        }else if(diePosition != null){
+          item.position = diePosition.copy();
+        }
         item.isDie = true;
       }
       index++;

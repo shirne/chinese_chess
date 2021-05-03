@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
-import '../models/engine.dart';
 import '../models/chess_rule.dart';
 import '../models/chess_item.dart';
 import '../models/chess_fen.dart';

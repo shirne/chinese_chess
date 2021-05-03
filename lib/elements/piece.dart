@@ -5,7 +5,6 @@ import 'package:chinese_chess/models/game_manager.dart';
 import 'package:chinese_chess/widgets/game_wrapper.dart';
 import 'package:flutter/material.dart';
 
-import '../chess.dart';
 import '../models/chess_item.dart';
 
 class Piece extends StatelessWidget {

@@ -10,7 +10,6 @@ import 'models/chess_manual.dart';
 import 'models/chess_pos.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
-import 'models/chess_fen.dart';
 
 class EditFen extends StatefulWidget {
   final String fen;
@@ -33,6 +32,24 @@ class EditFenState extends State<EditFen> {
   initState() {
     super.initState();
     manual = ChessManual();
+    manual.diePosition = ChessPos(9, 5);
+    manual.diePositions = {
+      'k':ChessPos(9, 9),
+      'a':ChessPos(10, 9),
+      'b':ChessPos(9, 8),
+      'c':ChessPos(10, 8),
+      'n':ChessPos(9, 7),
+      'r':ChessPos(10, 7),
+      'p':ChessPos(9, 6),
+
+      'K':ChessPos(9, 4),
+      'A':ChessPos(10, 4),
+      'B':ChessPos(9, 3),
+      'C':ChessPos(10, 3),
+      'N':ChessPos(9, 2),
+      'R':ChessPos(10, 2),
+      'P':ChessPos(9, 1),
+    };
     manual.setFen(widget.fen);
     items = manual.getChessItems();
     dieChrs = manual.currentFen.getDieChr();
@@ -51,6 +68,8 @@ class EditFenState extends State<EditFen> {
     ChessItem targetItem = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
     if(targetItem == null || targetItem.isBlank){
       if(activeItem != null){
+        manual.doMove(
+            '${activeItem.position.toCode()}${toPosition.toCode()}');
         setState(() {
           activeItem.position = toPosition;
           activeItem = null;
@@ -172,7 +191,7 @@ class EditFenState extends State<EditFen> {
                   onPointer(pointTrans(detail.localPosition));
                 },
                 onLongPressEnd: (detail){
-                  print('longPressEnd ${detail}');
+                  print('longPressEnd $detail');
                   
                 },
                 onPanEnd: (detail){
