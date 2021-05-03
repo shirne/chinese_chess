@@ -1,133 +1,125 @@
-import 'package:chinese_chess/elements/piece.dart';
+
 import 'package:flutter/material.dart';
+
+import 'edit_fen.dart';
 import 'models/chess_item.dart';
+import 'elements/piece.dart';
+import 'models/game_manager.dart';
+import 'widgets/game_wrapper.dart';
 
 class ChessBox extends StatefulWidget {
-  final List<ChessItem> items;
-  final ChessItem activeItem;
+  final String itemChrs;
+  final String activeChr;
+  final double height;
 
-  const ChessBox({Key key, this.items, this.activeItem}) : super(key: key);
+  const ChessBox({Key key, this.itemChrs, this.activeChr = '', this.height}) : super(key: key);
 
   @override
   State<ChessBox> createState() => _ChessBoxState();
 }
 
 class _ChessBoxState extends State<ChessBox> {
+  static const allItemChrs = 'kabcnrp';
+
+  int matchCount(String chr) {
+    return RegExp(chr).allMatches(widget.itemChrs).length;
+  }
+
+  setActive(String chr){
+    EditFenState parent = context.findAncestorStateOfType<EditFenState>();
+    parent.setActiveChr(chr);
+  }
+  clearAll(){
+    EditFenState parent = context.findAncestorStateOfType<EditFenState>();
+    parent.clearAll();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 114,
+      height: widget.height,
       child: Flex(
         direction: Axis.vertical,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Wrap(
-            children: [
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('k'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('a'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('b'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('n'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('r'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('c'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('p'),
-                  )
-                ],
-              )
-            ],
+            children: allItemChrs
+                .split('')
+                .map<Widget>((String chr) =>
+                    ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr,))
+                .toList(),
+          ),
+          Wrap(
+            children: allItemChrs
+                .toUpperCase()
+                .split('')
+                .map<Widget>((String chr) =>
+                    ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr))
+                .toList(),
           ),
           Wrap(
             children: [
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('K'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('A'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('B'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('N'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('R'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('C'),
-                  )
-                ],
-              ),
-              Stack(
-                children: [
-                  Piece(
-                    item: ChessItem('P'),
-                  )
-                ],
-              )
+              ElevatedButton(onPressed: (){
+                clearAll();
+              }, child: Text('清除全部'))
             ],
           )
         ],
       ),
     );
+  }
+}
+
+class ItemWidget extends StatelessWidget {
+  final String chr;
+  final int count;
+  final bool isActive;
+
+  const ItemWidget({Key key, this.chr, this.count, this.isActive}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    GameWrapperState wrapper =
+        context.findAncestorStateOfType<GameWrapperState>();
+    GameManager manager = wrapper.gamer;
+    _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>();
+    return GestureDetector(
+      onTap: (){
+        if(count > 0) {
+          parent.setActive(chr);
+        }
+      },
+      child: Container(
+        width: manager.skin.size,
+        height: manager.skin.size,
+        child: Stack(
+          children: [
+            Piece(
+              isActive: isActive,
+              item: ChessItem(chr,),
+            ),
+            Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                      color: count > 0 ? Colors.red : Colors.grey,
+                      borderRadius: BorderRadius.all(Radius.circular(10))
+                  ),
+                  child: Center(
+                    child: Text(count.toString(),style: TextStyle(color: Colors.white),),
+                  ),
+                ))
+          ],
+        ),
+      ),
+    ) ;
   }
 }

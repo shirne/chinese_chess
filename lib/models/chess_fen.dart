@@ -60,8 +60,14 @@ class ChessFen {
     return _rows[key];
   }
 
+  /// 强制刷新 在使用 []设置单个位置时，本类里只能走读操作，不会清缓存
+  clearFen(){
+    _fen = '';
+  }
+
   operator []=(int key, ChessFenRow value) {
     _rows[key] = value;
+    _fen = '';
   }
 
   String get fen {
@@ -211,20 +217,17 @@ class ChessFen {
     return items;
   }
 
-  List<ChessItem> getDies(){
-    List<ChessItem> items = [];
+  String getDieChr(){
     String fullChrs = initFen.replaceAll(RegExp(r'[1-9/]'), '');
     String currentChrs = getAllChr();
     if(fullChrs.length > currentChrs.length){
       currentChrs.split('').forEach((chr) {
         fullChrs = fullChrs.replaceFirst(chr, '');
       });
-      fullChrs.split('').forEach((chr) {
-        items.add(ChessItem(chr));
-      });
+      return fullChrs;
     }
 
-    return items;
+    return '';
   }
 
   String getAllChr() {

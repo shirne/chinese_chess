@@ -3,6 +3,7 @@
 import 'package:chinese_chess/models/chess_fen.dart';
 import 'package:chinese_chess/models/chess_item.dart';
 
+import 'chess_pos.dart';
 import 'chess_step.dart';
 
 class ChessManual{
@@ -297,10 +298,59 @@ class ChessManual{
     }else {
       currentFen.fen = moves[index-1].fen;
       fenPosition.fen = moves[index-1].fenPosition;
-      currentFen.move(moves[index-1].move);
-      fenPosition.move(moves[index-1].move);
+      doMove(moves[index-1].move);
     }
     step = index;
+  }
+
+  setFen(String fenStr){
+    ChessFen startFen = ChessFen(fen);
+    String initChrs = startFen.getAllChr();
+    String initPositions = startFen.position().getAllChr();
+
+    currentFen.fen = fenStr;
+    fenPosition.fen = currentFen.fen.replaceAllMapped(
+        RegExp(r'[^0-9\\/]'), (match){
+          String chr = initPositions[initChrs.indexOf(match[0])];
+          initChrs = initChrs.replaceFirst(match[0], '0');
+          return chr;
+        });
+  }
+
+  /// 设置某个位置，设置为空必真，设置为子会根据初始局面查找当前没在局面中的子的位置，未查找到会设置失败
+  bool setItem(ChessPos pos, String chr){
+    String posChr = '0';
+    if(chr != '0'){
+      ChessFen startFen = ChessFen(fen);
+      String initChrs = startFen.getAllChr();
+      String initPositions = startFen.position().getAllChr();
+
+      String positions = fenPosition.getAllChr();
+
+      int index = initChrs.indexOf(chr);
+      while(index > -1){
+        String curPosChr = initPositions[index];
+        if(positions.indexOf(curPosChr) < 0){
+          posChr = curPosChr;
+          break;
+        }
+        index = initChrs.indexOf(chr, index+1);
+      }
+      if(posChr == '0'){
+        return false;
+      }
+    }
+    currentFen[pos.y][pos.x] = chr;
+    fenPosition[pos.y][pos.x] = posChr;
+    currentFen.clearFen();
+    fenPosition.clearFen();
+    _items = [];
+    return true;
+  }
+
+  doMove(String move){
+    currentFen.move(move);
+    fenPosition.move(move);
   }
 
   bool get hasNext{
@@ -311,8 +361,7 @@ class ChessManual{
       step++;
       String move = moves[step - 1].move;
       String result = currentFen.toChineseString(move);
-      currentFen.move(move);
-      fenPosition.move(move);
+      doMove(move);
       return result;
     }else{
       return ChessFen.getChineseResult(result);
@@ -399,8 +448,7 @@ class ChessManual{
           fenPosition: fenPosition.fen
       ));
 
-      currentFen.move(move);
-      fenPosition.move(move);
+      doMove(move);
 
       step = moves.length;
     }

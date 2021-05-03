@@ -104,6 +104,9 @@ class ChessSkin{
   }
 
   Alignment getAlign(ChessPos pos){
+    if(pos == null){
+      return Alignment(1.2, 0);
+    }
     return Alignment(
       ((pos.x * size + offset.dx) * 2 ) / (width - size) - 1,
       (((9 - pos.y) * size + offset.dy) * 2 ) / (height - size) - 1,
