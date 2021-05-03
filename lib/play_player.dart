@@ -26,12 +26,29 @@ class PlayStepState extends State<PlayPlayer> {
         context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.playerNotifier.addListener(onChangePlayer);
+    gamer.gameNotifier.addListener(onReloadGame);
+    gamer.resultNotifier.addListener(onResult);
   }
 
   @override
   dispose() {
     gamer.playerNotifier.removeListener(onChangePlayer);
+    gamer.gameNotifier.removeListener(onReloadGame);
+    gamer.resultNotifier.removeListener(onResult);
     super.dispose();
+  }
+
+  onResult(){
+    setState(() {
+
+    });
+  }
+
+  onReloadGame(){
+    if(gamer.gameNotifier.value != 0)return;
+    setState(() {
+
+    });
   }
 
   onChangePlayer() {

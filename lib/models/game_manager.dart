@@ -263,6 +263,8 @@ class GameManager{
     manual.loadHistory(index);
     rule.fen = manual.currentFen;
     curHand = currentStep % 2;
+    playerNotifier.value = curHand;
+
 
     gameNotifier.value = currentStep;
     print('history $currentStep');

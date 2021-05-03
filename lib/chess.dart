@@ -1,10 +1,10 @@
 
 import 'dart:async';
 
-import 'package:chinese_chess/models/chess_manual.dart';
-import 'package:chinese_chess/widgets/customer_dialog.dart';
+import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
+import 'models/chess_manual.dart';
 import 'elements/board.dart';
 import 'models/chess_item.dart';
 import 'elements/piece.dart';
@@ -358,13 +358,7 @@ class ChessState extends State<Chess> {
   }
 
   void toast(String message, [SnackBarAction action, int duration = 3]) {
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(
-        duration:Duration(seconds: duration),
-        content: Text(message),
-        action: action
-    ));
+    MyDialog.of(context).snack(message,action: action, duration: duration);
   }
 
   alertResult(message) {
@@ -375,11 +369,11 @@ class ChessState extends State<Chess> {
     });
   }
   Future<bool> confirm(String message, String agreeText, String cancelText) {
-    return CustomerDialog.of(context).confirm(message, buttonText: agreeText,  cancelText: cancelText);
+    return MyDialog.of(context).confirm(message, buttonText: agreeText,  cancelText: cancelText).result;
   }
 
   Future<void> alert(String message) async {
-    return CustomerDialog.of(context).alert(message);
+    return MyDialog.of(context).alert(message).result;
   }
 
   @override

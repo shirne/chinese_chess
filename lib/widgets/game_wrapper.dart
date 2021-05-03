@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../models/game_manager.dart';
-import 'customer_dialog.dart';
 
 class GameWrapper extends StatefulWidget {
   final Widget child;
@@ -42,16 +42,21 @@ class GameWrapperState extends State<GameWrapper> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
+        print('onwillpop');
         Completer<bool> completer = Completer<bool>();
         if(widget.isMain) {
-          CustomerDialog.of(context)
-              .confirm('确定退出游戏？', buttonText: '退出', cancelText: '再想想')
-              .then((bool sure) {
+          MyDialog.of(context)
+              .confirm('确定退出？', buttonText: '退出', cancelText: '再想想')
+              .result.then((sure) {
             if (sure) {
               print('gamer destroy');
               gamer.dispose();
               gamer = null;
-              completer.complete(true);
+              Future.delayed(Duration(milliseconds: 500)).then((v){
+                completer.complete(true);
+              });
+            }else{
+              completer.complete(false);
             }
           });
         }else{

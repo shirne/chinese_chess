@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:universal_html/html.dart' as html;
 
-import 'widgets/customer_dialog.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play.dart';
@@ -33,11 +33,11 @@ class _GameBoardState extends State<GameBoard> {
       {String buttonText = 'OK',
       String title = 'Alert',
       String cancelText = 'Cancel'}) {
-    return CustomerDialog.of(context).confirm(message);
+    return MyDialog.of(context).confirm(message).result;
   }
 
   alert(message) {
-    CustomerDialog.of(context).alert(message);
+    MyDialog.of(context).alert(message);
   }
 
   @override
@@ -202,7 +202,7 @@ class _GameBoardState extends State<GameBoard> {
             title: '局面代码')
         .then((v) {
       if (v) {
-        if(RegExp(r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d\s\d)?$').hasMatch(fenStr)) {
+        if(RegExp(r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$').hasMatch(fenStr)) {
           gamer.newGame(fenStr);
         }else{
           alert('无效代码');

@@ -156,6 +156,13 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub"
     source: hosted
     version: "2.0.0"
+  shirne_dialog:
+    dependency: "direct main"
+    description:
+      path: "../fluttersamples/shirne_dialog"
+      relative: true
+    source: path
+    version: "0.0.1"
   sky_engine:
     dependency: transitive
     description: flutter

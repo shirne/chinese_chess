@@ -53,6 +53,7 @@ samples, guidance on mobile development, and a full API reference.
 
 
 ## 参考文献
+* [ECCO]https://www.xqbase.com/ecco/ecco_contents.htm#ecco_a
 * [UCCI]https://www.xqbase.com/protocol/cchess_ucci.htm
 * [着法表示]https://www.xqbase.com/protocol/cchess_move.htm
 * [FEN格式]https://www.xqbase.com/protocol/cchess_fen.htm
