@@ -47,7 +47,7 @@ class GameWrapperState extends State<GameWrapper> {
         if(widget.isMain) {
           MyDialog.of(context)
               .confirm('确定退出？', buttonText: '退出', cancelText: '再想想')
-              .result.then((sure) {
+              .then((sure) {
             if (sure) {
               print('gamer destroy');
               gamer.dispose();

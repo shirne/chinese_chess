@@ -73,14 +73,14 @@ class DriverRobot extends PlayerDriver{
       completeMove('giveup');
       return;
     }
-    print(moves);
+    //print(moves);
     await Future.delayed(Duration(milliseconds: 100));
     List<List<String>> moveGroups = await checkMoves(player.manager.fen, player.team == 'r'?0:1, moves);
-    print(moveGroups);
+    //print(moveGroups);
     await Future.delayed(Duration(milliseconds: 100));
 
     String move = await pickMove(moveGroups);
-    print(move);
+    //print(move);
     completeMove(move);
   }
 

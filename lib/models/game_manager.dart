@@ -297,7 +297,7 @@ class GameManager{
     print('addmove $move');
     if(PlayerDriver.isAction(move)){
       if(move == PlayerDriver.rstGiveUp){
-        setResult(curHand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '认输');
+        setResult(curHand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '${player.title}认输');
       }
       if(move == PlayerDriver.rstDraw){
         setResult(ChessManual.resultFstDraw);
@@ -387,6 +387,7 @@ class GameManager{
         }
 
         resultNotifier.value = 'checkMate';
+        Future.delayed(Duration(milliseconds: 10)).then((value) => resultNotifier.value = '' );
       }else{
         setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin);
       }

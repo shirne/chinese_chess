@@ -33,7 +33,7 @@ class _GameBoardState extends State<GameBoard> {
       {String buttonText = 'OK',
       String title = 'Alert',
       String cancelText = 'Cancel'}) {
-    return MyDialog.of(context).confirm(message).result;
+    return MyDialog.of(context).confirm(message);
   }
 
   alert(message) {

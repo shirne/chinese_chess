@@ -369,11 +369,11 @@ class ChessState extends State<Chess> {
     });
   }
   Future<bool> confirm(String message, String agreeText, String cancelText) {
-    return MyDialog.of(context).confirm(message, buttonText: agreeText,  cancelText: cancelText).result;
+    return MyDialog.of(context).confirm(message, buttonText: agreeText,  cancelText: cancelText);
   }
 
   Future<void> alert(String message) async {
-    return MyDialog.of(context).alert(message).result;
+    return MyDialog.of(context).alert(message);
   }
 
   @override
