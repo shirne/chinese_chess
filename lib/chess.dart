@@ -150,11 +150,6 @@ class ChessState extends State<Chess> {
     if (move.isEmpty) return;
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
-      confirm('对方请求和棋', '同意和棋', '忽略').then((bool isAgree) {
-        if (isAgree) {
-          gamer.player.completeMove(PlayerDriver.rstDraw);
-        }
-      });
       toast(
           '对方请求和棋',
           SnackBarAction(

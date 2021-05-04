@@ -47,13 +47,9 @@ class Player {
     print('onmove');
     manager.moveNotifier.value = move;
 
-    if (move.isNotEmpty &&
-        (!PlayerDriver.isAction(move) ||
-            move.contains(PlayerDriver.rstRqstDraw) ||
-            move == PlayerDriver.rstRqstRetract)) {
+    if (move.isNotEmpty) {
       Future.delayed(Duration(milliseconds: 500)).then((v) {
         manager.moveNotifier.value = '';
-        manager.switchPlayer();
       });
     }
 

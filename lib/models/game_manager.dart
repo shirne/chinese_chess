@@ -285,19 +285,18 @@ class GameManager{
   next(){
     player.move().then((String move){
       addMove(move);
+      checkResult(curHand == 0 ? 1 : 0 , currentStep - 1).then((canNext){
+        print(canNext);
+        if(canNext){
+          switchPlayer();
+        }
+      });
     });
   }
 
   /// 从用户落着 todo 检查出发点是否有子，检查落点是否对方子
   addStep(ChessPos from, ChessPos next) async{
     player.completeMove('${from.toCode()}${next.toCode()}');
-
-    checkResult(curHand == 0 ? 1 : 0 , currentStep - 1).then((canNext){
-      print(canNext);
-      if(canNext){
-        switchPlayer();
-      }
-    });
   }
 
   addMove(String move){
@@ -360,6 +359,7 @@ class GameManager{
 
   /// 棋局结果判断
   Future<bool> checkResult(int hand, int curMove) async{
+    print('checkResult');
     // 判断和棋
     if(unEatCount >= 120){
       setResult(ChessManual.resultFstDraw, '60回合无吃子判和');
@@ -432,9 +432,7 @@ class GameManager{
 
     resultNotifier.value = '';
     print(player.title);
-    player.move().then((move){
-      addMove(move);
-    });
+    next();
 
     messageNotifier.value = 'clear';
   }
