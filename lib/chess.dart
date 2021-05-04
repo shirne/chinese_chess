@@ -77,7 +77,7 @@ class ChessState extends State<Chess> {
     }
     List<String> parts = gamer.resultNotifier.value.split(' ');
     String resultText =
-        (parts.length > 0 && parts[1].isNotEmpty) ? parts[1] : null;
+        (parts.length > 1 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
       case 'checkMate':
         toast('将军');
@@ -133,7 +133,7 @@ class ChessState extends State<Chess> {
   }
 
   addStep(ChessPos chess, ChessPos next) {
-    gamer.player.completeMove('${chess.toCode()}${next.toCode()}');
+    gamer.addStep(chess, next);
   }
 
   fetchMovePoints() async {
@@ -278,7 +278,6 @@ class ChessState extends State<Chess> {
             });
 
             addStep(ChessPos.fromCode(activePos), toPosition);
-            gamer.switchPlayer();
           } else {
             Future.delayed(Duration(milliseconds: delay), () {
               setState(() {
@@ -335,8 +334,6 @@ class ChessState extends State<Chess> {
                 dieFlash = null;
               });
 
-              // 吃子，切换选手
-              gamer.switchPlayer();
             });
           } else {
             Future.delayed(Duration(milliseconds: delay), () {

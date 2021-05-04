@@ -24,7 +24,7 @@
 - [x] Web版适配
 - [ ] Android版适配
 - [ ] IOS版适配
-- [ ] MacOS版适配
+- [x] MacOS版适配
 - [ ] Linux版适配
 
 ## 已知问题

@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../models/chess_rule.dart';
 import '../models/chess_item.dart';
 import '../models/chess_fen.dart';
+import '../models/engine.dart';
 import '../models/player.dart';
 
 import 'player_driver.dart';
@@ -25,10 +26,10 @@ class DriverRobot extends PlayerDriver{
 
     // 网页版用不了引擎
     Future.delayed(Duration(seconds: 1)).then((value) {
-      if(kIsWeb) {
-        getMove();
-      }else {
+      if(Engine.isSupportEngine) {
         getMoveFromEngine();
+      }else {
+        getMove();
       }
     });
 
