@@ -79,7 +79,7 @@ class GameManager{
     curHand = 0;
     // map = ChessMap.fromFen(ChessManual.startFen);
 
-    stepNotifier = ValueNotifier<String>('==开始==');
+    stepNotifier = ValueNotifier<String>('');
     messageNotifier = ValueNotifier<String>('');
     playerNotifier = ValueNotifier(curHand);
     gameNotifier = ValueNotifier(-1);

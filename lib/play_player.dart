@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'driver/player_driver.dart';
+import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'widgets/tab_card.dart';
@@ -57,7 +58,7 @@ class PlayStepState extends State<PlayPlayer> {
     if (gamer.hands[team].isUser) {
       return IconButton(
         icon: Icon(Icons.android),
-        tooltip: '托管给机器人',
+        tooltip: S.of(context).trusteeship_to_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
         },
@@ -68,7 +69,7 @@ class PlayStepState extends State<PlayPlayer> {
           Icons.android,
           color: Colors.blueAccent,
         ),
-        tooltip: '取消托管',
+        tooltip: S.of(context).cancel_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.user);
         },
@@ -98,7 +99,7 @@ class PlayStepState extends State<PlayPlayer> {
               color: currentTeam == 1 ? Colors.blueAccent : Colors.black12,
             ),
             title: Text(gamer.getPlayer(1).title),
-            subtitle: Text(currentTeam == 1 ? '思考中...' : ''),
+            subtitle: Text(currentTeam == 1 ? S.of(context).thinking : ''),
             trailing: switchRobot(1),
           ),
           SizedBox(
@@ -108,7 +109,7 @@ class PlayStepState extends State<PlayPlayer> {
             leading: Icon(Icons.person,
                 color: currentTeam == 0 ? Colors.blueAccent : Colors.black12),
             title: Text(gamer.getPlayer(0).title),
-            subtitle: Text(currentTeam == 0 ? '思考中...' : ''),
+            subtitle: Text(currentTeam == 0 ? S.of(context).thinking : ''),
             trailing: switchRobot(0),
           ),
           SizedBox(
@@ -120,8 +121,8 @@ class PlayStepState extends State<PlayPlayer> {
               child: TabCard(
                   titlePadding: EdgeInsets.only(top: 10, bottom: 10),
                   titles: [
-                    Text('当前信息'),
-                    Text('棋局信息')
+                    Text(S.of(context).current_info),
+                    Text(S.of(context).manual)
                   ],
                   bodies: [
                     Center(
@@ -152,23 +153,23 @@ class PlayStepState extends State<PlayPlayer> {
                             TableCellVerticalAlignment.top,
                         children: [
                           TableRow(children: [
-                            Text('赛事：'),
+                            Text(S.of(context).the_event),
                             Text(gamer.manual.event)
                           ]),
                           TableRow(
-                              children: [Text('地点：'), Text(gamer.manual.site)]),
+                              children: [Text(S.of(context).the_site), Text(gamer.manual.site)]),
                           TableRow(
-                              children: [Text('日期：'), Text(gamer.manual.date)]),
+                              children: [Text(S.of(context).the_date), Text(gamer.manual.date)]),
                           TableRow(children: [
-                            Text('轮次：'),
+                            Text(S.of(context).the_round),
                             Text(gamer.manual.round)
                           ]),
                           TableRow(children: [
-                            Text('红方：'),
+                            Text(S.of(context).the_red),
                             Text('${gamer.manual.redTeam}/${gamer.manual.red}'),
                           ]),
                           TableRow(children: [
-                            Text('黑方：'),
+                            Text(S.of(context).the_black),
                             Text(
                                 '${gamer.manual.blackTeam}/${gamer.manual.black}'),
                           ]),

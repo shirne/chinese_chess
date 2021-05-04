@@ -1,3 +1,68 @@
 {
-  "app_title": "Chinese Chess"
+  "app_title": "Chinese Chess",
+
+  "menu": "Menu",
+  "open_menu": "Open Menu",
+  "copy_code": "Copy Chess Code",
+  "parse_code": "Parse Chess Code",
+  "edit_code": "Edit Chess",
+  "new_game": "New Game",
+  "load_manual": "Load Chess Manual",
+  "save_manual": "Save Chess Manual",
+  "setting": "Setting",
+  "feature_not_available": "Feature is not available",
+
+  "clear_all": "Clear All",
+  "save": "Apply",
+
+  "trusteeship_to_robots": "Trusteeship to Robots",
+  "cancel_robots": "Cancel Trusteeship",
+  "thinking": "Thinking...",
+  "current_info": "Current",
+  "manual": "Manual",
+  "the_event": "Event: ",
+  "the_site": "Site: ",
+  "the_date": "Date: ",
+  "the_round": "Round: ",
+  "the_red": "Red: ",
+  "the_black": "Black: ",
+
+  "step_start": "==Start==",
+
+  "exit_now": "Exit Now ?",
+  "dont_exit": "Wait a moment",
+  "yes_exit": "Yes exit",
+  "click_again_to_exit": "Click again to Exit",
+
+  "apply": "Apply",
+  "situation_code": "Chess Code",
+  "invalid_code": "Invalid Chess Code",
+  "copy_success": "Copy Success",
+  "save_success": "Save Success",
+  "select_directory_save": "Select a Directory to Save",
+  "save_filename": "Filename to Save",
+  "select_pgn_file": "Select .PGN file",
+
+  "recommend_move": "Recommend Move",
+  "remark": "Remark",
+  "no_remark": "No remark",
+
+  "check": "Check",
+  "checkmate": "Checkmate",
+  "long_recheck_loose": "The same move 3 round to Lose",
+  "no_eat_to_draw": "60 round with no eat to Draw",
+  "trapped": "Checkmate",
+  "red_loose": "Loose",
+  "red_win": "Win",
+  "red_draw": "Draw",
+
+  "request_draw": "Asked for a draw",
+  "agree_to_draw": "Agree to draw",
+  "request_retract": "Asked for a Retract",
+  "agree_retract": "Agree to retract",
+  "disagree_retract": "Disagree to retract",
+  "cant_send_check": "You can't send Check",
+  "pls_parry_check": "Please parry the Check",
+  "one_more_game": "New Game",
+  "let_me_see": "Let me see"
 }

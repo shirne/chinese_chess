@@ -1,3 +1,69 @@
 {
-  "app_title": "中国象棋"
+  "app_title": "中国象棋",
+
+  "menu": "菜单",
+  "open_menu": "打开菜单",
+  "copy_code": "复制局面代码",
+  "parse_code": "粘贴局面代码",
+  "edit_code": "编辑局面",
+  "new_game": "新对局",
+  "load_manual": "加载棋谱",
+  "save_manual": "保存棋谱",
+  "setting": "设置",
+  "feature_not_available": "功能暂未实现",
+
+  "clear_all": "清除全部",
+  "save": "确定",
+
+  "trusteeship_to_robots": "托管给机器人",
+  "cancel_robots": "取消托管",
+  "thinking": "思考中...",
+  "current_info": "当前信息",
+  "manual": "棋局信息",
+  "the_event": "赛事：",
+  "the_site": "地点：",
+  "the_date": "日期：",
+  "the_round": "轮次：",
+  "the_red": "红方：",
+  "the_black": "黑方：",
+
+  "step_start": "==开始==",
+
+  "exit_now": "确定退出？",
+  "dont_exit": "暂不退出",
+  "yes_exit": "立即退出",
+  "click_again_to_exit": "再次点击退出",
+
+  "apply": "应用",
+  "situation_code": "局面代码",
+  "invalid_code": "无效代码",
+  "copy_success": "复制成功",
+  "save_success": "保存成功",
+  "select_directory_save": "选择保存位置",
+  "save_filename": "保存文件名",
+  "select_pgn_file": "选择棋谱文件",
+
+  "recommend_move": "推荐招法",
+  "remark": "注解",
+  "no_remark": "暂无注解",
+
+  "check": "将军",
+  "checkmate": "绝杀",
+  "long_recheck_loose": "不变招长将作负",
+  "no_eat_to_draw": "60回合无吃子判和",
+  "trapped": "困毙",
+  "red_loose": "先负",
+  "red_win": "先负",
+  "red_draw": "先和",
+
+  "request_draw": "对方请求和棋",
+  "agree_to_draw": "同意和棋",
+  "request_retract": "对方请求悔棋",
+  "agree_retract": "同意悔棋",
+  "disagree_retract": "拒绝悔棋",
+  "cant_send_check": "不能送将",
+  "pls_parry_check": "请应将",
+  "one_more_game": "再来一局",
+  "let_me_see": "再看看"
+
 }

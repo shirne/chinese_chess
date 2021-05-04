@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:universal_html/html.dart' as html;
 
+import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play.dart';
@@ -44,12 +45,12 @@ class _GameBoardState extends State<GameBoard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('中国象棋'),
+        title: Text(S.of(context).app_title),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
                 icon: Icon(Icons.menu),
-                tooltip: '菜单',
+                tooltip: S.of(context).open_menu,
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 });
@@ -58,19 +59,19 @@ class _GameBoardState extends State<GameBoard> {
         actions: [
           IconButton(
               icon: Icon(Icons.copy),
-              tooltip: '复制局面代码',
+              tooltip: S.of(context).copy_code,
               onPressed: () {
                 copyFen();
               }),
           IconButton(
               icon: Icon(Icons.airplay),
-              tooltip: '粘贴局面代码',
+              tooltip: S.of(context).parse_code,
               onPressed: () {
                 applyFen();
               }),
           IconButton(
               icon: Icon(Icons.airplay),
-              tooltip: '编辑局面',
+              tooltip: S.of(context).edit_code,
               onPressed: () {
                 editFen();
               }),
@@ -81,13 +82,13 @@ class _GameBoardState extends State<GameBoard> {
 
           }),
           IconButton(icon: Icon(Icons.clear), color: Colors.red, onPressed: (){
-            this._showDialog('是否立即退出',
+            this._showDialog(S.of(context).exit_now,
                 [
                   TextButton(
                     onPressed: (){
                       Navigator.of(context).pop();
                     },
-                    child: Text('暂不退出'),
+                    child: Text(S.of(context).dont_exit),
                   ),
                   TextButton(
                       onPressed: (){
@@ -96,7 +97,7 @@ class _GameBoardState extends State<GameBoard> {
                           exit(0);
                         }
                       },
-                      child: Text('立即退出',style: TextStyle(color:Colors.red)),
+                      child: Text(S.of(context).yes_exit,style: TextStyle(color:Colors.red)),
                   )
                 ]
             );
@@ -104,7 +105,7 @@ class _GameBoardState extends State<GameBoard> {
         ],
       ),
       drawer: Drawer(
-        semanticLabel: '菜单',
+        semanticLabel: S.of(context).menu,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -117,7 +118,7 @@ class _GameBoardState extends State<GameBoard> {
                   children: [
                     Image.asset('assets/images/logo.png'),
                     Text(
-                      '中国象棋',
+                      S.of(context).app_title,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -127,7 +128,7 @@ class _GameBoardState extends State<GameBoard> {
                 ))),
             ListTile(
               leading: Icon(Icons.add),
-              title: Text('新对局'),
+              title: Text(S.of(context).new_game),
               onTap: () {
                 gamer.newGame();
                 Navigator.pop(context);
@@ -135,7 +136,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: Icon(Icons.description),
-              title: Text('加载棋谱'),
+              title: Text(S.of(context).load_manual),
               onTap: () {
                 Navigator.pop(context);
                 kIsWeb ? requestFile() : loadFile();
@@ -143,7 +144,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: Icon(Icons.save),
-              title: Text('保存棋谱'),
+              title: Text(S.of(context).save_manual),
               onTap: () {
                 Navigator.pop(context);
                 saveManual();
@@ -151,7 +152,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: Icon(Icons.copy),
-              title: Text('复制局面代码'),
+              title: Text(S.of(context).copy_code),
               onTap: () {
                 Navigator.pop(context);
                 copyFen();
@@ -159,9 +160,9 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text('设置'),
+              title: Text(S.of(context).setting),
               onTap: () {
-                alert('暂未支持');
+                alert(S.of(context).feature_not_available);
                 Navigator.pop(context);
               },
             ),
@@ -198,14 +199,14 @@ class _GameBoardState extends State<GameBoard> {
             TextField(
               controller: filenameController,
             ),
-            buttonText: '应用',
-            title: '局面代码')
+            buttonText: S.of(context).apply,
+            title: S.of(context).situation_code)
         .then((v) {
       if (v) {
         if(RegExp(r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$').hasMatch(fenStr)) {
           gamer.newGame(fenStr);
         }else{
-          alert('无效代码');
+          alert(S.of(context).invalid_code);
         }
       }
     });
@@ -213,7 +214,7 @@ class _GameBoardState extends State<GameBoard> {
 
   copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
-    alert('复制成功');
+    alert(S.of(context).copy_success);
   }
 
   saveManual() async {
@@ -232,7 +233,7 @@ class _GameBoardState extends State<GameBoard> {
       });
     } else {
       String result = await FilesystemPicker.open(
-        title: '选择保存位置',
+        title: S.of(context).select_directory_save,
         context: context,
         rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
         fsType: FilesystemType.folder,
@@ -250,12 +251,12 @@ class _GameBoardState extends State<GameBoard> {
                   controller: filenameController,
                 ),
                 buttonText: 'Save',
-                title: '保存文件名')
+                title: S.of(context).save_filename)
             .then((v) {
           if (v) {
             List<int> fData = gbk.encode(content);
             File('$result/$filename').writeAsBytes(fData).then((File file) {
-              alert('保存成功');
+              alert(S.of(context).save_success);
             });
           }
         });
@@ -284,7 +285,7 @@ class _GameBoardState extends State<GameBoard> {
 
   void loadFile() async {
     String path = await FilesystemPicker.open(
-      title: '选择棋谱文件',
+      title: S.of(context).select_pgn_file,
       context: context,
       rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
       fsType: FilesystemType.file,

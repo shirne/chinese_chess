@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'chess_box.dart';
 import 'chess_pieces.dart';
 import 'elements/board.dart';
+import 'generated/l10n.dart';
 import 'models/chess_item.dart';
 import 'models/chess_manual.dart';
 import 'models/chess_pos.dart';
@@ -167,14 +168,14 @@ class EditFenState extends State<EditFen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('编辑局面'),
+        title: Text(S.of(context).edit_code),
         actions: [
           TextButton(
             onPressed: () {
               editOK();
             },
             child: Text(
-              '确定',
+              S.of(context).save,
               style: TextStyle(color: Colors.white),
             ),
           )

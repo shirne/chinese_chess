@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
+import 'generated/l10n.dart';
 import 'models/chess_manual.dart';
 import 'elements/board.dart';
 import 'models/chess_item.dart';
@@ -80,16 +81,16 @@ class ChessState extends State<Chess> {
         (parts.length > 1 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
       case 'checkMate':
-        toast('将军');
+        toast(S.of(context).check);
         break;
       case ChessManual.resultFstLoose:
-        alertResult(resultText ?? '先负');
+        alertResult(resultText ?? S.of(context).red_loose);
         break;
       case ChessManual.resultFstWin:
-        alertResult(resultText ?? '先胜');
+        alertResult(resultText ?? S.of(context).red_win);
         break;
       case ChessManual.resultFstDraw:
-        alertResult(resultText ?? '和棋');
+        alertResult(resultText ?? S.of(context).red_draw);
         break;
       default:
         break;
@@ -151,9 +152,9 @@ class ChessState extends State<Chess> {
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
       toast(
-          '对方请求和棋',
+          S.of(context).request_draw,
           SnackBarAction(
-            label: '同意和棋',
+            label: S.of(context).agree_to_draw,
             onPressed: () {
               gamer.player.completeMove(PlayerDriver.rstDraw);
             },
@@ -165,7 +166,7 @@ class ChessState extends State<Chess> {
       }
     }
     if (move == PlayerDriver.rstRqstRetract) {
-      confirm('对方请求悔棋', '同意悔棋', '拒绝悔棋').then((bool isAgree) {
+      confirm(S.of(context).request_retract, S.of(context).agree_retract, S.of(context).disagree_retract).then((bool isAgree) {
         gamer.player.completeMove(isAgree ? PlayerDriver.rstRetract : '');
       });
       return;
@@ -232,16 +233,16 @@ class ChessState extends State<Chess> {
     ChessRule rule = ChessRule(gamer.fen.copy());
     rule.fen.move(move);
     if (rule.isKingMeet(gamer.curHand)) {
-      toast('不能送将');
+      toast(S.of(context).cant_send_check);
       return false;
     }
 
     /// todo 这里送将和应将判断不准确
     if (rule.isCheckMate(gamer.curHand)) {
       if (gamer.isCheckMate) {
-        toast('请应将');
+        toast(S.of(context).pls_parry_check);
       } else {
-        toast('不能送将');
+        toast(S.of(context).cant_send_check);
       }
       return false;
     }
@@ -355,7 +356,7 @@ class ChessState extends State<Chess> {
   }
 
   alertResult(message) {
-    confirm(message, '再来一局', '再看看').then((isConfirm) {
+    confirm(message, S.of(context).one_more_game, S.of(context).let_me_see).then((isConfirm) {
       if (isConfirm) {
         gamer.newGame();
       }

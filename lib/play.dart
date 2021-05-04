@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess.dart';
+import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play_bot.dart';
@@ -90,13 +91,13 @@ class PlayPageState extends State<PlayPage> {
                       titlePadding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                       titles: [
-                        Text('推荐招法'),
-                        Text('注解')
+                        Text(S.of(context).recommend_move),
+                        Text(S.of(context).remark)
                       ],
                       bodies: [
                         PlayBot(),
                         Center(
-                          child: Text('暂无注解'),
+                          child: Text(S.of(context).no_remark),
                         )
                       ]),
                 )

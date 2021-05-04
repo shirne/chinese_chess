@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'edit_fen.dart';
+import 'generated/l10n.dart';
 import 'models/chess_item.dart';
 import 'elements/piece.dart';
 import 'models/game_manager.dart';
@@ -67,7 +68,7 @@ class _ChessBoxState extends State<ChessBox> {
             children: [
               ElevatedButton(onPressed: (){
                 clearAll();
-              }, child: Text('清除全部'))
+              }, child: Text(S.of(context).clear_all))
             ],
           )
         ],

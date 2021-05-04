@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 
@@ -29,7 +30,7 @@ class PlayStepState extends State<PlayStep> {
     gamer = gameWrapper.gamer;
     gamer.stepNotifier.addListener(updateStep);
     steps = gamer.getSteps();
-    steps.insert(0, '==开始==');
+    steps.insert(0, S.of(context).step_start);
   }
 
   @override
@@ -44,7 +45,7 @@ class PlayStepState extends State<PlayStep> {
       setState(() {
         currentStep = gamer.currentStep;
         if (gamer.currentStep == 0) {
-          steps = ['==开始=='];
+          steps = [S.of(context).step_start];
         } else {
           steps.removeRange(currentStep + 1, steps.length);
         }

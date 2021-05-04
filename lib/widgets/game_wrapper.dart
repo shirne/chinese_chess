@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chinese_chess/generated/l10n.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,7 @@ class GameWrapperState extends State<GameWrapper> {
         Completer<bool> completer = Completer<bool>();
         if(widget.isMain) {
           MyDialog.of(context)
-              .confirm('确定退出？', buttonText: '退出', cancelText: '再想想')
+              .confirm(S.of(context).exit_now, buttonText: S.of(context).yes_exit, cancelText: S.of(context).dont_exit)
               .then((sure) {
             if (sure) {
               print('gamer destroy');
