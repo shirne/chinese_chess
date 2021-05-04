@@ -1,11 +1,9 @@
-
-
 import 'package:chinese_chess/models/game_manager.dart';
 
 import '../driver/player_driver.dart';
 import 'chess_item.dart';
 
-class Player{
+class Player {
   ChessItem item;
   GameManager manager;
   String lastPosition = '';
@@ -18,35 +16,41 @@ class Player{
   DriverType _driverType;
   PlayerDriver driver;
 
-  Player(this.team, this.manager,{this.title = '', DriverType type = DriverType.user}){
+  Player(this.team, this.manager,
+      {this.title = '', DriverType type = DriverType.user}) {
     this.driverType = type;
   }
 
-  set driverType(DriverType type){
+  set driverType(DriverType type) {
     _driverType = type;
     this.driver = PlayerDriver.createDriver(this, _driverType);
   }
-  DriverType get driverType{
+
+  DriverType get driverType {
     return _driverType;
   }
 
-  bool get isUser{
+  bool get isUser {
     return _driverType == DriverType.user;
   }
-  bool get isRobot{
+
+  bool get isRobot {
     return _driverType == DriverType.robot;
   }
 
-  bool get canBacktrace{
+  bool get canBacktrace {
     return driver.canBacktrace;
   }
 
   // 通知界面，从界面上过来的着法不需要调用
-  Future<String> onMove(String move){
+  Future<String> onMove(String move) {
     print('onmove');
     manager.moveNotifier.value = move;
 
-    if(move.isNotEmpty && move != PlayerDriver.rstDraw) {
+    if (move.isNotEmpty &&
+        (!PlayerDriver.isAction(move) ||
+            move.contains(PlayerDriver.rstRqstDraw) ||
+            move == PlayerDriver.rstRqstRetract)) {
       Future.delayed(Duration(milliseconds: 500)).then((v) {
         manager.moveNotifier.value = '';
         manager.switchPlayer();
@@ -56,15 +60,15 @@ class Player{
     return Future.value(move);
   }
 
-  Future<bool> onDraw(){
+  Future<bool> onDraw() {
     return driver.tryDraw();
   }
 
-  Future<String> move(){
+  Future<String> move() {
     return driver.move();
   }
 
-  completeMove(String move){
+  completeMove(String move) {
     driver.completeMove(move);
   }
 }
