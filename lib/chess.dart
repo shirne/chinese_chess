@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -50,11 +49,12 @@ class ChessState extends State<Chess> {
     super.initState();
     initGamer();
   }
-  initGamer(){
-    if(gamer != null)return;
+
+  initGamer() {
+    if (gamer != null) return;
     GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>();
-    if(gameWrapper == null)return;
+        context.findAncestorStateOfType<GameWrapperState>();
+    if (gameWrapper == null) return;
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
     gamer.resultNotifier.addListener(onResult);
@@ -76,18 +76,20 @@ class ChessState extends State<Chess> {
       return;
     }
     List<String> parts = gamer.resultNotifier.value.split(' ');
+    String resultText =
+        (parts.length > 0 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
       case 'checkMate':
         toast('将军');
         break;
       case ChessManual.resultFstLoose:
-        alertResult(parts[0].length>0 ? parts[1]:'先负');
+        alertResult(resultText ?? '先负');
         break;
       case ChessManual.resultFstWin:
-        alertResult(parts[0].length>0 ? parts[1]:'先胜');
+        alertResult(resultText ?? '先胜');
         break;
       case ChessManual.resultFstDraw:
-        alertResult(parts.length > 1 ? parts[1] : '和棋');
+        alertResult(resultText ?? '和棋');
         break;
       default:
         break;
@@ -142,56 +144,54 @@ class ChessState extends State<Chess> {
   }
 
   /// 从外部过来的指令
-  onMove(){
+  onMove() {
     String move = gamer.moveNotifier.value;
     print('onmove $move');
-    if(move.isEmpty)return;
-    if(move == PlayerDriver.rstGiveUp)return;
-    if(move.contains(PlayerDriver.rstRqstDraw)){
-      confirm('对方请求和棋','同意和棋','忽略').then(
-          (bool isAgree) {
-            if(isAgree) {
-              gamer.player.completeMove(PlayerDriver.rstDraw);
-            }
-          }
-      );
-      toast('对方请求和棋', SnackBarAction(
-        label: '同意和棋',
-        onPressed: (){
+    if (move.isEmpty) return;
+    if (move == PlayerDriver.rstGiveUp) return;
+    if (move.contains(PlayerDriver.rstRqstDraw)) {
+      confirm('对方请求和棋', '同意和棋', '忽略').then((bool isAgree) {
+        if (isAgree) {
           gamer.player.completeMove(PlayerDriver.rstDraw);
-        },
-      ), 5);
-      move = move.replaceAll(PlayerDriver.rstRqstDraw,'').trim();
-      if(move.isEmpty) {
+        }
+      });
+      toast(
+          '对方请求和棋',
+          SnackBarAction(
+            label: '同意和棋',
+            onPressed: () {
+              gamer.player.completeMove(PlayerDriver.rstDraw);
+            },
+          ),
+          5);
+      move = move.replaceAll(PlayerDriver.rstRqstDraw, '').trim();
+      if (move.isEmpty) {
         return;
       }
     }
-    if(move == PlayerDriver.rstRqstRetract){
-      confirm('对方请求悔棋','同意悔棋','拒绝悔棋').then(
-              (bool isAgree) {
-            gamer.player.completeMove(isAgree ? PlayerDriver.rstRetract : '');
-          }
-      );
+    if (move == PlayerDriver.rstRqstRetract) {
+      confirm('对方请求悔棋', '同意悔棋', '拒绝悔棋').then((bool isAgree) {
+        gamer.player.completeMove(isAgree ? PlayerDriver.rstRetract : '');
+      });
       return;
     }
 
     ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
     ChessPos toPosition = ChessPos.fromCode(move.substring(2, 4));
     activeItem = items.firstWhere(
-            (item) => !item.isBlank && item.position == fromPos,
+        (item) => !item.isBlank && item.position == fromPos,
         orElse: () => ChessItem('0'));
     ChessItem newActive = items.firstWhere(
-            (item) => !item.isBlank && item.position == toPosition,
+        (item) => !item.isBlank && item.position == toPosition,
         orElse: () => ChessItem('0'));
     setState(() {
-      if(activeItem != null && !activeItem.isBlank) {
+      if (activeItem != null && !activeItem.isBlank) {
         print('$activeItem => $move');
 
-        activeItem.position = ChessPos.fromCode( move.substring(2,4));
+        activeItem.position = ChessPos.fromCode(move.substring(2, 4));
         lastPosition = fromPos.toCode();
 
-
-        if(newActive != null && !newActive.isBlank) {
+        if (newActive != null && !newActive.isBlank) {
           print('eat $newActive');
           // 被吃的子的快照
           dieFlash = ChessItem(newActive.code, position: toPosition);
@@ -202,11 +202,12 @@ class ChessState extends State<Chess> {
             });
           });
         }
-      }else{
+      } else {
         print('Remote move error $move');
       }
     });
   }
+
   animateMove(ChessPos nextPosition) {
     print('$activeItem => $nextPosition');
     setState(() {
@@ -358,18 +359,20 @@ class ChessState extends State<Chess> {
   }
 
   void toast(String message, [SnackBarAction action, int duration = 3]) {
-    MyDialog.of(context).snack(message,action: action, duration: duration);
+    MyDialog.of(context).snack(message, action: action, duration: duration);
   }
 
   alertResult(message) {
-    confirm(message, '再来一局', '再看看').then((isConfirm){
-      if(isConfirm){
+    confirm(message, '再来一局', '再看看').then((isConfirm) {
+      if (isConfirm) {
         gamer.newGame();
       }
     });
   }
+
   Future<bool> confirm(String message, String agreeText, String cancelText) {
-    return MyDialog.of(context).confirm(message, buttonText: agreeText,  cancelText: cancelText);
+    return MyDialog.of(context)
+        .confirm(message, buttonText: agreeText, cancelText: cancelText);
   }
 
   Future<void> alert(String message) async {
@@ -432,7 +435,7 @@ class ChessState extends State<Chess> {
 
     return GestureDetector(
       onTapUp: (detail) {
-        if(gamer.isLock)return;
+        if (gamer.isLock) return;
         setState(() {
           onPointer(pointTrans(detail.localPosition));
         });
