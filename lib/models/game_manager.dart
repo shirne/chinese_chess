@@ -289,8 +289,15 @@ class GameManager{
   }
 
   /// 从用户落着 todo 检查出发点是否有子，检查落点是否对方子
-  addStep(ChessPos from, ChessPos next){
-    addMove('${from.toCode()}${next.toCode()}');
+  addStep(ChessPos from, ChessPos next) async{
+    player.completeMove('${from.toCode()}${next.toCode()}');
+
+    checkResult(curHand == 0 ? 1 : 0 , currentStep - 1).then((canNext){
+      print(canNext);
+      if(canNext){
+        switchPlayer();
+      }
+    });
   }
 
   addMove(String move){
@@ -339,8 +346,6 @@ class GameManager{
     currentStep = manual.moves.length;
 
     stepNotifier.value = manual.moves.last.toChineseString();
-
-    checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
   }
 
   setResult(String result, [String description = '']){
@@ -354,14 +359,15 @@ class GameManager{
   }
 
   /// 棋局结果判断
-  checkResult(int hand, int curMove) async{
+  Future<bool> checkResult(int hand, int curMove) async{
     // 判断和棋
     if(unEatCount >= 120){
       setResult(ChessManual.resultFstDraw, '60回合无吃子判和');
-      return;
+      return false;
     }
 
     isCheckMate = rule.isCheckMate(hand);
+    print('是否将军 $isCheckMate');
 
     // 判断输赢，包括能否应将，长将
     if(isCheckMate){
@@ -380,22 +386,25 @@ class GameManager{
             }
             if(hisMove + 6 < curMove){
               setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '不变招长将作负');
-              return;
+              return false;
             }
             hisMove -= 2;
           }
         }
 
         resultNotifier.value = 'checkMate';
-        Future.delayed(Duration(milliseconds: 10)).then((value) => resultNotifier.value = '' );
+        Future.delayed(Duration(milliseconds: 30)).then((value) => resultNotifier.value = '' );
       }else{
-        setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin);
+        setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '绝杀');
+        return false;
       }
     }else{
       if(rule.isTrapped(hand)){
         setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '困毙');
+        return false;
       }
     }
+    return true;
   }
 
   getSteps(){

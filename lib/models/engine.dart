@@ -14,7 +14,7 @@ class Engine extends CustomNotifier<String>{
 
   Future<Process> init(){
     ready = false;
-    if(kIsWeb){
+    if(!isSupportEngine){
       return Future.value(null);
     }
 
@@ -29,6 +29,17 @@ class Engine extends CustomNotifier<String>{
       process.stdin.writeln('ucci');
       return process;
     });
+  }
+
+  static bool get isSupportEngine{
+    if(kIsWeb){
+      return false;
+    }
+    if(Platform.isWindows){
+      return true;
+    }
+
+    return false;
   }
 
   void onMessage(List<int> event){
