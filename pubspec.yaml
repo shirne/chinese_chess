@@ -29,10 +29,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   file_picker: ^3.0.1
-  filesystem_picker: #^1.0.4
-    path: ../fluttersamples/filesystem_picker/package
-  shirne_dialog: #^0.0.1
-    path: ../fluttersamples/shirne_dialog
+  filesystem_picker: ^1.0.4
+    # path: ../fluttersamples/filesystem_picker/package
+  shirne_dialog: # ^1.0.1
+    git: https://github.com/shirne/shirne_dialog.git
+    # path: ../fluttersamples/shirne_dialog
   gbk2utf8: ^1.0.1
   universal_html: ^1.2.1
 
