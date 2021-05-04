@@ -38,11 +38,11 @@
 ## 预览
 棋盘界面和棋子取自象棋小巫师的资源<br />
 [Web版在线预览](https://www.shirne.com/demo/chinesechess/) web版需要加载canvaskit，打开较慢
-|开局|将军|
+|将军|Web机器人|
 |:---:|:---:|
-|![开局](preview/01.jpg "开局")|![将军](preview/02.jpg "将军")|
-|加载|棋谱查看|
-|![加载](preview/03.png "加载")|![棋谱查看](preview/04.jpg "棋谱查看")|
+|![将军](preview/01.jpg "将军")|![Web机器人](preview/02.jpg "Web机器人")|
+|粘贴局面代码|棋谱查看|
+|![粘贴局面代码](preview/03.jpg "粘贴局面代码")|![棋谱查看](preview/04.jpg "棋谱查看")|
 |编辑局面|结果|
 |![编辑局面](preview/05.jpg "编辑局面")|![结果](preview/06.jpg "结果")|
 
