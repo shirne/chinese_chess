@@ -1,4 +1,4 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'driver/player_driver.dart';
@@ -38,17 +38,13 @@ class PlayStepState extends State<PlayPlayer> {
     super.dispose();
   }
 
-  onResult(){
-    setState(() {
-
-    });
+  onResult() {
+    setState(() {});
   }
 
-  onReloadGame(){
-    if(gamer.gameNotifier.value != 0)return;
-    setState(() {
-
-    });
+  onReloadGame() {
+    if (gamer.gameNotifier.value != 0) return;
+    setState(() {});
   }
 
   onChangePlayer() {
@@ -93,7 +89,7 @@ class PlayStepState extends State<PlayPlayer> {
         border: Border.all(color: Colors.grey, width: 0.5),
         borderRadius: BorderRadius.all(Radius.circular(2)));
     return Container(
-      width: 209,
+      width: 229,
       child: Column(
         children: [
           ListTile(
@@ -128,34 +124,57 @@ class PlayStepState extends State<PlayPlayer> {
                     Text('棋局信息')
                   ],
                   bodies: [
-                    Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(gamer.manual.event),
-                          Text(
-                              '${gamer.manual.red} (${gamer.manual.chineseResult}) ${gamer.manual.black}'),
-                          Text(gamer.manual.ecco.isEmpty?'':'${gamer.manual.opening}(${gamer.manual.ecco})'),
-                        ],
+                    Center(
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(gamer.manual.event),
+                            Text(
+                                '${gamer.manual.red} (${gamer.manual.chineseResult}) ${gamer.manual.black}'),
+                            Text(gamer.manual.ecco.isEmpty
+                                ? ''
+                                : '${gamer.manual.opening}(${gamer.manual.ecco})'),
+                          ],
+                        ),
                       ),
                     ),
-                    Padding(
-                        padding: EdgeInsets.all(10),
-                        child: GridView.count(
-                          crossAxisCount: 2,
-                          childAspectRatio: 2.8,
-                          children: [
-                            Text('赛事：${gamer.manual.event}'),
-                            Text('轮次：${gamer.manual.round}'),
-                            Text('日期：${gamer.manual.date}'),
-                            Text('地点：${gamer.manual.site}'),
-                            Text('红方：${gamer.manual.redTeam}'),
-                            Text('选手：${gamer.manual.red}'),
-                            Text('黑方：${gamer.manual.blackTeam}'),
-                            Text('选手：${gamer.manual.black}'),
-                          ],
-                        ))
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: Table(
+                        border: null,
+                        columnWidths: {
+                          0: IntrinsicColumnWidth(),
+                          1: FlexColumnWidth(),
+                        },
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.top,
+                        children: [
+                          TableRow(children: [
+                            Text('赛事：'),
+                            Text(gamer.manual.event)
+                          ]),
+                          TableRow(
+                              children: [Text('地点：'), Text(gamer.manual.site)]),
+                          TableRow(
+                              children: [Text('日期：'), Text(gamer.manual.date)]),
+                          TableRow(children: [
+                            Text('轮次：'),
+                            Text(gamer.manual.round)
+                          ]),
+                          TableRow(children: [
+                            Text('红方：'),
+                            Text('${gamer.manual.redTeam}/${gamer.manual.red}'),
+                          ]),
+                          TableRow(children: [
+                            Text('黑方：'),
+                            Text(
+                                '${gamer.manual.blackTeam}/${gamer.manual.black}'),
+                          ]),
+                        ],
+                      ),
+                    )
                   ]),
             ),
           )

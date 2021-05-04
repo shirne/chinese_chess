@@ -6,6 +6,7 @@ class TabCard extends StatefulWidget{
   final List<Widget> titles;
   final List<Widget> bodies;
   final MainAxisAlignment titleAlign;
+  final Alignment bodyAlign;
   final FlexFit titleFit;
   final EdgeInsetsGeometry titlePadding;
   final BoxDecoration titleDecoration;
@@ -20,7 +21,8 @@ class TabCard extends StatefulWidget{
     this.titlePadding,
     this.titleDecoration = const BoxDecoration(color: Color.fromRGBO(0, 0, 0, .1)),
     this.titleActiveDecoration = const BoxDecoration(color: Colors.white),
-    this.titleFit = FlexFit.loose
+    this.titleFit = FlexFit.loose,
+    this.bodyAlign = Alignment.topLeft
   }) : super(key: key);
 
 
@@ -70,7 +72,7 @@ class TabCardState extends State<TabCard> {
           Expanded(
               child: IndexedStack(
                 index: index,
-                alignment: Alignment.center,
+                alignment: widget.bodyAlign,
                 sizing: StackFit.expand,
                 children: widget.bodies,
               )

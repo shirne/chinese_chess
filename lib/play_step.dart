@@ -5,9 +5,9 @@ import 'models/game_manager.dart';
 
 class PlayStep extends StatefulWidget {
   final BoxDecoration decoration;
-  final double height;
+  final double width;
 
-  const PlayStep({Key key, this.decoration, this.height}) : super(key: key);
+  const PlayStep({Key key, this.decoration, this.width}) : super(key: key);
 
   @override
   State<PlayStep> createState() => PlayStepState();
@@ -71,7 +71,7 @@ class PlayStepState extends State<PlayStep> {
   Widget build(BuildContext context) {
     int step = 0;
     return Container(
-      width: widget.height,
+      width: widget.width,
       padding: EdgeInsets.all(10),
       decoration: widget.decoration,
       child: ListView(

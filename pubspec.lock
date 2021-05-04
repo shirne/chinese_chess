@@ -81,10 +81,10 @@ packages:
   filesystem_picker:
     dependency: "direct main"
     description:
-      path: "../fluttersamples/filesystem_picker/package"
-      relative: true
-    source: path
-    version: "2.0.0-nullsafety.0"
+      name: filesystem_picker
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub"
+    source: hosted
+    version: "1.0.4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -159,10 +159,12 @@ packages:
   shirne_dialog:
     dependency: "direct main"
     description:
-      path: "../fluttersamples/shirne_dialog"
-      relative: true
-    source: path
-    version: "0.0.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: ab9dc60428765c870eff23ec8055fbc80190e52c
+      url: "https://github.com/shirne/shirne_dialog.git"
+    source: git
+    version: "1.0.1"
   sky_engine:
     dependency: transitive
     description: flutter

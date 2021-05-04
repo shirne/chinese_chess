@@ -74,7 +74,7 @@ class PlayPageState extends State<PlayPage> {
                       ),
                       PlayStep(
                         decoration: decoration,
-                        height: 200,
+                        width: 180,
                       ),
                     ],
                   ),
