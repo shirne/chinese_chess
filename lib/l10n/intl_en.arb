@@ -12,6 +12,10 @@
   "setting": "Setting",
   "feature_not_available": "Feature is not available",
 
+  "mode_robot": "Robot Mode",
+  "mode_online": "Online Mode",
+  "mode_free": "Free Mode",
+
   "clear_all": "Clear All",
   "save": "Apply",
 

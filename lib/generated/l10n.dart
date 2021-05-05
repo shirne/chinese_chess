@@ -145,6 +145,36 @@ class S {
     );
   }
 
+  /// `Robot Mode`
+  String get mode_robot {
+    return Intl.message(
+      'Robot Mode',
+      name: 'mode_robot',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Online Mode`
+  String get mode_online {
+    return Intl.message(
+      'Online Mode',
+      name: 'mode_online',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free Mode`
+  String get mode_free {
+    return Intl.message(
+      'Free Mode',
+      name: 'mode_free',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Clear All`
   String get clear_all {
     return Intl.message(

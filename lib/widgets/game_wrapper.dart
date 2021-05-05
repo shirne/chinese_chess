@@ -31,11 +31,22 @@ class GameWrapperState extends State<GameWrapper> {
       print('gamer inited');
       gamer.dispose();
     }
+
+      onInit();
+
+  }
+
+  void onInit() async{
+    if(widget.isMain){
+      await Future.delayed(Duration(milliseconds: 500));
+    }
     gamer = GameManager();
-    gamer.init().then((val) {
-      setState(() {
-        inited = true;
-      });
+    await gamer.init();
+    if(widget.isMain){
+      await Future.delayed(Duration(milliseconds: 500));
+    }
+    setState(() {
+      inited = true;
     });
   }
 
@@ -67,7 +78,7 @@ class GameWrapperState extends State<GameWrapper> {
         }
         return completer.future;
       },
-      child: inited ? widget.child : Center(child: CircularProgressIndicator()),
+      child: inited ? widget.child :Scaffold(body: Center(child: CircularProgressIndicator()),) ,
     );
   }
 

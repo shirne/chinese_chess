@@ -12,6 +12,10 @@
   "setting": "设置",
   "feature_not_available": "功能暂未实现",
 
+  "mode_robot": "人机模式",
+  "mode_online": "联网模式",
+  "mode_free": "自由模式",
+
   "clear_all": "清除全部",
   "save": "确定",
 

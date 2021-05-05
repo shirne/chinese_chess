@@ -90,9 +90,7 @@ class GameManager{
     skin = ChessSkin("woods");
     skin.readyNotifier.addListener(() {
       gameNotifier.value = 0;
-      next();
     });
-
 
     return true;
   }
@@ -181,20 +179,28 @@ class GameManager{
     }
   }
 
-  newGame([String fen = ChessManual.startFen]){
+  stop(){
     gameNotifier.value = -1;
     isStop = true;
-    engine.stop();
+    if(engine != null)engine.stop();
     currentStep = 0;
-    stepNotifier.value = 'clear';
-    messageNotifier.value = 'clear';
+    stepNotifier.value = '';
+    messageNotifier.value = '';
     resultNotifier.value = '';
     lockNotifier.value = true;
+  }
 
+  newGame([String fen = ChessManual.startFen]){
+    stop();
+
+    stepNotifier.value = 'clear';
+    messageNotifier.value = 'clear';
     manual = ChessManual(fen:fen);
     rule = ChessRule(manual.currentFen);
     hands[0].title = manual.red;
+    hands[0].driverType = DriverType.user;
     hands[1].title = manual.black;
+    hands[1].driverType = DriverType.user;
     curHand = manual.startHand;
 
     gameNotifier.value = 0;
@@ -202,12 +208,7 @@ class GameManager{
   }
 
   loadPGN(String pgn){
-    gameNotifier.value = -1;
-    currentStep = 0;
-    stepNotifier.value = 'clear';
-    messageNotifier.value = 'clear';
-    resultNotifier.value = '';
-    lockNotifier.value = true;
+    stop();
 
     _loadPGN(pgn).then((result){
       gameNotifier.value = 0;
@@ -439,31 +440,37 @@ class GameManager{
 
   Future<bool> startEngine(){
     if(engine != null) {
-      return Future.delayed(Duration(milliseconds: 500));
+      return Future.value(true);
     }
     Completer<bool> engineFuture = Completer<bool>();
     engine = Engine();
     engineOK = false;
     engine.init().then((v){
-      engineFuture.complete(true);
+      if(v != null) {
+        engineOK = true;
+        engine.addListener(parseMessage);
+        engineFuture.complete(true);
+      }else{
+        engineFuture.complete(false);
+      }
     });
-    engine.addListener(parseMessage);
     return engineFuture.future;
   }
 
   requestHelp(){
     if(engine == null){
       startEngine().then((v){
-        requestHelp();
+        if(v) {
+          requestHelp();
+        }else{
+          print('engine is not support');
+        }
       });
     }else {
       if(engineOK) {
         isStop = true;
         engine.stop();
-        //currentFen = map.toFen();
-        engine.position(
-            manual.currentFen.fen + ' ' + (curHand > 0 ? 'b' : 'w') +
-                ' - - $unEatCount ' + (manual.moves.length ~/ 2).toString());
+        engine.position(fenStr);
         engine.go(depth: 10);
       }else{
         print('engine is not ok');
@@ -472,7 +479,7 @@ class GameManager{
   }
 
   String get fenStr{
-    return '${manual.currentFen.fen} ${curHand>0?'b':'w'} - - 0 1';
+    return '${manual.currentFen.fen} ${curHand>0?'b':'w'} - - $unEatCount '+(manual.moves.length ~/ 2).toString();
   }
 
   Player get player{

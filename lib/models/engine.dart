@@ -1,5 +1,6 @@
 
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,8 @@ import '../foundation/customer_notifier.dart';
 
 class Engine extends CustomNotifier<String>{
   String engine = 'eleeye.exe';
+  List<Completer<String>> readyCompleters = [];
+  Completer<bool> stopCompleter;
   bool ready;
 
   Process process;
@@ -50,9 +53,30 @@ class Engine extends CustomNotifier<String>{
         ready = false;
         process = null;
       }else if(line.isNotEmpty && this.hasListeners) {
+        if(line.startsWith('nobestmove') || line.startsWith('bestmove ') ){
+          if(stopCompleter != null && !stopCompleter.isCompleted){
+            stopCompleter.complete(true);
+          }else if(readyCompleters.length > 0){
+            readyCompleters.removeAt(0).complete(line);
+          }
+        }
         this.notifyListeners(line);
       }
     });
+  }
+
+  Future<String> requestMove(String fen,{int time = 0, int increment = 0, String type = '', int depth = 0, int nodes = 0}){
+    Completer<String> readyCompleter = Completer();
+    stop().then((bool){
+      if(bool){
+        readyCompleters.add(readyCompleter);
+        position(fen);
+        go(time:time, increment:increment, type: type, depth: depth, nodes: nodes);
+      }else{
+        readyCompleter.complete('isbusy');
+      }
+    });
+    return readyCompleter.future;
   }
 
   void sendCommand(String command){
@@ -96,8 +120,13 @@ class Engine extends CustomNotifier<String>{
     sendCommand('probe $fen');
   }
 
-  void stop(){
+  Future<bool> stop(){
+    if(!ready || (stopCompleter != null && !stopCompleter.isCompleted)){
+      return Future.value(false);
+    }
+    stopCompleter = Completer();
     sendCommand('stop');
+    return stopCompleter.future;
   }
 
   void quit(){

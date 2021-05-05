@@ -11,6 +11,7 @@ import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'generated/l10n.dart';
+import 'models/play_mode.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play.dart';
@@ -23,6 +24,7 @@ class GameBoard extends StatefulWidget {
 
 class _GameBoardState extends State<GameBoard> {
   GameManager gamer;
+  PlayMode mode;
 
   @override
   void initState() {
@@ -39,6 +41,48 @@ class _GameBoardState extends State<GameBoard> {
 
   alert(message) {
     MyDialog.of(context).alert(message);
+  }
+
+  Widget selectMode(){
+    double maxHeight = MediaQuery.of(context).size.height;
+    return Center(
+        child:Container(
+          height: maxHeight * 0.6,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+            ElevatedButton.icon(
+              onPressed: (){
+                setState(() {
+                  mode = PlayMode.modeRobot;
+                });
+              },
+              icon: Icon(Icons.android),
+              label: Text(S.of(context).mode_robot),
+            ),
+            ElevatedButton.icon(
+              onPressed: (){
+                MyDialog.of(context).toast(S.of(context).feature_not_available, icon: MyDialog.iconError);
+                return;
+                setState(() {
+                  mode = PlayMode.modeOnline;
+                });
+              },
+              icon: Icon(Icons.wifi),
+              label: Text(S.of(context).mode_online),
+            ),
+            ElevatedButton.icon(
+              onPressed: (){
+                setState(() {
+                  mode = PlayMode.modeFree;
+                });
+              },
+              icon: Icon(Icons.map),
+              label: Text(S.of(context).mode_free),
+            ),
+          ],),
+        )
+    );
   }
 
   @override
@@ -130,8 +174,11 @@ class _GameBoardState extends State<GameBoard> {
               leading: Icon(Icons.add),
               title: Text(S.of(context).new_game),
               onTap: () {
-                gamer.newGame();
                 Navigator.pop(context);
+                setState(() {
+                  gamer.stop();
+                  mode = null;
+                });
               },
             ),
             ListTile(
@@ -170,7 +217,7 @@ class _GameBoardState extends State<GameBoard> {
         ),
       ),
       body: Center(
-        child: PlayPage(),
+        child: mode == null ? selectMode() : PlayPage(mode:mode),
       ),
     );
   }

@@ -15,6 +15,7 @@ import 'player_driver.dart';
 class DriverRobot extends PlayerDriver{
   DriverRobot(Player player) : super(player);
   Completer<String> requestMove;
+  bool isCleared = true;
 
   Future<bool> tryDraw(){
     return Future.value(true);
@@ -37,9 +38,12 @@ class DriverRobot extends PlayerDriver{
   }
   getMoveFromEngine() async{
     player.manager.startEngine().then((v){
-      player.manager.engine.addListener(onEngineMessage);
-      player.manager.engine.position(player.manager.fenStr);
-      player.manager.engine.go(depth: 10);
+      if(v){
+        player.manager.engine.requestMove(player.manager.fenStr, depth: 10)
+            .then(onEngineMessage);
+      }else{
+        getMove();
+      }
     });
   }
 
@@ -49,12 +53,21 @@ class DriverRobot extends PlayerDriver{
       case 'ucciok':
         break;
       case 'nobestmove':
+      case 'isbusy':
+        if(!isCleared){
+          isCleared=true;
+          return;
+        }
         if (!requestMove.isCompleted) {
           player.manager.engine.removeListener(onEngineMessage);
           getMove();
         }
         break;
       case 'bestmove':
+        if(!isCleared){
+          isCleared=true;
+          return;
+        }
         player.manager.engine.removeListener(onEngineMessage);
         completeMove(parts[1]);
         break;

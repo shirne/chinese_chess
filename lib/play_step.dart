@@ -26,11 +26,10 @@ class PlayStepState extends State<PlayStep> {
     super.initState();
     _controller = ScrollController(keepScrollOffset: true);
     GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.stepNotifier.addListener(updateStep);
     steps = gamer.getSteps();
-    steps.insert(0, S.of(context).step_start);
   }
 
   @override
@@ -70,6 +69,9 @@ class PlayStepState extends State<PlayStep> {
 
   @override
   Widget build(BuildContext context) {
+    if(steps.length < 1){
+      steps.insert(0, S.of(context).step_start);
+    }
     int step = 0;
     return Container(
       width: widget.width,

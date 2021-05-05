@@ -1,10 +1,12 @@
 
+import 'package:chinese_chess/driver/player_driver.dart';
 import 'package:chinese_chess/play_step.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess.dart';
 import 'generated/l10n.dart';
+import 'models/play_mode.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play_bot.dart';
@@ -12,12 +14,16 @@ import 'play_player.dart';
 import 'widgets/tab_card.dart';
 
 class PlayPage extends StatefulWidget {
+  final PlayMode mode;
+
+  const PlayPage({Key key, this.mode}) : super(key: key);
   @override
   State<StatefulWidget> createState() => PlayPageState();
 }
 
 class PlayPageState extends State<PlayPage> {
   GameManager gamer;
+  bool inited = false;
 
   @override
   void initState() {
@@ -27,6 +33,16 @@ class PlayPageState extends State<PlayPage> {
     gamer = gameWrapper.gamer;
   }
 
+  initGame() async{
+    if(inited)return;
+    inited=true;
+    gamer.newGame();
+    if(widget.mode == PlayMode.modeRobot){
+      gamer.switchDriver(1, DriverType.robot);
+    }
+    gamer.next();
+  }
+
   @override
   dispose() {
     super.dispose();
@@ -34,6 +50,7 @@ class PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
+    initGame();
     BoxDecoration decoration = BoxDecoration(
         border: Border.all(color: Colors.grey, width: 0.5),
         borderRadius: BorderRadius.all(Radius.circular(2)));
