@@ -32,11 +32,26 @@ dependencies:
   intl: ^0.17.0
   cupertino_icons: ^1.0.2
   file_picker: ^3.0.1
+  #desktop_window: ^0.4.0
+  window_size:
+    git:
+      url: git://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
+      ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
+  menubar:
+    git:
+      url: git://github.com/google/flutter-desktop-embedding.git
+      path: plugins/menubar
+      ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
   filesystem_picker: ^1.0.4
-    # path: ../fluttersamples/filesystem_picker/package
+  # path: ../fluttersamples/filesystem_picker/package
+  file_selector: ^0.8.2
+  file_selector_windows: ^0.0.2
+  file_selector_macos: ^0.0.4
+  file_selector_linux: ^0.0.2
   shirne_dialog: # ^1.0.1
     git: https://github.com/shirne/shirne_dialog.git
-    # path: ../fluttersamples/shirne_dialog
+    #path: ../fluttersamples/shirne_dialog
   gbk2utf8: ^1.0.1
   universal_html: ^1.2.1
 

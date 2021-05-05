@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -186,7 +188,7 @@ class _GameBoardState extends State<GameBoard> {
               title: Text(S.of(context).load_manual),
               onTap: () {
                 Navigator.pop(context);
-                kIsWeb ? requestFile() : loadFile();
+                loadFile();
               },
             ),
             ListTile(
@@ -268,50 +270,81 @@ class _GameBoardState extends State<GameBoard> {
     String content = gamer.manual.export();
     String filename = '${DateTime.now().millisecondsSinceEpoch ~/ 1000}.pgn';
     if (kIsWeb) {
-      List<int> fData = gbk.encode(content);
-      var link = html.window.document.createElement('a');
-      link.setAttribute('download', filename);
-      link.style.display = 'none';
-      link.setAttribute('href', Uri.dataFromBytes(fData).toString());
-      html.window.document.getElementsByTagName('body')[0].append(link);
-      link.click();
-      Future<void>.delayed(Duration(seconds: 10)).then((v) {
-        link.remove();
-      });
-    } else {
-      String result = await FilesystemPicker.open(
-        title: S.of(context).select_directory_save,
-        context: context,
-        rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
-        fsType: FilesystemType.folder,
-        folderIconColor: Colors.teal,
-        fileTileSelectMode: FileTileSelectMode.wholeTile,
-      );
-      if (result != null && result.isNotEmpty) {
-        TextEditingController filenameController =
-            TextEditingController(text: filename);
-        filenameController.addListener(() {
-          filename = filenameController.text;
-        });
-        confirm(
-                TextField(
-                  controller: filenameController,
-                ),
-                buttonText: 'Save',
-                title: S.of(context).save_filename)
-            .then((v) {
-          if (v) {
-            List<int> fData = gbk.encode(content);
-            File('$result/$filename').writeAsBytes(fData).then((File file) {
-              alert(S.of(context).save_success);
-            });
-          }
-        });
-      }
+      _saveManualWeb(content, filename);
+    } else if(Platform.isAndroid || Platform.isIOS) {
+      _saveManualMobile(content, filename);
+    } else if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
+      _saveManualWindow(content, filename);
     }
   }
 
-  void requestFile() async {
+  _saveManualWeb(String content, String filename){
+    List<int> fData = gbk.encode(content);
+    var link = html.window.document.createElement('a');
+    link.setAttribute('download', filename);
+    link.style.display = 'none';
+    link.setAttribute('href', Uri.dataFromBytes(fData).toString());
+    html.window.document.getElementsByTagName('body')[0].append(link);
+    link.click();
+    Future<void>.delayed(Duration(seconds: 10)).then((v) {
+      link.remove();
+    });
+  }
+  _saveManualMobile(String content, String filename) async{
+    String result = await FilesystemPicker.open(
+      title: S.of(context).select_directory_save,
+      context: context,
+      rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
+      fsType: FilesystemType.folder,
+      folderIconColor: Colors.teal,
+      fileTileSelectMode: FileTileSelectMode.wholeTile,
+    );
+    if (result != null && result.isNotEmpty) {
+      TextEditingController filenameController =
+      TextEditingController(text: filename);
+      filenameController.addListener(() {
+        filename = filenameController.text;
+      });
+      confirm(
+          TextField(
+            controller: filenameController,
+          ),
+          buttonText: 'Save',
+          title: S.of(context).save_filename)
+          .then((v) {
+        if (v) {
+          List<int> fData = gbk.encode(content);
+          File('$result/$filename').writeAsBytes(fData).then((File file) {
+            alert(S.of(context).save_success);
+          });
+        }
+      });
+    }
+  }
+  _saveManualWindow(String content, String filename) async{
+    final path = await FileSelectorPlatform.instance.getSavePath(
+      suggestedName: filename,
+    );
+    if (path == null) {
+      return;
+    }
+    final fileData = gbk.encode(content);
+    File(path).writeAsBytes(fileData).then((File file) {
+      alert(S.of(context).save_success);
+    });
+  }
+
+  loadFile(){
+    if(kIsWeb){
+      _loadFileWeb();
+    }else if(Platform.isAndroid || Platform.isIOS){
+      _loadFileMobile();
+    }else if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
+      _loadFileWindow();
+    }
+  }
+
+  void _loadFileWeb() async {
     FilePickerResult result = await FilePicker.platform
         .pickFiles(allowedExtensions: ['.pgn', '.PGN']);
 
@@ -330,7 +363,19 @@ class _GameBoardState extends State<GameBoard> {
     }
   }
 
-  void loadFile() async {
+  void _loadFileWindow() async{
+    final typeGroup = XTypeGroup(
+      label: '棋谱文件',
+      extensions: ['pgn'],
+    );
+    final files = await FileSelectorPlatform.instance
+        .openFiles(acceptedTypeGroups: [typeGroup]);
+    if(files != null && files.length>0){
+      gamer.loadPGN(files[0].path);
+    }
+  }
+
+  void _loadFileMobile() async {
     String path = await FilesystemPicker.open(
       title: S.of(context).select_pgn_file,
       context: context,
