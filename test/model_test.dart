@@ -51,7 +51,7 @@ void main() {
       // 局面判断
       rule = ChessRule(manual.currentFen);
       int eTeam = manual.getMove().hand == 0 ? 1 : 0;
-      if(rule.isCheckMate(eTeam)){
+      if(rule.isCheck(eTeam)){
         if(rule.canParryKill(eTeam)){
           print('将军!');
         }else{
@@ -85,20 +85,20 @@ void main() {
 
 
     ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR');
-    bool isCheckMate = rule.isCheckMate(0);
+    bool isCheck = rule.isCheck(0);
     bool canParryKill;
-    expect(isCheckMate, false);
+    expect(isCheck, false);
 
     rule.fen.fen = 'R2akCb2/9/2N3n2/8p/4p4/6p2/P3c3P/4C1r2/4A4/1cBrK1BR1 w - - 0 1';
-    print(rule.isCheckMate(0));
+    print(rule.isCheck(0));
     print(rule.canParryKill(0));
 
     rule.fen.fen = '2b2k3/9/2N1b4/4CR3/p1p6/4N3p/P1P5P/1C7/9/R1BAKAB2';
-    print(rule.isCheckMate(1));
+    print(rule.isCheck(1));
     print(rule.canParryKill(1));
 
     rule.fen.fen = '1nRa1k2r/4P4/5R2n/p5p2/2p5p/9/P1P3P1P/N1C1C1N2/9/2BAKAB2 b - - 0 1';
-    print(rule.isCheckMate(1));
+    print(rule.isCheck(1));
     print(rule.canParryKill(1));
 
     var now = DateTime.now();
@@ -107,8 +107,8 @@ void main() {
 
     rule.fen.fen = '4k4/4a4/2P5n/5N3/9/5R3/9/9/2p2p2r/C3K4';
     print('初始局面：${rule.fen}');
-    isCheckMate = rule.isCheckMate(1);
-    expect(isCheckMate, false);
+    isCheck = rule.isCheck(1);
+    expect(isCheck, false);
     print('判断当前局面未将军');
     print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
@@ -121,8 +121,8 @@ void main() {
     ].forEach((step) {
       print(rule.fen.toChineseString(step[0]));
       rule.fen.move(step[0]);
-      isCheckMate = rule.isCheckMate(1);
-      expect(isCheckMate, true);
+      isCheck = rule.isCheck(1);
+      expect(isCheck, true);
       canParryKill = rule.canParryKill(1);
       if(step[1] == '1-0'){
         expect(canParryKill, false);

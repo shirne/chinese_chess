@@ -5,6 +5,18 @@ import 'chess_pos.dart';
 
 class ChessRule{
 
+  static const chessWeight = {
+    'k': 9,
+    'r': 7,
+    'p++': 5,
+    'n': 3,
+    'c': 3,
+    'p+': 2,
+    'a': 1,
+    'b': 1,
+    'p': 1
+  };
+
   ChessFen fen;
 
   ChessRule(this.fen);
@@ -25,7 +37,7 @@ class ChessRule{
           if(rule.isKingMeet(team)){
             return false;
           }
-          if(rule.isCheckMate(team)){
+          if(rule.isCheck(team)){
             return false;
           }
           return true;
@@ -54,7 +66,7 @@ class ChessRule{
           if(rule.isKingMeet(team)){
             return false;
           }
-          if(rule.isCheckMate(team)){
+          if(rule.isCheck(team)){
             return false;
           }
           // print('$item $point');
@@ -86,8 +98,32 @@ class ChessRule{
     return false;
   }
 
-  /// 检查是否被将军
+  /// 检查方是否能将军
+  bool teamCanCheck(int team){
+    return fen.getAll().any((item)
+        => item.team == team && itemCanCheck(item.position, team)
+    );
+  }
+
+  /// 检查某个子是否能将军
+  bool itemCanCheck(ChessPos pos, int team){
+    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K');
+    if(kPos == null)return true;
+    List<String> points = movePoints(pos, kPos);
+    return points.any((point) {
+      ChessFen newFen = fen.copy();
+      newFen.move(pos.toCode() + point);
+      return ChessRule(newFen).isCheck(team == 0 ? 1 : 0);
+    });
+  }
+
+  /// 检查是否被将死
   bool isCheckMate(int team){
+    return (isCheck(team) && !canParryKill(team)) || isTrapped(team);
+  }
+
+  /// 检查是否被将军
+  bool isCheck(int team){
     ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
     if(kPos == null){
       // 老将没了
@@ -109,27 +145,124 @@ class ChessRule{
     });
   }
 
-  /// 检查被将军次数 todo 优化
-  int checkCheckMate(int team){
-    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+  /// 获取某个位置的根数
+  int rootCount(ChessPos pos, int team){
+    List<ChessItem> items = fen.getAll();
+    return items.where(
+            (item) => item.team == team &&
+            ChessRule(fen).movePoints(item.position, pos).contains(pos)
+    ).length;
+  }
+
+
+  /// 位置权重
+  int positionWeight(ChessPos pos){
+    String item = fen[pos.y][pos.x];
+    List<String> points = movePoints(pos);
+    int team = item.codeUnitAt(0) < ChessFen.colIndexBase ? 0 : 1;
+    int weight = 0;
+    points.forEach((point) {
+      ChessPos cPos = ChessPos.fromCode(point);
+      String code = fen[cPos.y][cPos.x];
+      if((team == 0 && code == 'K') || (team == 1 && code == 'k')){
+
+      }else if(code != '0'){
+        if(code == 'p'){
+          if(cPos.y < 5){
+            code = 'p+';
+            if(cPos.y < 3 && cPos.x > 2 && cPos.x < 7){
+              code = 'p++';
+            }
+          }
+        }else if(code == 'P'){
+          if(cPos.y > 4){
+            code = 'P+';
+            if(cPos.y > 6 && cPos.x > 2 && cPos.x < 7){
+              code = 'P++';
+            }
+          }
+        }
+        weight += chessWeight[code.toLowerCase()];
+      }
+    });
+    return weight;
+  }
+
+  /// 获取抽子招法 将军同时吃对方无根子
+  /// 1.一个子将军，另一个子吃子，判断被吃子能否解将
+  /// 2.躲将后是否有子被吃，被吃子能否解将
+  List<String> getCheckEat(int team){
+    List<String> moves = [];
+
+    // todo
+
+    return moves;
+  }
+
+  /// 获取某方所有的将军招法
+  List<String> getCheckMoves(int team){
+    List<String> moves = [];
+    // 对方老将
+    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K');
     if(kPos == null){
       // 老将没了
-      return 9999;
+      return moves;
     }
-
     List<ChessItem> pieces = fen.getAll();
-    int checkTime = 0;
-    pieces.forEach((element) {
-      if(element.team != team && !['K','k','A','a','B','b'].contains(element.code)){
+
+    pieces.forEach((item) {
+      if(item.team == team && !['K','k'].contains(item.code)){
         // 这里传入目标位置，返回的可行点有针对性
-        List<String> points = movePoints(element.position, kPos);
+        List<String> points = movePoints(item.position, kPos);
         if(points.contains(kPos.toCode())){
-          checkTime ++;
+          moves.add(item.position.toCode()+kPos.toCode());
         }
       }
     });
+    return moves;
+  }
 
-    return checkTime;
+  /// 获取杀招 ，连将，连将过程中局面不会复原，不会被解将
+  List<String> getCheckMate(int team,[ int depth = 10]){
+    List<String> moves = [];
+    List<String> fenHis = [];
+
+    List<ChessItem> pieces = fen.getAll();
+    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K');
+
+    // 正在将军，直接查出吃老将的招法
+    int enemyTeam = team == 0 ? 1 : 0;
+    if(isCheck(enemyTeam)){
+      ChessItem item = pieces.firstWhere((item){
+        if(item.team == team){
+          List<String> moves = movePoints(item.position, kPos);
+          if(moves.contains(kPos)){
+            moves.add(item.position.toCode()+kPos.toCode());
+            return true;
+          }
+        }
+        return false;
+      });
+
+      return moves;
+    }
+
+    // todo
+    ChessFen currentFen = fen.copy();
+    List<int> mvIndex = [0];
+    int curDepth = 0;
+    while(true){
+
+      fenHis.add(currentFen.fen);
+      List<String> checkMoves = ChessRule(currentFen).getCheckMoves(team);
+      checkMoves.forEach((move) {
+
+      });
+
+      mvIndex[curDepth]++;
+    }
+
+    return moves;
   }
 
   /// 获取当前子力能移动的位置 target 为目标位置，如果传入了目标位置，则会优化检测

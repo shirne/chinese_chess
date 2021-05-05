@@ -367,7 +367,7 @@ class GameManager{
       return false;
     }
 
-    isCheckMate = rule.isCheckMate(hand);
+    isCheckMate = rule.isCheck(hand);
     print('是否将军 $isCheckMate');
 
     // 判断输赢，包括能否应将，长将

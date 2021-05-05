@@ -140,7 +140,7 @@ class ChessState extends State<Chess> {
   fetchMovePoints() async {
     setState(() {
       movePoints = gamer.rule.movePoints(activeItem.position);
-      print('move points: $movePoints');
+      // print('move points: $movePoints');
     });
   }
 
@@ -238,7 +238,7 @@ class ChessState extends State<Chess> {
     }
 
     /// todo 这里送将和应将判断不准确
-    if (rule.isCheckMate(gamer.curHand)) {
+    if (rule.isCheck(gamer.curHand)) {
       if (gamer.isCheckMate) {
         toast(S.of(context).pls_parry_check);
       } else {

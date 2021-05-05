@@ -45,7 +45,14 @@ class ChessStep{
 
   @override
   String toString() {
-    return '$code $move '+(isEat?'吃':'');
+    String moveString = '$code $move ';
+    if(isEat){
+      moveString += '吃 ';
+    }
+    if(isCheckMate){
+      moveString += '将 ';
+    }
+    return moveString;
   }
 
   String _chineseString = '';
