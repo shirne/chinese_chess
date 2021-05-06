@@ -92,7 +92,7 @@ class DriverRobot extends PlayerDriver{
     }
     //print(moves);
     await Future.delayed(Duration(milliseconds: 100));
-    List<List<String>> moveGroups = await checkMoves(player.manager.fen, team, moves);
+    Map<String, int> moveGroups = await checkMoves(player.manager.fen, team, moves);
     //print(moveGroups);
     await Future.delayed(Duration(milliseconds: 100));
 
@@ -133,28 +133,27 @@ class DriverRobot extends PlayerDriver{
   }
 
   /// todo 检查着法优势 吃子（被吃子是否有根以及与本子权重），躲吃，生根，将军，叫杀 将着法按权重分组
-  Future<List<List<String>>> checkMoves(ChessFen fen, int team, List<String> moves) async{
-    // 着法分类
-    List<List<String>> groups = [
-      [], // 0.将军
-      [], // 1.叫杀
-      [], // 2.挡将，挡杀
-      [], // 3.捉
-      [], // 4.保
-      [], // 5.吃
-      [], // 6.躲
-      [], // 7.闲
+  Future<Map<String, int>> checkMoves(ChessFen fen, int team, List<String> moves) async{
+    // 着法加分
+    List<int> weights = [
+      49, // 0.将军
+      99, // 1.叫杀
+      199, // 2.挡将，挡杀
+      9, // 3.捉 这四项根据子力价值倍乘
+      19, // 4.保
+      19, // 5.吃
+      9, // 6.躲
+      0, // 7.闲 进 退
     ];
+    Map<String, int> moveWeight = {};
+
     ChessRule rule = ChessRule(fen);
 
     int enemyTeam = team == 0 ? 1 : 0;
     // 被将军的局面，生成的都是挡着
     if(rule.isCheck(team)){
-      // groups[2] = moves;
-      List<String> canChecks = [];
-      List<String> canotChecks = [];
 
-      // todo 计算挡着深度
+      // 计算挡着后果
       moves.forEach((move) {
         ChessRule nRule = ChessRule(fen.copy());
         nRule.fen.move(move);
@@ -162,21 +161,90 @@ class DriverRobot extends PlayerDriver{
         // 走着后还能不能被将
         bool canCheck = nRule.teamCanCheck(enemyTeam);
         if(!canCheck){
-          canChecks.add(move);
+          moveWeight[move] = weights[2];
         }else{
-          canotChecks.add(move);
+          moveWeight[move] = weights[2] * 3;
         }
       });
-      groups[2] = canotChecks + canChecks;
     }else {
+
       moves.forEach((move) {
+        moveWeight[move] = 0;
         ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
         ChessPos toPos = ChessPos.fromCode(move.substring(2, 4));
 
         String chess = fen[fromPos.y][fromPos.x];
-        String toChess = fen[fromPos.y][fromPos.x];
+        String toChess = fen[toPos.y][toPos.x];
         if (toChess != '0') {
-          groups[5].add(move);
+          int toRootCount = rule.rootCount(toPos, enemyTeam);
+          int wPower = rule.getChessWeight(toPos);
+
+          // 被吃子有根，则要判断双方子力价值才吃
+          if(toRootCount > 0){
+            wPower -= rule.getChessWeight(fromPos);
+          }
+          moveWeight[move] += weights[5] * wPower;
+        }
+        int rootCount = rule.rootCount(fromPos, team);
+        int eRootCount = rule.rootCount(fromPos, enemyTeam);
+
+        // 躲吃
+        if(rootCount < 1 && eRootCount > 0){
+          moveWeight[move] += weights[6] * rule.getChessWeight(fromPos);
+        }else if(rootCount < eRootCount){
+          moveWeight[move] += weights[6] * (rule.getChessWeight(fromPos) - rule.getChessWeight(toPos));
+        }
+
+        // 开局兵不挡马路不动兵
+        int chessCount = rule.fen.getAllChr().length;
+        if(chessCount > 28) {
+          if (chess == 'p') {
+            if(fen[fromPos.y+1][fromPos.x] == 'n'){
+              moveWeight[move] += 9;
+            }
+          } else if (chess == 'P') {
+            if(fen[fromPos.y-1][fromPos.x] == 'N'){
+              moveWeight[move] += 9;
+            }
+          }
+
+          // 开局先动马炮
+          if(['c','C','n','N'].contains(chess)){
+            moveWeight[move] += 9;
+          }
+
+        }
+        if(chessCount > 20) {
+          // 车马炮在原位的优先动
+          if ((chess == 'C' && fromPos.y == 2 && (fromPos.x == 1 || fromPos.x == 7)) ||
+              (chess == 'c' && fromPos.y == 7 && (fromPos.x == 1 || fromPos.x == 7))) {
+            moveWeight[move] += 19;
+          }
+          if ((chess == 'N' && fromPos.y == 0) ||(chess == 'n' && fromPos.y == 9)) {
+            moveWeight[move] += 19;
+          }
+          if ((chess == 'R' && fromPos.y == 0) ||(chess == 'r' && fromPos.y == 9)) {
+            moveWeight[move] += 9;
+          }
+        }
+
+        // 马往前跳权重增加
+        if((chess == 'n' && toPos.y < fromPos.y) || (chess == 'N' && toPos.y > fromPos.y)){
+          moveWeight[move] += 9;
+        }
+
+        // 马在原位不动车
+        if((chess == 'r' && fromPos.y == 9) || (chess == 'R' && fromPos.y == 0)){
+          ChessPos nPos = rule.fen.find(chess == 'R'?'N':'n');
+          if(fromPos.x == 0 ){
+            if(nPos.x == 1 && nPos.y == fromPos.y){
+              moveWeight[move] -= rule.getChessWeight(nPos);
+            }
+          }else if(fromPos.x == 8){
+            if(nPos.x == 7 && nPos.y == fromPos.y){
+              moveWeight[move] -= rule.getChessWeight(nPos);
+            }
+          }
         }
 
         ChessRule mRule = ChessRule(fen.copy());
@@ -184,91 +252,72 @@ class DriverRobot extends PlayerDriver{
 
         // 走招后要被将军
         if(rule.teamCanCheck(enemyTeam)){
+
           List<String> checkMoves = rule.getCheckMoves(enemyTeam);
           checkMoves.forEach((eMove) {
             ChessRule eRule = ChessRule(mRule.fen.copy());
             eRule.fen.move(eMove);
             // 不能应将，就是杀招
             if(eRule.canParryKill(team)){
-
+              print('$move 要被将军');
+              moveWeight[move] -= weights[0];
             }else{
-
+              print('$move 有杀招');
+              moveWeight[move] -= weights[1];
             }
           });
         }else{
+          rootCount = rule.rootCount(toPos, team);
+          eRootCount = rule.rootCount(toPos, enemyTeam);
+          if((rootCount == 0 && eRootCount > 0) || rootCount < eRootCount){
+            moveWeight[move] -= rule.getChessWeight(toPos);
+          }
+
+          // 炮震老将
+          if(chess == 'c' || chess == 'C'){
+
+          }
+
+          // 捉子优先
 
         }
       });
+    }
+    int minWeight = 0;
+    moveWeight.forEach((key, value) {
+      if(minWeight > value)minWeight = value;
+    });
 
-      // 检查位置评分
-      Map<String, int> posLevels = {};
-      List<String> poses = moves.map<String>((move) => move.substring(2, 4))
-          .toList();
-
-
-      poses.forEach((pos) {
-        if (posLevels.containsKey(pos)) return;
-        ChessPos target = ChessPos.fromCode(pos);
-        // 己方根数
-        int selfRoots = rule.rootCount(target, team);
-
-        // 对方根数
-        int enemyRoots = rule.rootCount(target, team == 0 ? 1 : 0);
-
-        // 己方无根，对方有根
-        if(selfRoots < 1 && enemyRoots > 0){
-          posLevels[pos] = -2;
-        }else {
-          posLevels[pos] = selfRoots - enemyRoots;
-        }
-      });
-
-      // 生成每步招法的权重
-      Map<String, int> posWeights = {};
-      moves.forEach((move) {
-        int weight = rule.positionWeight(
-            ChessPos.fromCode(move.substring(0, 2)));
-        ChessRule nextRule = ChessRule(rule.fen.copy());
-        nextRule.fen.move(move);
-        String toPos = move.substring(2, 4);
-        int toWeight = rule.positionWeight(ChessPos.fromCode(toPos));
-        int group = toWeight - weight + posLevels[toPos];
-        posWeights[move] = group;
-      });
-
-      print(posWeights);
-      moves.sort((item, item2) =>
-      -posWeights[item].compareTo(posWeights[item2]));
+    if(minWeight < 0){
+      moveWeight.updateAll((key, value) => value - minWeight);
     }
 
-    return groups;
+    print(moveWeight);
+
+    return moveWeight;
   }
 
   /// todo 从分组好的招法中随机筛选一个
-  Future<String> pickMove(List<List<String>> groups) async{
-    int groupIndex = 0;
-    int index = 0;
+  Future<String> pickMove(Map<String, int> groups) async{
+    int totalSum = 0;
+    groups.values.forEach((wgt) {wgt+=1;if(wgt<0)wgt = 0; totalSum += wgt;});
+
     Random random = Random(DateTime
         .now()
         .millisecondsSinceEpoch);
 
-    List<String> moves = groups[groupIndex];
-    while (moves.length < 1 || random.nextDouble() > 0.4) {
-      groupIndex++;
-      if (groupIndex >= groups.length) {
-        groupIndex = 0;
-      }
-      moves = groups[groupIndex];
-    }
-
-    while (random.nextDouble() > 0.4) {
-      index ++;
-      if (index >= moves.length) {
-        index = 0;
+    double rand = random.nextDouble() * totalSum;
+    int curSum = 0;
+    String move = '';
+    for(String key in groups.keys){
+      move = key;
+      curSum += groups[key];
+      if(curSum > rand){
+        break;
       }
     }
 
-    return moves[index];
+    return move;
   }
 
   @override

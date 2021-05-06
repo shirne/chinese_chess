@@ -69,6 +69,7 @@ samples, guidance on mobile development, and a full API reference.
 * [PGN格式]https://www.xqbase.com/protocol/cchess_pgn.htm
 
 ## Log
+* 20210504 编辑局面功能，多处细节优化
 
 * 20210430 结果提示，棋谱加载 困毙判断
 

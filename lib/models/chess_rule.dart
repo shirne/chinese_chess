@@ -5,15 +5,14 @@ import 'chess_pos.dart';
 
 class ChessRule{
 
+  // 棋子初始权重
   static const chessWeight = {
-    'k': 9,
-    'r': 7,
-    'p++': 5,
-    'n': 3,
-    'c': 3,
-    'p+': 2,
-    'a': 1,
-    'b': 1,
+    'k': 99,
+    'r': 19,
+    'n': 8,
+    'c': 8,
+    'a': 2,
+    'b': 2,
     'p': 1
   };
 
@@ -23,6 +22,60 @@ class ChessRule{
 
   ChessRule.fromFen([String fenStr = ChessFen.initFen]){
     fen = ChessFen(fenStr);
+  }
+
+  int getChessWeight(ChessPos pos){
+    String chess = fen[pos.y][pos.x];
+    if(chess == '0')return 0;
+    int weight = chessWeight[chess.toLowerCase()];
+
+    int chessCount = fen.getAllChr().length;
+    ChessPos kPos = fen.find(chess.codeUnitAt(0) > ChessFen.colIndexBase ? 'K' : 'k');
+
+    // 开局，中局炮价值增加
+    if(chess == 'c' || chess == 'C') {
+      if (chessCount > 25) {
+        weight = (weight * 1.5).toInt();
+      }
+
+      // 炮和将一线权重翻倍
+      if(kPos.y == pos.y || kPos.x == pos.x){
+        weight = weight * 2;
+      }
+    }
+
+    // 残局 马价值增加
+    if(chess == 'n' || chess == 'N') {
+      if (chessCount < 15) {
+        weight = (weight * 1.5).toInt();
+      }
+    }
+
+
+    // 兵过河价值翻倍，接近9宫3倍，占宫4倍
+    if(chess == 'p') {
+      if (pos.y < 5) {
+        weight *= 2;
+        if (pos.y < 4 && pos.x > 1 && pos.x < 8) {
+          weight *= 2;
+          if (pos.y < 3 && pos.x > 2 && pos.x < 7) {
+            weight *= 2;
+          }
+        }
+      }
+    }else if(chess == 'P'){
+      if (pos.y > 4) {
+        weight *= 2;
+        if (pos.y > 5 && pos.x > 1 && pos.x < 8) {
+          weight *= 2;
+          if (pos.y > 6 && pos.x > 2 && pos.x < 7) {
+            weight *= 2;
+          }
+        }
+      }
+    }
+
+    return weight;
   }
 
   /// 是否困毙
