@@ -62,7 +62,8 @@ class PlayStepState extends State<PlayStep> {
       });
     }
     Future.delayed(Duration(milliseconds: 16)).then((value) {
-      _controller.animateTo(currentStep * 23.0,
+      ScrollPositionWithSingleContext position  = _controller.position as ScrollPositionWithSingleContext;
+      _controller.animateTo(position.maxScrollExtent,
           duration: Duration(milliseconds: 100), curve: Curves.easeOut);
     });
   }

@@ -17,11 +17,13 @@ class PlayBot extends StatefulWidget{
 
 class PlayStepState extends State<PlayBot> {
   List<String> botMessages = [ ];
+  ScrollController _controller;
   GameManager gamer;
 
   @override
   void initState() {
     super.initState();
+    _controller = ScrollController(keepScrollOffset: true);
     GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
     gamer = gameWrapper.gamer;
     gamer.messageNotifier.addListener(updateMessage);
@@ -34,6 +36,7 @@ class PlayStepState extends State<PlayBot> {
   }
 
   updateMessage(){
+    if(gamer.messageNotifier.value.isEmpty)return;
     if(gamer.messageNotifier.value == 'clear'){
       setState(() {
         botMessages = [];
@@ -43,12 +46,18 @@ class PlayStepState extends State<PlayBot> {
         botMessages.add(gamer.messageNotifier.value);
       });
     }
+    Future.delayed(Duration(milliseconds: 16)).then((value) {
+      ScrollPositionWithSingleContext position  = _controller.position as ScrollPositionWithSingleContext;
+      _controller.animateTo(position.maxScrollExtent,
+          duration: Duration(milliseconds: 100), curve: Curves.easeOut);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: ListView(
+        controller: _controller,
         padding: EdgeInsets.all(10),
         children: botMessages.map<Widget>((e) => Text(e)).toList(),
       ),
