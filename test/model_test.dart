@@ -13,13 +13,26 @@ import 'package:chinese_chess/models/chess_pos.dart';
 import 'package:chinese_chess/models/chess_rule.dart';
 
 void main() {
+  test('test rootCount', () async {
+    ChessRule rule = ChessRule.fromFen('4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1');
+    expect(rule.rootCount(ChessPos.fromCode('g4'), 0), 3);
+    expect(rule.rootCount(ChessPos.fromCode('g4'), 1), 0);
+
+    rule.fen.fen = 'C1bak4/7R1/2n1b4/1N4p1p/2pn1r3/P2R2P2/2P1cr2P/2C1B4/4A4/2BAK4 w - - 0 1';
+    expect(rule.rootCount(ChessPos.fromCode('d5'), 0), 2);
+    expect(rule.rootCount(ChessPos.fromCode('d5'), 1), 2);
+    rule.fen.move('c2d2');
+    expect(rule.rootCount(ChessPos.fromCode('d5'), 0), 3);
+    expect(rule.rootCount(ChessPos.fromCode('d5'), 1), 2);
+  });
+
   test('test Future', () async{
     print(DateTime.now().millisecondsSinceEpoch);
     await Future.delayed(Duration(seconds: 5));
     print(DateTime.now().millisecondsSinceEpoch);
 
     Future.delayed(Duration(seconds: 5)).then((value) {
-    print(DateTime.now().millisecondsSinceEpoch);
+      print(DateTime.now().millisecondsSinceEpoch);
     });
   });
 

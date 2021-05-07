@@ -200,10 +200,20 @@ class ChessRule{
 
   /// 获取某个位置的根数
   int rootCount(ChessPos pos, int team){
-    List<ChessItem> items = fen.getAll();
+    ChessFen cFen = fen.copy();
+    String chess = cFen[pos.y][pos.x];
+    if(chess == '0' ||
+        (chess.codeUnitAt(0) < ChessFen.colIndexBase && team == 0) ||
+        (chess.codeUnitAt(0) >= ChessFen.colIndexBase && team == 1)
+    ){
+      cFen[pos.y][pos.x] = team == 0 ? 'p' : 'P';
+      cFen.clearFen();
+    }
+
+    List<ChessItem> items = cFen.getAll();
     return items.where(
-            (item) => item.team == team &&
-            ChessRule(fen).movePoints(item.position, pos).contains(pos)
+            (item) => item.position != pos && item.team == team &&
+            ChessRule(cFen).movePoints(item.position, pos).contains(pos.toCode())
     ).length;
   }
 
