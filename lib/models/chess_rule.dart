@@ -251,7 +251,66 @@ class ChessRule{
     return weight;
   }
 
-  /// 获取抽子招法 将军同时吃对方无根子
+  /// 获取要被吃的子，无根，或者吃子者权重低， 不含老将
+  List<ChessItem> getBeEatenList(int team){
+    List<ChessItem> items = [];
+    List<ChessItem> pieces = fen.getAll();
+    int eTeam = team == 0 ? 1 : 0;
+    pieces.forEach((item) {
+      if(item.team == team && !['K','k'].contains(item.code)){
+        int rc = rootCount(item.position, team);
+        int erc = rootCount(item.position, eTeam);
+        if(rc == 0 && erc > 0){
+          items.add(item);
+        }else{
+          List<ChessItem> canEatMe = getBeEatList(item.position);
+          for(ChessItem eItem in canEatMe){
+            if(chessWeight[eItem.code.toLowerCase()] < chessWeight[item.code.toLowerCase()]){
+              items.add(item);
+              break;
+            }
+          }
+        }
+      }
+    });
+    items.sort((a, b)=> chessWeight[b.code.toLowerCase()].compareTo(chessWeight[a.code.toLowerCase()]));
+    return items;
+  }
+
+  /// 获取能吃的子的列表
+  List<ChessItem> getEatList(ChessPos pos){
+    List<String> moves = movePoints(pos);
+    List<ChessItem> items = [];
+    moves.forEach((move) {
+      ChessPos toPos = ChessPos.fromCode(move);
+      String chr = fen[toPos.y][toPos.x];
+      if(chr != '0'){
+        items.add(ChessItem(chr, position: toPos));
+      }
+    });
+    items.sort((a, b)=> chessWeight[b.code.toLowerCase()].compareTo(chessWeight[a.code.toLowerCase()]));
+    return items;
+  }
+
+  /// 获取被吃子的列表
+  List<ChessItem> getBeEatList(ChessPos pos){
+    List<ChessItem> items = [];
+    List<ChessItem> pieces = fen.getAll();
+    String chr = fen[pos.y][pos.x];
+    ChessItem curChess = ChessItem(chr, position: pos);
+    pieces.forEach((item) {
+      if(item.team != curChess.team ){
+        List<String> points = movePoints(item.position, pos);
+        if(points.contains(pos.toCode())){
+          items.add(item);
+        }
+      }
+    });
+    items.sort((a, b)=> chessWeight[b.code.toLowerCase()].compareTo(chessWeight[a.code.toLowerCase()]));
+    return items;
+  }
+
+  /// todo 获取抽子招法 将军同时吃对方无根子
   /// 1.一个子将军，另一个子吃子，判断被吃子能否解将
   /// 2.躲将后是否有子被吃，被吃子能否解将
   List<String> getCheckEat(int team){
@@ -274,18 +333,23 @@ class ChessRule{
     List<ChessItem> pieces = fen.getAll();
 
     pieces.forEach((item) {
-      if(item.team == team && !['K','k'].contains(item.code)){
+      if(item.team == team ){
         // 这里传入目标位置，返回的可行点有针对性
-        List<String> points = movePoints(item.position, kPos);
-        if(points.contains(kPos.toCode())){
-          moves.add(item.position.toCode()+kPos.toCode());
-        }
+        List<String> points = movePoints(item.position);
+        // 挪子后其它子可将军
+        points.forEach((point) {
+          ChessRule nRule = ChessRule(fen.copy());
+          nRule.fen.move(item.position.toCode()+point);
+          if(nRule.isCheck(team == 0 ? 1 : 0)){
+            moves.add(item.position.toCode()+point);
+          }
+        });
       }
     });
     return moves;
   }
 
-  /// 获取杀招 ，连将，连将过程中局面不会复原，不会被解将
+  /// todo 获取杀招 ，连将，连将过程中局面不会复原，不会被解将
   List<String> getCheckMate(int team,[ int depth = 10]){
     List<String> moves = [];
     List<String> fenHis = [];

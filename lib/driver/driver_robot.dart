@@ -137,7 +137,7 @@ class DriverRobot extends PlayerDriver{
     // 着法加分
     List<int> weights = [
       49, // 0.将军
-      99, // 1.叫杀
+      199, // 1.叫杀
       199, // 2.挡将，挡杀
       9, // 3.捉 这四项根据子力价值倍乘
       19, // 4.保
@@ -167,6 +167,8 @@ class DriverRobot extends PlayerDriver{
         }
       });
     }else {
+      // 获取要被吃的子
+      List<ChessItem> willBeEaten = rule.getBeEatenList(team);
 
       moves.forEach((move) {
         moveWeight[move] = 0;
@@ -189,11 +191,11 @@ class DriverRobot extends PlayerDriver{
         int eRootCount = rule.rootCount(fromPos, enemyTeam);
 
         // 躲吃
-        if(rootCount < 1 && eRootCount > 0){
+        /*if(rootCount < 1 && eRootCount > 0){
           moveWeight[move] += weights[6] * rule.getChessWeight(fromPos);
         }else if(rootCount < eRootCount){
           moveWeight[move] += weights[6] * (rule.getChessWeight(fromPos) - rule.getChessWeight(toPos));
-        }
+        }*/
 
         // 开局兵不挡马路不动兵
         int chessCount = rule.fen.getAllChr().length;
@@ -247,19 +249,34 @@ class DriverRobot extends PlayerDriver{
           }
         }
 
+        ChessPos ekPos = fen.find(enemyTeam==0?'K':'k');
+        // 炮是否应着老将
+        if(chess == 'c' || chess == 'C'){
+          if(fromPos.y == ekPos.y || fromPos.x == ekPos.x){
+            if(toPos.y != ekPos.y && toPos.x != ekPos.x){
+              moveWeight[move] -= weights[0];
+            }
+          }else{
+            if(toPos.y == ekPos.y || toPos.x == ekPos.x){
+              moveWeight[move] += weights[0];
+            }
+          }
+        }
+
         ChessRule mRule = ChessRule(fen.copy());
         mRule.fen.move(move);
 
         // 走招后要被将军
-        if(rule.teamCanCheck(enemyTeam)){
+        if(mRule.teamCanCheck(enemyTeam)){
 
-          List<String> checkMoves = rule.getCheckMoves(enemyTeam);
+          List<String> checkMoves = mRule.getCheckMoves(enemyTeam);
+          //print('将军招法: $checkMoves');
           checkMoves.forEach((eMove) {
             ChessRule eRule = ChessRule(mRule.fen.copy());
             eRule.fen.move(eMove);
             // 不能应将，就是杀招
             if(eRule.canParryKill(team)){
-              print('$move 要被将军');
+              //print('$move 要被将军');
               moveWeight[move] -= weights[0];
             }else{
               print('$move 有杀招');
@@ -267,19 +284,50 @@ class DriverRobot extends PlayerDriver{
             }
           });
         }else{
-          rootCount = rule.rootCount(toPos, team);
-          eRootCount = rule.rootCount(toPos, enemyTeam);
+          rootCount = mRule.rootCount(toPos, team);
+          eRootCount = mRule.rootCount(toPos, enemyTeam);
+
+          willBeEaten.forEach((bItem) {
+            // 当前走的子就是被吃的子
+            if(bItem.position == fromPos){
+              // 走之后不被吃了
+              if(eRootCount < 1){
+                moveWeight[move] += mRule.getChessWeight(toPos) * weights[6];
+              }else if(rootCount > 0){
+                List<ChessItem> eItems = mRule.getBeEatList(toPos);
+                moveWeight[move] += (mRule.getChessWeight(eItems[0].position) - mRule.getChessWeight(toPos)) * weights[6];
+              }
+
+            }else{
+              // 不是被吃的子，但是也躲过去了
+              int oRootCount = mRule.rootCount(bItem.position, enemyTeam);
+              if(oRootCount < 1){
+                moveWeight[move] += mRule.getChessWeight(bItem.position) * weights[6];
+              }else{
+                // 有根了
+                List<ChessItem> eItems = mRule.getBeEatList(bItem.position);
+                moveWeight[move] += (mRule.getChessWeight(eItems[0].position) - mRule.getChessWeight(bItem.position)) * weights[6];
+              }
+            }
+          });
+
+
+          // 走着后要被吃
           if((rootCount == 0 && eRootCount > 0) || rootCount < eRootCount){
-            moveWeight[move] -= rule.getChessWeight(toPos);
-          }
-
-          // 炮震老将
-          if(chess == 'c' || chess == 'C'){
-
+            moveWeight[move] -= mRule.getChessWeight(toPos) * weights[5];
           }
 
           // 捉子优先
-
+          List<ChessItem> canEatItems = mRule.getEatList(toPos);
+          List<ChessItem> oldCanEatItems = rule.getEatList(fromPos);
+          int eatWeight = 0;
+          oldCanEatItems.forEach((oItem) {
+            eatWeight += mRule.getChessWeight(oItem.position) * weights[3];
+          });
+          canEatItems.forEach((oItem) {
+            eatWeight -= mRule.getChessWeight(oItem.position) * weights[3];
+          });
+          moveWeight[move] -= eatWeight;
         }
       });
     }

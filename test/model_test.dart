@@ -9,10 +9,68 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:chinese_chess/models/chess_manual.dart';
 import 'package:chinese_chess/models/chess_fen.dart';
+import 'package:chinese_chess/models/chess_item.dart';
 import 'package:chinese_chess/models/chess_pos.dart';
 import 'package:chinese_chess/models/chess_rule.dart';
 
 void main() {
+  test('test checkMove', (){
+    ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
+    expect(rule.teamCanCheck(0), false);
+
+    rule.fen.fen = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/NC5CN/9/1RBAKABR1 w - - 0 1';
+    expect(rule.teamCanCheck(0), false);
+
+    rule.fen.fen = '4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1';
+    expect(rule.teamCanCheck(0), true);
+    print(rule.getCheckMoves(0));
+
+    rule.fen.fen = 'C1bak4/7R1/2n1b4/1N4p1p/2pn1r3/P2R2P2/2P1cr2P/2C1B4/4A4/2BAK4 w - - 0 1';
+    expect(rule.teamCanCheck(0), true);
+    print(rule.getCheckMoves(0));
+  });
+  
+  test('test Eat', () {
+    int startMillionSec = DateTime.now().millisecondsSinceEpoch;
+    print(startMillionSec);
+    ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
+
+    List<ChessItem> beEatens = rule.getBeEatenList(0);
+    beEatens.forEach((item) {
+      List<ChessItem> beEats = rule.getBeEatList(item.position);
+      print('${item.code} <= ${beEats.map<String>((item)=>item.code).join(',')}');
+    });
+    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    startMillionSec = DateTime.now().millisecondsSinceEpoch;
+
+    rule.fen.fen = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/NC5CN/9/1RBAKABR1 w - - 0 1';
+    beEatens = rule.getBeEatenList(0);
+    beEatens.forEach((item) {
+      List<ChessItem> beEats = rule.getBeEatList(item.position);
+      print('${item.code} <= ${beEats.map<String>((item)=>item.code).join(',')}');
+    });
+    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    startMillionSec = DateTime.now().millisecondsSinceEpoch;
+
+    rule.fen.fen = '4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1';
+    beEatens = rule.getBeEatenList(0);
+    beEatens.forEach((item) {
+      List<ChessItem> beEats = rule.getBeEatList(item.position);
+      print('${item.code} <= ${beEats.map<String>((item)=>item.code).join(',')}');
+    });
+    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    startMillionSec = DateTime.now().millisecondsSinceEpoch;
+
+    rule.fen.fen = 'C1bak4/7R1/2n1b4/1N4p1p/2pn1r3/P2R2P2/2P1cr2P/2C1B4/4A4/2BAK4 w - - 0 1';
+    beEatens = rule.getBeEatenList(0);
+    beEatens.forEach((item) {
+      List<ChessItem> beEats = rule.getBeEatList(item.position);
+      print('${item.code} <= ${beEats.map<String>((item)=>item.code).join(',')}');
+    });
+    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    startMillionSec = DateTime.now().millisecondsSinceEpoch;
+  });
+
   test('test rootCount', () async {
     ChessRule rule = ChessRule.fromFen('4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1');
     expect(rule.rootCount(ChessPos.fromCode('g4'), 0), 3);
@@ -94,7 +152,7 @@ void main() {
   });
 
 
-  test('test checkMate', (){
+  test('test isCheck', (){
 
 
     ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR');
