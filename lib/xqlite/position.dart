@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 import 'dart:core';
 
 import 'dart:math' as Math;
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
@@ -463,8 +464,8 @@ class Position {
   static List<int> bookMoveList = List.filled(MAX_BOOK_SIZE, 0);
   static List<int> bookValue = List.filled(MAX_BOOK_SIZE, 0);
 
-  static init() async {
-    RC4 rc4 = new RC4(List.filled(1, 0));
+  static Future<bool> init() async {
+    RC4 rc4 = new RC4(Uint8List.fromList([0]));
     PreGen_zobristKeyPlayer = rc4.nextLong();
     rc4.nextLong(); // Skip ZobristLock0
     PreGen_zobristLockPlayer = rc4.nextLong();
@@ -477,21 +478,20 @@ class Position {
     }
 
     //InputStream input = rc4.getClass().getResourceAsStream("/book/BOOK.DAT");
-    ByteData input = await rootBundle.load('/engines/BOOK.DAT');
+    ByteData input = await rootBundle.load('assets/engines/BOOK.DAT');
     if (input != null) {
       try {
-        int shortMAX = Math.pow(2, 8) - 1;
         while (bookSize < MAX_BOOK_SIZE) {
-          int row = input.getInt64(bookSize);
-          bookLock[bookSize] = row >> 33;
-          bookMoveList[bookSize] = row >> 16 & shortMAX;
-          bookValue[bookSize] = row &  shortMAX;
+          bookLock[bookSize] = input.getUint32(bookSize * 8, Endian.little) >> 1;
+          bookMoveList[bookSize] = input.getUint16(bookSize * 8 + 4, Endian.little);
+          bookValue[bookSize] = input.getUint16(bookSize * 8 + 6, Endian.little);
           bookSize++;
         }
       } catch (e) {
         // Exit "while" when IOException occurs
       }
     }
+    return true;
   }
 
   int sdPlayer;
