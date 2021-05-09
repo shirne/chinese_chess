@@ -69,6 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "select_directory_save" : MessageLookupByLibrary.simpleMessage("选择保存位置"),
     "select_pgn_file" : MessageLookupByLibrary.simpleMessage("选择棋谱文件"),
     "setting" : MessageLookupByLibrary.simpleMessage("设置"),
+    "setting_title" : MessageLookupByLibrary.simpleMessage("系统设置"),
     "situation_code" : MessageLookupByLibrary.simpleMessage("局面代码"),
     "step_start" : MessageLookupByLibrary.simpleMessage("==开始=="),
     "the_black" : MessageLookupByLibrary.simpleMessage("黑方："),

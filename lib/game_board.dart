@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:chinese_chess/setting.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
@@ -211,8 +212,8 @@ class _GameBoardState extends State<GameBoard> {
               leading: Icon(Icons.settings),
               title: Text(S.of(context).setting),
               onTap: () {
-                alert(S.of(context).feature_not_available);
                 Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder:(BuildContext context) => SettingPage()));
               },
             ),
           ],

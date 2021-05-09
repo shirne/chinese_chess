@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:chinese_chess/driver/player_driver.dart';
 import 'package:chinese_chess/models/chess_skin.dart';
+import 'package:chinese_chess/models/game_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 
@@ -68,9 +69,12 @@ class GameManager{
   // 走子规则
   ChessRule rule;
 
+  GameSetting setting;
+
   GameManager();
 
   Future<bool> init() async{
+    setting = await GameSetting.getInstance();
     manual = ChessManual();
     rule = ChessRule(manual.currentFen);
 
@@ -361,6 +365,12 @@ class GameManager{
   /// 棋局结果判断
   Future<bool> checkResult(int hand, int curMove) async{
     print('checkResult');
+
+    int repeatRound = manual.repeatRound();
+    if(repeatRound > 2){
+      // 提醒
+    }
+
     // 判断和棋
     if(unEatCount >= 120){
       setResult(ChessManual.resultFstDraw, '60回合无吃子判和');
@@ -375,22 +385,11 @@ class GameManager{
       manual.moves[curMove].isCheckMate = isCheckMate;
 
       if(rule.canParryKill(hand)){
-        // todo 改进算法
-        if(manual.moves.length > 6) {
-          String cmMove = manual.moves[curMove].move;
-          String parryMove = manual.moves[curMove - 1].move;
-          int hisMove = curMove - 2;
-          while(hisMove > 0){
-            if(cmMove != manual.moves[hisMove].move ||
-                parryMove != manual.moves[hisMove + 1].move){
-              break;
-            }
-            if(hisMove + 6 < curMove){
-              setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '不变招长将作负');
-              return false;
-            }
-            hisMove -= 2;
-          }
+
+        // 长将
+        if(repeatRound > 3){
+          setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '不变招长将作负');
+          return false;
         }
 
         resultNotifier.value = 'checkMate';
@@ -404,6 +403,12 @@ class GameManager{
         setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '困毙');
         return false;
       }
+    }
+
+    // todo 判断长捉，一捉一将，一将一杀
+    if(repeatRound > 3){
+      setResult(ChessManual.resultFstDraw, '不变招判和');
+      return false;
     }
     return true;
   }

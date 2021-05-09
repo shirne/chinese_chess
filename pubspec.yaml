@@ -43,17 +43,18 @@ dependencies:
       url: git://github.com/google/flutter-desktop-embedding.git
       path: plugins/menubar
       ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
-  filesystem_picker: ^1.0.4
-  # path: ../fluttersamples/filesystem_picker/package
+  filesystem_picker: #^1.0.4
+    path: ../fluttersamples/filesystem_picker/package
   file_selector: ^0.8.2
   file_selector_windows: ^0.0.2
   file_selector_macos: ^0.0.4
   file_selector_linux: ^0.0.2
   shirne_dialog: # ^1.0.1
-    git: https://github.com/shirne/shirne_dialog.git
-    #path: ../fluttersamples/shirne_dialog
+    #git: https://github.com/shirne/shirne_dialog.git
+    path: ../fluttersamples/shirne_dialog
   gbk2utf8: ^1.0.1
   universal_html: ^1.2.1
+  shared_preferences: ^2.0.5
 
 dev_dependencies:
   flutter_test:

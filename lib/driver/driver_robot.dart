@@ -5,6 +5,10 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
+import '../models/engine_type.dart';
+import '../xqlite/util.dart';
+import '../xqlite/position.dart';
+import '../xqlite/search.dart';
 import '../models/chess_rule.dart';
 import '../models/chess_item.dart';
 import '../models/chess_fen.dart';
@@ -19,6 +23,9 @@ class DriverRobot extends PlayerDriver{
   Completer<String> requestMove;
   bool isCleared = true;
 
+  Position position;
+  Search search;
+
   Future<bool> tryDraw(){
     return Future.value(true);
   }
@@ -29,10 +36,11 @@ class DriverRobot extends PlayerDriver{
 
     // 网页版用不了引擎
     Future.delayed(Duration(seconds: 1)).then((value) {
-      if(Engine.isSupportEngine) {
+      if(Engine.isSupportEngine && player.manager.setting.robotType == EngineType.elephantEye) {
         getMoveFromEngine();
       }else {
-        getMove();
+        // getMove();
+        getBuiltInMove();
       }
     });
 
@@ -79,6 +87,22 @@ class DriverRobot extends PlayerDriver{
       case 'option':
       default:
         return;
+    }
+  }
+
+  getBuiltInMove() async{
+    if(search == null){
+      position = Position();
+      search = Search(position, 12);
+      Position.init().then((bool v){
+        getBuiltInMove();
+      });
+    }else{
+      // 0, 1, 2
+      position.fromFen(player.manager.fenStr);
+      int mvLast = search.searchMain(1000 << (0 << 1));
+      print('$mvLast => ${Util.move2Iccs(mvLast)}');
+      completeMove(Util.move2Iccs(mvLast));
     }
   }
 

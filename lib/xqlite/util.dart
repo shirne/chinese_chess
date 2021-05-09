@@ -127,4 +127,22 @@ class Util {
       stepLevel--;
     }
   }
+
+  static String move2Iccs(int mv){
+    var sqSrc = mv & 255;
+    var sqDst = mv >> 8;
+    return String.fromCharCode("a".codeUnitAt(0) + (sqSrc & 15) - 3) +
+        String.fromCharCode("9".codeUnitAt(0) - (sqSrc >> 4) + 3) +
+        String.fromCharCode("a".codeUnitAt(0) + (sqDst & 15) - 3) +
+        String.fromCharCode("9".codeUnitAt(0) - (sqDst >> 4) + 3);
+  }
+
+  static int iccs2Move(String iccs){
+    int sqSrc1 = iccs.codeUnitAt(0) + 3 - "a".codeUnitAt(0);
+    int sqSrc2 = 3 + "9".codeUnitAt(0) - iccs.codeUnitAt(1);
+    int sqDst1 = iccs.codeUnitAt(2) + 3 - "a".codeUnitAt(0);
+    int sqDst2 = 3 + "9".codeUnitAt(0) - iccs.codeUnitAt(3);
+
+    return sqSrc1 | (sqSrc2 << 4) | ((sqDst1 | (sqDst2 << 4)) << 8);
+  }
 }

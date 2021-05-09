@@ -13,7 +13,7 @@
 - [ ] 加入音效
 - [x] 对局信息展示
 - [x] 编辑局面
-- [x] 加入随机落着的笨机器人
+- [x] 加入随机落着的笨机器人(内置机器人已更新为象棋小巫师)
 - [ ] 局面时间控制
 - [ ] 在线对局
 
@@ -72,6 +72,9 @@ samples, guidance on mobile development, and a full API reference.
 * [PGN格式]https://www.xqbase.com/protocol/cchess_pgn.htm
 
 ## Log
+
+* 20210509 设置页，功能优化，内置机器人由[象棋小巫师](https://github.com/xqbase/eleeye)翻译而来
+
 * 20210504 编辑局面功能，多处细节优化
 
 * 20210430 结果提示，棋谱加载 困毙判断

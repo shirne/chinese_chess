@@ -5,7 +5,14 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:math' as Math;
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'package:chinese_chess/xqlite/position.dart';
+import 'package:chinese_chess/xqlite/search.dart';
+import 'package:chinese_chess/xqlite/util.dart';
 
 import 'package:chinese_chess/models/chess_manual.dart';
 import 'package:chinese_chess/models/chess_fen.dart';
@@ -14,6 +21,59 @@ import 'package:chinese_chess/models/chess_pos.dart';
 import 'package:chinese_chess/models/chess_rule.dart';
 
 void main() {
+  test('test IccsMove', (){
+    List<String> iccs = ['b0c2','h9g7','h0g2','b9c7','f0e1','i9i8','a0a1','b7a7','g3g4','i8f8'];
+    List<int> moves = [42436,22842,43466,21812,47048,19259,46019,21332,35225,18507];
+
+    for(int i=0;i<iccs.length;i++) {
+      expect(Util.iccs2Move(iccs[i]), moves[i]);
+      expect(Util.move2Iccs(moves[i]), iccs[i]);
+    }
+
+  });
+
+  test('test bookSearch', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    int startMillionSec = DateTime.now().millisecondsSinceEpoch;
+    print(startMillionSec);
+
+    Position position = Position();
+    Search search = Search(position, 12);
+    Position.init().then((bool v){
+
+      print('初始化耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+      startMillionSec = DateTime.now().millisecondsSinceEpoch;
+
+      int step = 0;
+      ChessFen fen = ChessFen();
+      while(step < 10) {
+        position.fromFen('${fen.fen} ${step % 2 == 0 ? 'w' : 'b'} - - 0 $step');
+        int mvLast = search.searchMain(1000 << (1 << 1));
+        String move = Util.move2Iccs(mvLast);
+        print('$mvLast => $move => ${fen.toChineseString(move)}');
+        fen.move(move);
+
+        print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+        startMillionSec = DateTime.now().millisecondsSinceEpoch;
+        step++;
+      }
+    });
+  });
+  test('test ReadBook', () async{
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    ByteData data = await rootBundle.load('assets/engines/BOOK.DAT');
+    print(data.lengthInBytes);
+
+    int shortMAX = Math.pow(2, 16) - 1;
+    int row = data.getUint64(0, Endian.little);
+
+    print([row >> 33, data.getUint32(0, Endian.little) >> 1]);
+    print([row >> 16 & shortMAX, data.getUint16(4, Endian.little)]);
+    print([row & shortMAX, data.getUint16(6, Endian.little)]);
+  });
+
   test('test checkMove', (){
     ChessRule rule = ChessRule.fromFen('rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
     expect(rule.teamCanCheck(0), false);

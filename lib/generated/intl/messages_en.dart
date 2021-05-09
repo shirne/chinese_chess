@@ -69,6 +69,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "select_directory_save" : MessageLookupByLibrary.simpleMessage("Select a Directory to Save"),
     "select_pgn_file" : MessageLookupByLibrary.simpleMessage("Select .PGN file"),
     "setting" : MessageLookupByLibrary.simpleMessage("Setting"),
+    "setting_title" : MessageLookupByLibrary.simpleMessage("Settings"),
     "situation_code" : MessageLookupByLibrary.simpleMessage("Chess Code"),
     "step_start" : MessageLookupByLibrary.simpleMessage("==Start=="),
     "the_black" : MessageLookupByLibrary.simpleMessage("Black: "),

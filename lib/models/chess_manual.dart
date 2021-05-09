@@ -462,6 +462,22 @@ class ChessManual{
     }
   }
 
+  int repeatRound(){
+    int rewind = step - 1;
+    int round = 0;
+
+    while(rewind > 1){
+      if(moves[rewind].fen == moves[rewind - 1].fen &&
+          moves[rewind].move == moves[rewind - 1].move){
+        round++;
+      }else{
+        break;
+      }
+      rewind -= 2;
+    }
+    return round;
+  }
+
   static isNumberMove(String move){
     return RegExp(r'[abcrnkpABCRNKP][0-9a-e][+\-\.][0-9]').hasMatch(move);
   }
