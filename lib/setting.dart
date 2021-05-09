@@ -3,6 +3,7 @@
 import 'package:chinese_chess/models/game_setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shirne_dialog/shirne_dialog.dart';
 
 import 'generated/l10n.dart';
 import 'models/engine_type.dart';
@@ -20,7 +21,7 @@ class _SettingPageState extends State<SettingPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    GameSetting.getInstance().then((value) => setting = value);
+    GameSetting.getInstance().then((value) => setState((){setting = value;}));
   }
 
   @override
@@ -35,13 +36,17 @@ class _SettingPageState extends State<SettingPage> {
         title: Text(S.of(context).setting_title),
         actions: [
           TextButton(onPressed: (){
-            setting.save();
+            setting.save().then((v){
+              Navigator.pop(context);
+              MyDialog.of(context).toast('保存成功', icon:MyDialog.iconSuccess);
+            });
           }, child: Text('保存', style: TextStyle(color: Colors.white),)
           ),
         ],
       ),
       body: Center(
-        child: Container(
+        child: setting == null ? CircularProgressIndicator()
+            : Container(
           width: width,
           padding: EdgeInsets.all(20),
           child: SingleChildScrollView(
@@ -51,12 +56,14 @@ class _SettingPageState extends State<SettingPage> {
                   title: Text('AI类型'),
                     trailing: CupertinoSegmentedControl(
                       onValueChanged: (value){
-                        setting.robotType = value;
+                        setState(() {
+                          setting.robotType = value;
+                        });
                       },
                       groupValue: setting.robotType,
                       children: {
-                        EngineType.builtIn: Text('内置引擎'),
-                        EngineType.elephantEye: Text('elephantEye')
+                        EngineType.builtIn: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('内置引擎'),),
+                        EngineType.elephantEye: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('elephantEye'))
                       },
                     )
                 ),

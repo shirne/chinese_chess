@@ -4,17 +4,20 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'engine_type.dart';
+
 class GameSetting{
   static SharedPreferences storage;
   static GameSetting _instance;
   static const cacheKey = 'setting';
 
-  String robotType = 'engine';
+  String robotType = EngineType.builtIn;
   int robotLevel = 0;
   bool sound = true;
   double soundVolume = 1;
 
-  GameSetting({this.robotType, this.robotLevel,this.sound,this.soundVolume});
+  GameSetting({this.robotType = EngineType.builtIn, this.robotLevel = 0,this.sound = true,this.soundVolume = 1});
+
   GameSetting.fromJson(String jsonStr){
     if(jsonStr == null || jsonStr.isEmpty)return;
     Map<String, dynamic> json = JsonDecoder().convert(jsonStr);
