@@ -34,8 +34,8 @@ class Piece extends StatelessWidget {
     return this.item.isBlank
         ? blankWidget(gamer)
         :  AnimatedContainer(
-              width: gamer.skin.size,
-              height: gamer.skin.size,
+              width: gamer.skin.size * gamer.scale,
+              height: gamer.skin.size * gamer.scale,
               duration: Duration(milliseconds: 300),
               curve: Curves.easeOutQuint,
               transform: this.isHover ? (Matrix4.translationValues(-4, -4, -4)) : ( Matrix4.translationValues(0,0,0)),

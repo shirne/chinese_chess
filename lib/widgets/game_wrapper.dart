@@ -52,6 +52,14 @@ class GameWrapperState extends State<GameWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    if(inited) {
+      Size size = MediaQuery.of(context).size;
+      if (size.width < 541) {
+        gamer.scale = (size.width - 20) / 521;
+      } else {
+        gamer.scale = 1;
+      }
+    }
     return WillPopScope(
       onWillPop: () {
         print('onwillpop');

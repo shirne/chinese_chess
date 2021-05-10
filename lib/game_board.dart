@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:universal_html/html.dart' as html;
 
+import 'game_bottom_bar.dart';
 import 'generated/l10n.dart';
 import 'models/play_mode.dart';
 import 'widgets/game_wrapper.dart';
@@ -46,46 +47,47 @@ class _GameBoardState extends State<GameBoard> {
     MyDialog.of(context).alert(message);
   }
 
-  Widget selectMode(){
+  Widget selectMode() {
     double maxHeight = MediaQuery.of(context).size.height;
     return Center(
-        child:Container(
-          height: maxHeight * 0.6,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-            ElevatedButton.icon(
-              onPressed: (){
-                setState(() {
-                  mode = PlayMode.modeRobot;
-                });
-              },
-              icon: Icon(Icons.android),
-              label: Text(S.of(context).mode_robot),
-            ),
-            ElevatedButton.icon(
-              onPressed: (){
-                MyDialog.of(context).toast(S.of(context).feature_not_available, icon: MyDialog.iconError);
-                return;
-                setState(() {
-                  mode = PlayMode.modeOnline;
-                });
-              },
-              icon: Icon(Icons.wifi),
-              label: Text(S.of(context).mode_online),
-            ),
-            ElevatedButton.icon(
-              onPressed: (){
-                setState(() {
-                  mode = PlayMode.modeFree;
-                });
-              },
-              icon: Icon(Icons.map),
-              label: Text(S.of(context).mode_free),
-            ),
-          ],),
-        )
-    );
+        child: Container(
+      height: maxHeight * 0.6,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                mode = PlayMode.modeRobot;
+              });
+            },
+            icon: Icon(Icons.android),
+            label: Text(S.of(context).mode_robot),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              MyDialog.of(context).toast(S.of(context).feature_not_available,
+                  icon: MyDialog.iconError);
+              return;
+              setState(() {
+                mode = PlayMode.modeOnline;
+              });
+            },
+            icon: Icon(Icons.wifi),
+            label: Text(S.of(context).mode_online),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                mode = PlayMode.modeFree;
+              });
+            },
+            icon: Icon(Icons.map),
+            label: Text(S.of(context).mode_free),
+          ),
+        ],
+      ),
+    ));
   }
 
   @override
@@ -213,15 +215,21 @@ class _GameBoardState extends State<GameBoard> {
               title: Text(S.of(context).setting),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder:(BuildContext context) => SettingPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => SettingPage()));
               },
             ),
           ],
         ),
       ),
-      body: Center(
-        child: mode == null ? selectMode() : PlayPage(mode:mode),
+      body: SafeArea(
+        child: Center(
+          child: mode == null ? selectMode() : PlayPage(mode: mode),
+        ),
       ),
+      bottomNavigationBar: (mode == null || MediaQuery.of(context).size.width >= 980) ? null : GameBottomBar(mode),
     );
   }
 
@@ -253,9 +261,11 @@ class _GameBoardState extends State<GameBoard> {
             title: S.of(context).situation_code)
         .then((v) {
       if (v) {
-        if(RegExp(r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$').hasMatch(fenStr)) {
+        if (RegExp(
+                r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$')
+            .hasMatch(fenStr)) {
           gamer.newGame(fenStr);
-        }else{
+        } else {
           alert(S.of(context).invalid_code);
         }
       }
@@ -272,14 +282,14 @@ class _GameBoardState extends State<GameBoard> {
     String filename = '${DateTime.now().millisecondsSinceEpoch ~/ 1000}.pgn';
     if (kIsWeb) {
       _saveManualWeb(content, filename);
-    } else if(Platform.isAndroid || Platform.isIOS) {
+    } else if (Platform.isAndroid || Platform.isIOS) {
       _saveManualMobile(content, filename);
-    } else if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
+    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       _saveManualWindow(content, filename);
     }
   }
 
-  _saveManualWeb(String content, String filename){
+  _saveManualWeb(String content, String filename) {
     List<int> fData = gbk.encode(content);
     var link = html.window.document.createElement('a');
     link.setAttribute('download', filename);
@@ -291,7 +301,8 @@ class _GameBoardState extends State<GameBoard> {
       link.remove();
     });
   }
-  _saveManualMobile(String content, String filename) async{
+
+  _saveManualMobile(String content, String filename) async {
     String result = await FilesystemPicker.open(
       title: S.of(context).select_directory_save,
       context: context,
@@ -302,16 +313,16 @@ class _GameBoardState extends State<GameBoard> {
     );
     if (result != null && result.isNotEmpty) {
       TextEditingController filenameController =
-      TextEditingController(text: filename);
+          TextEditingController(text: filename);
       filenameController.addListener(() {
         filename = filenameController.text;
       });
       confirm(
-          TextField(
-            controller: filenameController,
-          ),
-          buttonText: 'Save',
-          title: S.of(context).save_filename)
+              TextField(
+                controller: filenameController,
+              ),
+              buttonText: 'Save',
+              title: S.of(context).save_filename)
           .then((v) {
         if (v) {
           List<int> fData = gbk.encode(content);
@@ -322,7 +333,8 @@ class _GameBoardState extends State<GameBoard> {
       });
     }
   }
-  _saveManualWindow(String content, String filename) async{
+
+  _saveManualWindow(String content, String filename) async {
     final path = await FileSelectorPlatform.instance.getSavePath(
       suggestedName: filename,
     );
@@ -335,12 +347,12 @@ class _GameBoardState extends State<GameBoard> {
     });
   }
 
-  loadFile(){
-    if(kIsWeb){
+  loadFile() {
+    if (kIsWeb) {
       _loadFileWeb();
-    }else if(Platform.isAndroid || Platform.isIOS){
+    } else if (Platform.isAndroid || Platform.isIOS) {
       _loadFileMobile();
-    }else if(Platform.isWindows || Platform.isMacOS || Platform.isLinux){
+    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       _loadFileWindow();
     }
   }
@@ -364,14 +376,14 @@ class _GameBoardState extends State<GameBoard> {
     }
   }
 
-  void _loadFileWindow() async{
+  void _loadFileWindow() async {
     final typeGroup = XTypeGroup(
       label: '棋谱文件',
       extensions: ['pgn'],
     );
     final files = await FileSelectorPlatform.instance
         .openFiles(acceptedTypeGroups: [typeGroup]);
-    if(files != null && files.length>0){
+    if (files != null && files.length > 0) {
       gamer.loadPGN(files[0].path);
     }
   }

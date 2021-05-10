@@ -76,8 +76,8 @@ class _ChessPiecesState extends State<ChessPieces> {
           curve: Curves.easeOutQuint,
           alignment: gamer.skin.getAlign(item.position),
           child: Container(
-            width: gamer.skin.size,
-            height: gamer.skin.size,
+            width: gamer.skin.size * gamer.scale,
+            height: gamer.skin.size * gamer.scale,
             //transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105 * skewStepper, 1 - skewStepper*0.1, 0, -0.004 * skewStepper, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
             child: Piece(
               item: item,

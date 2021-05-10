@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'chess_box.dart';
 import 'chess_pieces.dart';
+import 'chess_single_box.dart';
 import 'elements/board.dart';
 import 'generated/l10n.dart';
 import 'models/chess_item.dart';
@@ -153,8 +154,8 @@ class EditFenState extends State<EditFen> {
   }
 
   ChessPos pointTrans(Offset tapPoint) {
-    int x = (tapPoint.dx - gamer.skin.offset.dx) ~/ gamer.skin.size;
-    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy) ~/ gamer.skin.size;
+    int x = (tapPoint.dx - gamer.skin.offset.dx * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
+    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
     return ChessPos(x, y);
   }
 
@@ -182,38 +183,83 @@ class EditFenState extends State<EditFen> {
         ],
       ),
       body: Center(
-        child: Container(
-          width: gamer.skin.width + 10 + gamer.skin.size * 2 + 10,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTapUp: (detail){
-                  onPointer(pointTrans(detail.localPosition));
-                },
-                onLongPressEnd: (detail){
-                  print('longPressEnd $detail');
-                  
-                },
-                onPanEnd: (detail){
-                  
-                },
-                child: Container(
-                  width: gamer.skin.width,
-                  height: gamer.skin.height,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              ChessBox(height:gamer.skin.height, itemChrs: dieChrs, activeChr:activeChr)
-            ],
+        child: gamer.scale < 1 ? _mobileContainer() : _windowContainer()
+      ),
+    );
+  }
+
+  Widget _mobileContainer(){
+    return Container(
+      width: gamer.skin.width * gamer.scale,
+      height: (gamer.skin.height + gamer.skin.size * 2 + 20) * gamer.scale,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          ChessSingleBox(width:gamer.skin.width * gamer.scale, itemChrs: dieChrs, activeChr:activeChr),
+          SizedBox(
+            width: 10,
           ),
-        ),
+          GestureDetector(
+            onTapUp: (detail){
+              onPointer(pointTrans(detail.localPosition));
+            },
+            onLongPressEnd: (detail){
+              print('longPressEnd $detail');
+
+            },
+            onPanEnd: (detail){
+
+            },
+            child: Container(
+              width: gamer.skin.width * gamer.scale,
+              height: gamer.skin.height * gamer.scale,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          ChessSingleBox(width:gamer.skin.width * gamer.scale, itemChrs: dieChrs, activeChr:activeChr)
+        ],
+      ),
+    );
+  }
+
+  Widget _windowContainer(){
+    return Container(
+      width: gamer.skin.width + 10 + gamer.skin.size * 2 + 10,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTapUp: (detail){
+              onPointer(pointTrans(detail.localPosition));
+            },
+            onLongPressEnd: (detail){
+              print('longPressEnd $detail');
+
+            },
+            onPanEnd: (detail){
+
+            },
+            child: Container(
+              width: gamer.skin.width,
+              height: gamer.skin.height,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          ChessBox(height:gamer.skin.height, itemChrs: dieChrs, activeChr:activeChr)
+        ],
       ),
     );
   }

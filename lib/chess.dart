@@ -346,8 +346,8 @@ class ChessState extends State<Chess> {
   }
 
   ChessPos pointTrans(Offset tapPoint) {
-    int x = (tapPoint.dx - gamer.skin.offset.dx) ~/ gamer.skin.size;
-    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy) ~/ gamer.skin.size;
+    int x = (tapPoint.dx - gamer.skin.offset.dx * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
+    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
     return ChessPos(x, y);
   }
 
@@ -396,7 +396,7 @@ class ChessState extends State<Chess> {
       layer0.add(Align(
         alignment: gamer.skin.getAlign(emptyItem.position),
         child: MarkComponent(
-          size: gamer.skin.size,
+          size: gamer.skin.size * gamer.scale,
         ),
       ));
     }
@@ -417,7 +417,7 @@ class ChessState extends State<Chess> {
           ChessItem('0', position: ChessPos.fromCode(element));
       layer2.add(Align(
         alignment: gamer.skin.getAlign(emptyItem.position),
-        child: PointComponent(size: gamer.skin.size),
+        child: PointComponent(size: gamer.skin.size * gamer.scale),
       ));
     });
     widgets.add(Stack(

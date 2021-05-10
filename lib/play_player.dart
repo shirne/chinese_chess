@@ -13,10 +13,10 @@ class PlayPlayer extends StatefulWidget {
   const PlayPlayer({Key key, this.height}) : super(key: key);
 
   @override
-  State<PlayPlayer> createState() => PlayStepState();
+  State<PlayPlayer> createState() => PlayPlayerState();
 }
 
-class PlayStepState extends State<PlayPlayer> {
+class PlayPlayerState extends State<PlayPlayer> {
   GameManager gamer;
   int currentTeam = 0;
 

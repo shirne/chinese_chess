@@ -8,19 +8,21 @@ import 'elements/piece.dart';
 import 'models/game_manager.dart';
 import 'widgets/game_wrapper.dart';
 
-class ChessBox extends StatefulWidget {
+class ChessSingleBox extends StatefulWidget {
   final String itemChrs;
   final String activeChr;
-  final double height;
+  final double width;
+  final int team;
 
-  const ChessBox({Key key, this.itemChrs, this.activeChr = '', this.height}) : super(key: key);
+  const ChessSingleBox({Key key, this.itemChrs, this.activeChr = '', this.width, this.team = 0}) : super(key: key);
 
   @override
-  State<ChessBox> createState() => _ChessBoxState();
+  State<ChessSingleBox> createState() => _ChessBoxState();
 }
 
-class _ChessBoxState extends State<ChessBox> {
-  static const allItemChrs = 'kabcnrp';
+class _ChessBoxState extends State<ChessSingleBox> {
+  static String allItemChrs = 'kabcnrp';
+  GameManager gamer;
 
   int matchCount(String chr) {
     return RegExp(chr).allMatches(widget.itemChrs).length;
@@ -38,30 +40,30 @@ class _ChessBoxState extends State<ChessBox> {
   @override
   void initState() {
     super.initState();
+    if(widget.team == 0){
+      allItemChrs = allItemChrs.toUpperCase();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if(gamer == null) {
+      GameWrapperState gameWrapper =
+      context.findAncestorStateOfType<GameWrapperState>();
+      gamer = gameWrapper.gamer;
+    }
     return Container(
-      width: 114,
-      height: widget.height,
+      width: widget.width,
+      height: gamer.skin.size * gamer.scale,
       child: Flex(
-        direction: Axis.vertical,
+        direction: Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Wrap(
             children: allItemChrs
                 .split('')
                 .map<Widget>((String chr) =>
-                    ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr,))
-                .toList(),
-          ),
-          Wrap(
-            children: allItemChrs
-                .toUpperCase()
-                .split('')
-                .map<Widget>((String chr) =>
-                    ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr))
+                ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr,))
                 .toList(),
           ),
           Wrap(
@@ -87,7 +89,7 @@ class ItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GameWrapperState wrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>();
     GameManager manager = wrapper.gamer;
     _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>();
     return GestureDetector(
@@ -117,7 +119,8 @@ class ItemWidget extends StatelessWidget {
                   child: Center(
                     child: Text(count.toString(),style: TextStyle(color: Colors.white),),
                   ),
-                ))
+                ),
+            )
           ],
         ),
       ),

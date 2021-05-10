@@ -7,8 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_pos.dart';
+import 'game_manager.dart';
 
 class ChessSkin{
+  GameManager manager;
   String folder = "";
 
   double width = 521;
@@ -39,7 +41,7 @@ class ChessSkin{
 
   ValueNotifier<bool> readyNotifier;
 
-  ChessSkin(this.folder){
+  ChessSkin(this.folder, this.manager){
     readyNotifier = ValueNotifier(false);
     String jsonfile = "assets/skins/$folder/config.json";
     rootBundle.loadString(jsonfile).then((String fileContents) {
@@ -78,7 +80,6 @@ class ChessSkin{
         case 'black':
           blackMap = value.cast<String, String>();
           break;
-
       }
     });
     readyNotifier.value = true;

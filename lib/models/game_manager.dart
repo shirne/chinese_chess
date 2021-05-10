@@ -18,6 +18,7 @@ import 'player.dart';
 class GameManager{
 
   ChessSkin skin;
+  double scale = 1;
 
   // 当前对局
   ChessManual manual;
@@ -91,7 +92,7 @@ class GameManager{
     lockNotifier = ValueNotifier(true);
     moveNotifier = ValueNotifier('');
 
-    skin = ChessSkin("woods");
+    skin = ChessSkin("woods", this);
     skin.readyNotifier.addListener(() {
       gameNotifier.value = 0;
     });

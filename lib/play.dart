@@ -1,4 +1,3 @@
-
 import 'package:chinese_chess/driver/player_driver.dart';
 import 'package:chinese_chess/play_step.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'chess.dart';
 import 'generated/l10n.dart';
 import 'models/play_mode.dart';
+import 'play_single_player.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 import 'play_bot.dart';
@@ -33,11 +33,11 @@ class PlayPageState extends State<PlayPage> {
     gamer = gameWrapper.gamer;
   }
 
-  initGame() async{
-    if(inited)return;
-    inited=true;
+  initGame() async {
+    if (inited) return;
+    inited = true;
     gamer.newGame();
-    if(widget.mode == PlayMode.modeRobot){
+    if (widget.mode == PlayMode.modeRobot) {
       gamer.switchDriver(1, DriverType.robot);
     }
     gamer.next();
@@ -51,6 +51,30 @@ class PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     initGame();
+    return MediaQuery.of(context).size.width < 980 ? _mobileContainer() : _windowContainer();
+  }
+
+  Widget _mobileContainer() {
+
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          PlaySinglePlayer(team: 1,),
+          SizedBox(height: 10,),
+           Container(
+              width: gamer.skin.width * gamer.scale,
+              height: gamer.skin.height * gamer.scale,
+              child: Chess(),
+            ),
+          SizedBox(height: 10,),
+          PlaySinglePlayer(team: 0,placeAt: Alignment.bottomCenter,),
+        ],
+      ),
+    );
+  }
+
+  Widget _windowContainer() {
     BoxDecoration decoration = BoxDecoration(
         border: Border.all(color: Colors.grey, width: 0.5),
         borderRadius: BorderRadius.all(Radius.circular(2)));
@@ -104,7 +128,7 @@ class PlayPageState extends State<PlayPage> {
                   height: 180,
                   decoration: decoration,
                   child: TabCard(
-                    titleFit: FlexFit.tight,
+                      titleFit: FlexFit.tight,
                       titlePadding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                       titles: [
@@ -116,7 +140,8 @@ class PlayPageState extends State<PlayPage> {
                         Center(
                           child: Text(S.of(context).no_remark),
                         )
-                      ]),
+                      ],
+                  ),
                 )
               ],
             ),
