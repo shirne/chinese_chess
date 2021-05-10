@@ -22,7 +22,7 @@
 - [ ] 版面美化
 - [x] Windows版适配
 - [x] Web版适配
-- [ ] Android版适配
+- [x] Android版适配
 - [ ] IOS版适配
 - [x] MacOS版适配
 - [ ] Linux版适配

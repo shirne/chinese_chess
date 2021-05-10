@@ -3,8 +3,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
-
 import '../models/engine_type.dart';
 import '../xqlite/util.dart';
 import '../xqlite/position.dart';

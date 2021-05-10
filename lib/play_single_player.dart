@@ -5,6 +5,7 @@ import 'driver/player_driver.dart';
 import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
+import 'widgets/list_item.dart';
 import 'widgets/tab_card.dart';
 
 class PlaySinglePlayer extends StatefulWidget {
@@ -93,6 +94,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
     if(widget.placeAt == Alignment.topCenter){
       leading = Icon(
         Icons.person,
+        size: 28,
         color: currentTeam == widget.team ? Colors.blueAccent : Colors.black12,
       );
       trailing = switchRobot(widget.team);
@@ -100,6 +102,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
     }else{
       trailing = Icon(
         Icons.person,
+        size: 28,
         color: currentTeam == widget.team ? Colors.blueAccent : Colors.black12,
       );
       leading = switchRobot(widget.team);
@@ -108,11 +111,12 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
     List<Widget> childs = [
       SizedBox(
         width: 229,
-        child: ListTile(
+        child: ListItem(
           leading: leading,
-          title: Text(gamer.getPlayer(widget.team).title, textDirection: tDirect,),
-          subtitle: Text(currentTeam == widget.team ? S.of(context).thinking : '', textDirection: tDirect),
+          title: Text(gamer.getPlayer(widget.team).title, style: TextStyle(fontSize: 14), textDirection: tDirect,),
+          subtitle: currentTeam == widget.team ? Text( S.of(context).thinking , style: TextStyle(fontSize: 10), textDirection: tDirect) : null,
           trailing: trailing,
+          titleAlign: widget.placeAt == Alignment.topCenter ? CrossAxisAlignment.start : CrossAxisAlignment.end,
         ),
       ),
       SizedBox(
@@ -120,6 +124,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
       ),
     ];
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: widget.placeAt == Alignment.topCenter ? childs : childs.reversed.toList(),

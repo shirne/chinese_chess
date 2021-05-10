@@ -49,45 +49,64 @@ class _GameBoardState extends State<GameBoard> {
 
   Widget selectMode() {
     double maxHeight = MediaQuery.of(context).size.height;
-    return Center(
-        child: Container(
-      height: maxHeight * 0.6,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                mode = PlayMode.modeRobot;
-              });
-            },
-            icon: Icon(Icons.android),
-            label: Text(S.of(context).mode_robot),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              MyDialog.of(context).toast(S.of(context).feature_not_available,
-                  icon: MyDialog.iconError);
-              return;
-              setState(() {
-                mode = PlayMode.modeOnline;
-              });
-            },
-            icon: Icon(Icons.wifi),
-            label: Text(S.of(context).mode_online),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              setState(() {
-                mode = PlayMode.modeFree;
-              });
-            },
-            icon: Icon(Icons.map),
-            label: Text(S.of(context).mode_free),
-          ),
-        ],
+    List<Widget> widgets = [
+      ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            mode = PlayMode.modeRobot;
+          });
+        },
+        icon: Icon(Icons.android),
+        label: Text(S.of(context).mode_robot),
       ),
-    ));
+      ElevatedButton.icon(
+        onPressed: () {
+          MyDialog.of(context).toast(S.of(context).feature_not_available,
+              icon: MyDialog.iconError);
+          return;
+          setState(() {
+            mode = PlayMode.modeOnline;
+          });
+        },
+        icon: Icon(Icons.wifi),
+        label: Text(S.of(context).mode_online),
+      ),
+      ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            mode = PlayMode.modeFree;
+          });
+        },
+        icon: Icon(Icons.map),
+        label: Text(S.of(context).mode_free),
+      ),
+    ];
+    if (kIsWeb) {
+      widgets.add(TextButton(
+          onPressed: () {
+            var link = html.window.document.getElementById('download-apk');
+            if(link == null) {
+              link = html.window.document.createElement('a');
+              link.style.display = 'none';
+              link.setAttribute('id', 'download-apk');
+              link.setAttribute('target', '_blank');
+              link.setAttribute('href', 'chinese-chess.apk');
+              html.window.document.getElementsByTagName('body')[0].append(link);
+            }
+            link.click();
+          },
+          child: Text('Download APK'),
+      ));
+    }
+    return Center(
+      child: Container(
+        height: maxHeight * 0.6,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: widgets,
+        ),
+      ),
+    );
   }
 
   @override
@@ -229,7 +248,10 @@ class _GameBoardState extends State<GameBoard> {
           child: mode == null ? selectMode() : PlayPage(mode: mode),
         ),
       ),
-      bottomNavigationBar: (mode == null || MediaQuery.of(context).size.width >= 980) ? null : GameBottomBar(mode),
+      bottomNavigationBar:
+          (mode == null || MediaQuery.of(context).size.width >= 980)
+              ? null
+              : GameBottomBar(mode),
     );
   }
 

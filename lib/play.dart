@@ -58,16 +58,14 @@ class PlayPageState extends State<PlayPage> {
 
     return Container(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           PlaySinglePlayer(team: 1,),
-          SizedBox(height: 10,),
            Container(
               width: gamer.skin.width * gamer.scale,
               height: gamer.skin.height * gamer.scale,
               child: Chess(),
             ),
-          SizedBox(height: 10,),
           PlaySinglePlayer(team: 0,placeAt: Alignment.bottomCenter,),
         ],
       ),
