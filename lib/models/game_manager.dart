@@ -2,12 +2,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chinese_chess/driver/player_driver.dart';
-import 'package:chinese_chess/models/chess_skin.dart';
-import 'package:chinese_chess/models/game_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:gbk2utf8/gbk2utf8.dart';
 
+import '../driver/player_driver.dart';
+import 'chess_skin.dart';
+import 'game_setting.dart';
+import 'sound.dart';
 import 'chess_fen.dart';
 import 'chess_manual.dart';
 import 'chess_pos.dart';
@@ -333,9 +334,11 @@ class GameManager{
     }
 
     if(fen.hasItemAt(ChessPos.fromCode(move.substring(2,4)))){
-      unEatCount ++;
-    }else{
       unEatCount = 0;
+      Sound.play(Sound.capture);
+    }else{
+      unEatCount ++;
+      Sound.play(Sound.move);
     }
 
     // 如果当前不是最后一步，移除后面着法
@@ -360,6 +363,13 @@ class GameManager{
     }
     print('本局结果：$result');
     resultNotifier.value = '$result $description';
+    if(result == ChessManual.resultFstDraw){
+      Sound.play(Sound.draw);
+    }else if(result == ChessManual.resultFstWin){
+      Sound.play(Sound.win);
+    }else if(result == ChessManual.resultFstLoose){
+      Sound.play(Sound.loose);
+    }
     manual.result = result;
   }
 
@@ -392,7 +402,7 @@ class GameManager{
           setResult(hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin, '不变招长将作负');
           return false;
         }
-
+        Sound.play(Sound.check);
         resultNotifier.value = 'checkMate';
         Future.delayed(Duration(milliseconds: 30)).then((value) => resultNotifier.value = '' );
       }else{

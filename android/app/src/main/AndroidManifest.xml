@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
    <application
-        android:label="Chinese Chess"
+        android:label="中国象棋"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

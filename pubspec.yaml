@@ -55,11 +55,13 @@ dependencies:
   gbk2utf8: ^1.0.1
   universal_html: ^1.2.1
   shared_preferences: ^2.0.5
+  #audioplayers: ^0.18.0
+  assets_audio_player: ^3.0.3+3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.8.0
+  flutter_launcher_icons: ^0.9.0
 
 # flutter pub run flutter_launcher_icons:main
 flutter_icons:
@@ -82,6 +84,7 @@ flutter:
     - assets/skins/woods/
     - assets/images/
     - assets/engines/
+    - assets/sounds/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

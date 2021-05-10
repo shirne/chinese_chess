@@ -4,6 +4,7 @@ import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
 import 'generated/l10n.dart';
+import 'models/sound.dart';
 import 'models/chess_manual.dart';
 import 'elements/board.dart';
 import 'models/chess_item.dart';
@@ -290,12 +291,14 @@ class ChessState extends State<Chess> {
 
     // 置空当前选中状态
     if (activeItem != null && activeItem.position == toPosition) {
+      Sound.play(Sound.click);
       setState(() {
         activeItem = null;
         lastPosition = '';
         movePoints = [];
       });
     } else if (newActive.team == gamer.curHand) {
+      Sound.play(Sound.click);
       // 切换选中的子
       setState(() {
         activeItem = newActive;
