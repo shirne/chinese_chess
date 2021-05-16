@@ -12,11 +12,11 @@ class GameSetting{
   static const cacheKey = 'setting';
 
   String robotType = EngineType.builtIn;
-  int robotLevel = 0;
+  int robotLevel = 10;
   bool sound = true;
   double soundVolume = 1;
 
-  GameSetting({this.robotType = EngineType.builtIn, this.robotLevel = 0,this.sound = true,this.soundVolume = 1});
+  GameSetting({this.robotType = EngineType.builtIn, this.robotLevel = 10,this.sound = true,this.soundVolume = 1});
 
   GameSetting.fromJson(String jsonStr){
     if(jsonStr == null || jsonStr.isEmpty)return;
@@ -26,6 +26,9 @@ class GameSetting{
     }
     if(json.containsKey('robotLevel')) {
       this.robotLevel = json['robotLevel'];
+      if(this.robotLevel <10 || this.robotLevel > 12){
+        this.robotLevel = 10;
+      }
     }
     if(json.containsKey('sound')) {
       this.sound = json['sound'];

@@ -57,6 +57,8 @@ dependencies:
   shared_preferences: ^2.0.5
   #audioplayers: ^0.18.0
   assets_audio_player: ^3.0.3+3
+  #dart_vlc: ^0.0.7
+    #git: https://github.com/alexmercerind/dart_vlc.git
 
 dev_dependencies:
   flutter_test:

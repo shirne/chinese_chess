@@ -1,8 +1,11 @@
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+
+import 'game_setting.dart';
 
 class Sound{
   static const move = 'move2.wav';
@@ -16,10 +19,27 @@ class Sound{
   static const illegal = 'illegal.wav';
 
   static AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
+  //static Player vlcPlayer = Player(id: 69420);
+
+  static GameSetting setting;
 
   static Future<bool> play(String id) async{
+    if(setting == null){
+      setting = await GameSetting.getInstance();
+    }
+    if(!setting.sound)return false;
 
-    audioPlayer.open(Audio("assets/sounds/$id"));
+    String asset = "assets/sounds/$id";
+    if(kIsWeb) {
+      audioPlayer.setVolume(setting.soundVolume);
+      audioPlayer.open(Audio(asset));
+    }else if(Platform.isLinux || Platform.isWindows){
+      //vlcPlayer.setVolume(setting.soundVolume);
+      //vlcPlayer.open(await Media.asset(asset));
+    }else{
+      audioPlayer.setVolume(setting.soundVolume);
+      audioPlayer.open(Audio(asset));
+    }
     return true;
   }
 }

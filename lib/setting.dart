@@ -1,5 +1,6 @@
 
 
+import 'package:chinese_chess/models/engine_level.dart';
 import 'package:chinese_chess/models/game_setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,6 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     GameSetting.getInstance().then((value) => setState((){setting = value;}));
   }
@@ -68,6 +68,22 @@ class _SettingPageState extends State<SettingPage> {
                     )
                 ),
                 ListTile(
+                  title: Text('AI级别'),
+                    trailing: CupertinoSegmentedControl(
+                      onValueChanged: (value){
+                        setState(() {
+                          setting.robotLevel = value;
+                        });
+                      },
+                      groupValue: setting.robotLevel,
+                      children: {
+                        EngineLevel.learn: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('初级'),),
+                        EngineLevel.middle: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('中级')),
+                        EngineLevel.master: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('大师'))
+                      },
+                    )
+                ),
+                ListTile(
                   title: Text('游戏声音'),
                   trailing: CupertinoSwitch(
                     value: setting.sound,
@@ -82,6 +98,8 @@ class _SettingPageState extends State<SettingPage> {
                   title: Text('游戏音量'),
                   trailing: CupertinoSlider(
                     value: setting.soundVolume,
+                    min: 0,
+                    max: 1,
                     onChanged: (v){
                       setState(() {
                         setting.soundVolume = v;

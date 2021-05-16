@@ -91,7 +91,7 @@ class DriverRobot extends PlayerDriver{
   getBuiltInMove() async{
     if(search == null){
       position = Position();
-      search = Search(position, 12);
+      search = Search(position, player.manager.setting.robotLevel);
       Position.init().then((bool v){
         getBuiltInMove();
       });

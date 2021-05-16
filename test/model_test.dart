@@ -22,6 +22,9 @@ import 'package:chinese_chess/models/chess_rule.dart';
 
 void main() {
   test('test IccsMove', (){
+    TestWidgetsFlutterBinding.ensureInitialized();
+    print(rootBundle.toString());
+
     List<String> iccs = ['b0c2','h9g7','h0g2','b9c7','f0e1','i9i8','a0a1','b7a7','g3g4','i8f8'];
     List<int> moves = [42436,22842,43466,21812,47048,19259,46019,21332,35225,18507];
 
