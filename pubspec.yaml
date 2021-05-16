@@ -57,6 +57,9 @@ dependencies:
   shared_preferences: ^2.0.5
   #audioplayers: ^0.18.0
   assets_audio_player: ^3.0.3+3
+  flutter_audio_desktop:
+    #git: https://github.com/shirne/flutter_audio_desktop
+    path: ../flutter/flutter_audio_desktop
   #dart_vlc: ^0.0.7
     #git: https://github.com/alexmercerind/dart_vlc.git
 

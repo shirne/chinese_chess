@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_audio_desktop/flutter_audio_desktop.dart' as ad;
 
 import 'game_setting.dart';
 
@@ -19,7 +20,20 @@ class Sound{
   static const illegal = 'illegal.wav';
 
   static AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
-  //static Player vlcPlayer = Player(id: 69420);
+  static Duration lastDuration = Duration(milliseconds: 0);
+  static ad.AudioPlayer audioDesktopPlayer = ad.AudioPlayer(id: 0)
+    ..stream.listen(
+        (ad.Audio audio) {
+      print('${audio.position} ${audio.duration}');
+      if(audio.position >= audio.duration || audio.position < lastDuration) {
+        audioDesktopPlayer.stop().then((v){
+          audioDesktopPlayer.setPosition(Duration(milliseconds: 0));
+        });
+        lastDuration = Duration(milliseconds: 0);
+      }
+      lastDuration = audio.position;
+    },
+  );
 
   static GameSetting setting;
 
@@ -34,8 +48,10 @@ class Sound{
       audioPlayer.setVolume(setting.soundVolume);
       audioPlayer.open(Audio(asset));
     }else if(Platform.isLinux || Platform.isWindows){
-      //vlcPlayer.setVolume(setting.soundVolume);
-      //vlcPlayer.open(await Media.asset(asset));
+      print('play desktop audio: $id');
+      audioDesktopPlayer.setVolume(setting.soundVolume);
+      audioDesktopPlayer.load(await ad.AudioSource.fromAsset(asset));
+      audioDesktopPlayer.play();
     }else{
       audioPlayer.setVolume(setting.soundVolume);
       audioPlayer.open(Audio(asset));

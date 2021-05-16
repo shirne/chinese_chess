@@ -181,6 +181,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_audio_desktop:
+    dependency: "direct main"
+    description:
+      path: "../flutter/flutter_audio_desktop"
+      relative: true
+    source: path
+    version: "0.1.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
