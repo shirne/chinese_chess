@@ -83,19 +83,19 @@ class _GameBoardState extends State<GameBoard> {
     ];
     if (kIsWeb) {
       widgets.add(TextButton(
-          onPressed: () {
-            var link = html.window.document.getElementById('download-apk');
-            if(link == null) {
-              link = html.window.document.createElement('a');
-              link.style.display = 'none';
-              link.setAttribute('id', 'download-apk');
-              link.setAttribute('target', '_blank');
-              link.setAttribute('href', 'chinese-chess.apk');
-              html.window.document.getElementsByTagName('body')[0].append(link);
-            }
-            link.click();
-          },
-          child: Text('Download APK'),
+        onPressed: () {
+          var link = html.window.document.getElementById('download-apk');
+          if (link == null) {
+            link = html.window.document.createElement('a');
+            link.style.display = 'none';
+            link.setAttribute('id', 'download-apk');
+            link.setAttribute('target', '_blank');
+            link.setAttribute('href', 'chinese-chess.apk');
+            html.window.document.getElementsByTagName('body')[0].append(link);
+          }
+          link.click();
+        },
+        child: Text('Download APK'),
       ));
     }
     return Center(
