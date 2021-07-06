@@ -1,7 +1,49 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
+
+import '../models/game_setting.dart';
+
+import 'position.dart';
+import 'search.dart';
+
+class IsoMessage {
+  final String fen;
+  final SendPort sendPort;
+  final ByteData data;
+  static ByteData bookData;
+
+  IsoMessage(this.fen, this.sendPort) : data = bookData;
+}
+
+class XQIsoSearch {
+  static Position position;
+  static Search search;
+
+  static init() async {
+    if (search == null) {
+      position = Position();
+      GameSetting setting = await GameSetting.getInstance();
+      search = Search(position, setting.robotLevel);
+      await Position.init();
+    }
+  }
+
+  static Future<String> getMove(IsoMessage message) async {
+    Position.input = message.data;
+    await init();
+    position.fromFen(message.fen);
+    int mvLast = search.searchMain(1000 << (0 << 1));
+    print('$mvLast => ${Util.move2Iccs(mvLast)}');
+    String move = Util.move2Iccs(mvLast);
+    if (message.sendPort != null) message.sendPort.send(move);
+    return move;
+  }
+}
+
 class RC4 {
-  List<int> state = List.filled(256, 0);
+  List<int> state = List.generate(256, (i) => i);
   int x;
   int y;
 
@@ -14,9 +56,6 @@ class RC4 {
   RC4(Uint8List key) {
     x = 0;
     y = 0;
-    for (int i = 0; i < 256; i++) {
-      state[i] = i;
-    }
     int j = 0;
     for (int i = 0; i < 256; i++) {
       j = (j + state[i] + key[i % key.length]) & 0xff;
@@ -42,8 +81,6 @@ class RC4 {
   }
 }
 
-
-
 class Util {
   static int MIN_MAX(int min, int mid, int max) {
     return mid < min
@@ -53,7 +90,8 @@ class Util {
             : mid;
   }
 
-  static Uint8List POP_COUNT_16_LIST = Uint8List.fromList(List.generate(65536, (i) {
+  static Uint8List POP_COUNT_16_LIST =
+      Uint8List.fromList(List.generate(65536, (i) {
     int n = ((i >> 1) & 0x5555) + (i & 0x5555);
     n = ((n >> 2) & 0x3333) + (n & 0x3333);
     n = ((n >> 4) & 0x0f0f) + (n & 0x0f0f);
@@ -128,7 +166,7 @@ class Util {
     }
   }
 
-  static String move2Iccs(int mv){
+  static String move2Iccs(int mv) {
     var sqSrc = mv & 255;
     var sqDst = mv >> 8;
     return String.fromCharCode("a".codeUnitAt(0) + (sqSrc & 15) - 3) +
@@ -137,7 +175,7 @@ class Util {
         String.fromCharCode("9".codeUnitAt(0) - (sqDst >> 4) + 3);
   }
 
-  static int iccs2Move(String iccs){
+  static int iccs2Move(String iccs) {
     int sqSrc1 = iccs.codeUnitAt(0) + 3 - "a".codeUnitAt(0);
     int sqSrc2 = 3 + "9".codeUnitAt(0) - iccs.codeUnitAt(1);
     int sqDst1 = iccs.codeUnitAt(2) + 3 - "a".codeUnitAt(0);

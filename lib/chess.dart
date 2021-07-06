@@ -149,7 +149,7 @@ class ChessState extends State<Chess> {
   onMove() {
     String move = gamer.moveNotifier.value;
     print('onmove $move');
-    if (move.isEmpty) return;
+    if (move == null || move.isEmpty) return;
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
       toast(
@@ -167,7 +167,9 @@ class ChessState extends State<Chess> {
       }
     }
     if (move == PlayerDriver.rstRqstRetract) {
-      confirm(S.of(context).request_retract, S.of(context).agree_retract, S.of(context).disagree_retract).then((bool isAgree) {
+      confirm(S.of(context).request_retract, S.of(context).agree_retract,
+              S.of(context).disagree_retract)
+          .then((bool isAgree) {
         gamer.player.completeMove(isAgree ? PlayerDriver.rstRetract : '');
       });
       return;
@@ -332,7 +334,6 @@ class ChessState extends State<Chess> {
               setState(() {
                 dieFlash = null;
               });
-
             });
           } else {
             Future.delayed(Duration(milliseconds: delay), () {
@@ -349,8 +350,11 @@ class ChessState extends State<Chess> {
   }
 
   ChessPos pointTrans(Offset tapPoint) {
-    int x = (tapPoint.dx - gamer.skin.offset.dx * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
-    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
+    int x = (tapPoint.dx - gamer.skin.offset.dx * gamer.scale) ~/
+        (gamer.skin.size * gamer.scale);
+    int y = 9 -
+        (tapPoint.dy - gamer.skin.offset.dy * gamer.scale) ~/
+            (gamer.skin.size * gamer.scale);
     return ChessPos(x, y);
   }
 
@@ -359,7 +363,8 @@ class ChessState extends State<Chess> {
   }
 
   alertResult(message) {
-    confirm(message, S.of(context).one_more_game, S.of(context).let_me_see).then((isConfirm) {
+    confirm(message, S.of(context).one_more_game, S.of(context).let_me_see)
+        .then((isConfirm) {
       if (isConfirm) {
         gamer.newGame();
       }

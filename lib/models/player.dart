@@ -47,7 +47,7 @@ class Player {
     print('onmove');
     manager.moveNotifier.value = move;
 
-    if (move.isNotEmpty) {
+    if (move != null && move.isNotEmpty) {
       Future.delayed(Duration(milliseconds: 500)).then((v) {
         manager.moveNotifier.value = '';
       });
