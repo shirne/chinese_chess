@@ -7,7 +7,7 @@ import '../models/player.dart';
 import 'player_driver.dart';
 
 class DriverUser extends PlayerDriver{
-  Completer<String> requestMove;
+  late Completer<String> requestMove;
 
   DriverUser(Player player) : super(player);
 

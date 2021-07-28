@@ -1,11 +1,10 @@
 
 
-
-import 'package:chinese_chess/models/game_manager.dart';
-import 'package:chinese_chess/widgets/game_wrapper.dart';
 import 'package:flutter/material.dart';
 
 import '../models/chess_item.dart';
+import '../models/game_manager.dart';
+import '../widgets/game_wrapper.dart';
 
 class Piece extends StatelessWidget {
   final ChessItem item;
@@ -13,7 +12,7 @@ class Piece extends StatelessWidget {
   final bool isAblePoint;
   final bool isHover;
 
-  const Piece({Key key, this.item, this.isActive = false, this.isHover = false, this.isAblePoint = false})
+  const Piece({Key? key,required this.item, this.isActive = false, this.isHover = false, this.isAblePoint = false})
       : super(key: key);
 
   Widget blankWidget(GameManager gamer) {
@@ -28,7 +27,7 @@ class Piece extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GameManager gamer = context.findAncestorStateOfType<GameWrapperState>().gamer;
+    GameManager gamer = context.findAncestorStateOfType<GameWrapperState>()!.gamer;
     String team = item.team == 0 ? 'r' : 'b';
 
     return this.item.isBlank

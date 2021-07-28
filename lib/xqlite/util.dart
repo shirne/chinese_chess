@@ -10,16 +10,16 @@ import 'search.dart';
 
 class IsoMessage {
   final String fen;
-  final SendPort sendPort;
+  final SendPort? sendPort;
   final ByteData data;
-  static ByteData bookData;
+  static ByteData? bookData;
 
-  IsoMessage(this.fen, this.sendPort) : data = bookData;
+  IsoMessage(this.fen, [this.sendPort]) : data = bookData!;
 }
 
 class XQIsoSearch {
-  static Position position;
-  static Search search;
+  static late Position position;
+  static Search? search;
 
   static init() async {
     if (search == null) {
@@ -34,10 +34,10 @@ class XQIsoSearch {
     Position.input = message.data;
     await init();
     position.fromFen(message.fen);
-    int mvLast = search.searchMain(1000 << (0 << 1));
+    int mvLast = search!.searchMain(1000 << (0 << 1));
     print('$mvLast => ${Util.move2Iccs(mvLast)}');
     String move = Util.move2Iccs(mvLast);
-    if (message.sendPort != null) message.sendPort.send(move);
+    message.sendPort?.send(move);
     return move;
   }
 }
@@ -53,9 +53,7 @@ class RC4 {
     state[j] = t;
   }
 
-  RC4(Uint8List key) {
-    x = 0;
-    y = 0;
+  RC4(Uint8List key):x=0,y=0 {
     int j = 0;
     for (int i = 0; i < 256; i++) {
       j = (j + state[i] + key[i % key.length]) & 0xff;

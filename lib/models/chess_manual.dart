@@ -1,8 +1,7 @@
 
 
-import 'package:chinese_chess/models/chess_fen.dart';
-import 'package:chinese_chess/models/chess_item.dart';
-
+import 'chess_fen.dart';
+import 'chess_item.dart';
 import 'chess_pos.dart';
 import 'chess_step.dart';
 
@@ -37,7 +36,7 @@ class ChessManual{
   // RedTitle、RedElo、RedType
 
   // 别名
-  get redNA{
+  String get redNA{
     return redTeam;
   }
   set redNA(String value){
@@ -69,10 +68,10 @@ class ChessManual{
   int startHand = 0;
 
   // 子力位置图
-  ChessFen fenPosition;
+  late ChessFen fenPosition;
 
   // 当前
-  ChessFen currentFen;
+  late ChessFen currentFen;
 
   // 记谱方法 Chinese(中文纵线格式)、WXF(WXF纵线格式)和ICCS(ICCS坐标格式)
   String format = 'Chinese';
@@ -88,8 +87,8 @@ class ChessManual{
   List<ChessStep> moves = [];
   int step = 0;
 
-  ChessPos diePosition;
-  Map<String,ChessPos> diePositions;
+  ChessPos? diePosition;
+  Map<String,ChessPos>? diePositions;
 
   ChessManual({
     this.fen = startFen,
@@ -119,8 +118,8 @@ class ChessManual{
     round = '1';
     ecco = '';
     timeControl = '';
-    currentFen = null;
-    fenPosition = null;
+    //currentFen = null;
+    //fenPosition = null;
   }
 
   initFen(String fenStr){
@@ -144,7 +143,7 @@ class ChessManual{
     String description = '';
     content = content.replaceAllMapped(
         RegExp('[${ChessFen.replaceNumber.join('')}]'),
-            (match) => ChessFen.replaceNumber.indexOf(match[0]).toString()
+            (match) => ChessFen.replaceNumber.indexOf(match[0]!).toString()
     );
     while(true){
       String chr = content[idx];
@@ -314,8 +313,8 @@ class ChessManual{
     currentFen.fen = fenStr;
     fenPosition.fen = currentFen.fen.replaceAllMapped(
         RegExp(r'[^0-9\\/]'), (match){
-          String chr = initPositions[initChrs.indexOf(match[0])];
-          initChrs = initChrs.replaceFirst(match[0], '0');
+          String chr = initPositions[initChrs.indexOf(match[0]!)];
+          initChrs = initChrs.replaceFirst(match[0]!, '0');
           return chr;
         });
   }
@@ -393,14 +392,14 @@ class ChessManual{
 
       if(newIndex > -1){
         // print('${item.code}@${item.position.toCode()}: $chr @ $index => $newIndex');
-        item.position = fenPosition.find(chr);
+        item.position = fenPosition.find(chr)!;
         item.isDie = false;
       }else{
         // print('${item.code}@${item.position.toCode()}: $chr @ $index --');
-        if(diePositions != null && diePositions.containsKey(item.code)){
-          item.position = diePositions[item.code].copy();
+        if(diePositions != null && diePositions!.containsKey(item.code)){
+          item.position = diePositions![item.code]!.copy();
         }else if(diePosition != null){
-          item.position = diePosition.copy();
+          item.position = diePosition!.copy();
         }
         item.isDie = true;
       }
@@ -411,7 +410,7 @@ class ChessManual{
   }
 
   // 获取当前招法
-  ChessStep getMove(){
+  ChessStep? getMove(){
     if(step < 1)return null;
     if(step > moves.length) return null;
     return moves[step-1];
@@ -432,7 +431,7 @@ class ChessManual{
     });
   }
 
-  addMove(String move, {String description, int addStep = -1}){
+  addMove(String move, {String description = '', int addStep = -1}){
     if(results.contains(move)){
       result = move;
     }else {

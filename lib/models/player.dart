@@ -1,10 +1,11 @@
-import 'package:chinese_chess/models/game_manager.dart';
+
 
 import '../driver/player_driver.dart';
 import 'chess_item.dart';
+import 'game_manager.dart';
 
 class Player {
-  ChessItem item;
+  //ChessItem item;
   GameManager manager;
   String lastPosition = '';
   String team = 'r';
@@ -13,8 +14,8 @@ class Player {
   int totalTime = 0;
   int stepTime = 0;
 
-  DriverType _driverType;
-  PlayerDriver driver;
+  late DriverType _driverType;
+  late PlayerDriver driver;
 
   Player(this.team, this.manager,
       {this.title = '', DriverType type = DriverType.user}) {
@@ -47,7 +48,7 @@ class Player {
     print('onmove');
     manager.moveNotifier.value = move;
 
-    if (move != null && move.isNotEmpty) {
+    if ( move.isNotEmpty) {
       Future.delayed(Duration(milliseconds: 500)).then((v) {
         manager.moveNotifier.value = '';
       });

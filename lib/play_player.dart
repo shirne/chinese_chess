@@ -8,23 +8,22 @@ import 'models/game_manager.dart';
 import 'widgets/tab_card.dart';
 
 class PlayPlayer extends StatefulWidget {
-  final double height;
 
-  const PlayPlayer({Key key, this.height}) : super(key: key);
+  const PlayPlayer({Key? key}) : super(key: key);
 
   @override
   State<PlayPlayer> createState() => PlayPlayerState();
 }
 
 class PlayPlayerState extends State<PlayPlayer> {
-  GameManager gamer;
+  late GameManager gamer;
   int currentTeam = 0;
 
   @override
   void initState() {
     super.initState();
     GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+        context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
     gamer.playerNotifier.addListener(onChangePlayer);
     gamer.gameNotifier.addListener(onReloadGame);
@@ -75,7 +74,8 @@ class PlayPlayerState extends State<PlayPlayer> {
         },
       );
     }
-    return null;
+
+    return SizedBox();
   }
 
   void changePlayDriver(int team, DriverType driverType) {

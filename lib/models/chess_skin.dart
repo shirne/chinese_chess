@@ -39,7 +39,7 @@ class ChessSkin{
     "p": "bp.png"
   };
 
-  ValueNotifier<bool> readyNotifier;
+  late ValueNotifier<bool> readyNotifier;
 
   ChessSkin(this.folder, this.manager){
     readyNotifier = ValueNotifier(false);

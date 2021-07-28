@@ -3,17 +3,11 @@ class ChessPos {
   int y;
   ChessPos(this.x, this.y);
 
-  ChessPos.tlOrigin(int x, int y){
-    this.x = x;
-    this.y = 9 - y;
-  }
+  ChessPos.tlOrigin(this.x, int y):y = 9-y;
 
-  ChessPos.fromCode(String code){
-    if(code.length > 1) {
-      x = code.codeUnitAt(0) - 'a'.codeUnitAt(0);
-      y = int.tryParse(code[1]) ?? 0;
-    }
-  }
+  ChessPos.fromCode(String code):
+        x = code.codeUnitAt(0) - 'a'.codeUnitAt(0),
+        y = int.tryParse(code[1]) ?? 0;
 
   @override
   int get hashCode => this.x * 10 + this.y;

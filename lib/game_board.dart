@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chinese_chess/setting.dart';
+import 'package:fast_gbk/fast_gbk.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
@@ -10,9 +10,9 @@ import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:universal_html/html.dart' as html;
 
+import 'setting.dart';
 import 'game_bottom_bar.dart';
 import 'generated/l10n.dart';
 import 'models/play_mode.dart';
@@ -27,16 +27,16 @@ class GameBoard extends StatefulWidget {
 }
 
 class _GameBoardState extends State<GameBoard> {
-  GameManager gamer;
-  PlayMode mode;
+  late GameManager gamer;
+  PlayMode? mode;
 
   @override
   void initState() {
     super.initState();
-    gamer = context.findAncestorStateOfType<GameWrapperState>().gamer;
+    gamer = context.findAncestorStateOfType<GameWrapperState>()!.gamer;
   }
 
-  Future<bool> confirm(message,
+  Future<bool?> confirm(message,
       {String buttonText = 'OK',
       String title = 'Alert',
       String cancelText = 'Cancel'}) {
@@ -201,7 +201,7 @@ class _GameBoardState extends State<GameBoard> {
                 Navigator.pop(context);
                 setState(() {
                   gamer.stop();
-                  mode = null;
+                  //mode = null;
                 });
               },
             ),
@@ -245,13 +245,13 @@ class _GameBoardState extends State<GameBoard> {
       ),
       body: SafeArea(
         child: Center(
-          child: mode == null ? selectMode() : PlayPage(mode: mode),
+          child: mode == null ? selectMode() : PlayPage(mode: mode!),
         ),
       ),
       bottomNavigationBar:
           (mode == null || MediaQuery.of(context).size.width >= 980)
               ? null
-              : GameBottomBar(mode),
+              : GameBottomBar(mode!),
     );
   }
 
@@ -268,8 +268,8 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   applyFen() async {
-    ClipboardData cData = await Clipboard.getData(Clipboard.kTextPlain);
-    String fenStr = cData.text;
+    ClipboardData? cData = await Clipboard.getData(Clipboard.kTextPlain);
+    String fenStr = cData?.text ?? '';
     TextEditingController filenameController =
         TextEditingController(text: fenStr);
     filenameController.addListener(() {
@@ -282,7 +282,7 @@ class _GameBoardState extends State<GameBoard> {
             buttonText: S.of(context).apply,
             title: S.of(context).situation_code)
         .then((v) {
-      if (v) {
+      if (v ?? false) {
         if (RegExp(
                 r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$')
             .hasMatch(fenStr)) {
@@ -325,7 +325,7 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   _saveManualMobile(String content, String filename) async {
-    String result = await FilesystemPicker.open(
+    String? result = await FilesystemPicker.open(
       title: S.of(context).select_directory_save,
       context: context,
       rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
@@ -346,7 +346,7 @@ class _GameBoardState extends State<GameBoard> {
               buttonText: 'Save',
               title: S.of(context).save_filename)
           .then((v) {
-        if (v) {
+        if (v ?? false) {
           List<int> fData = gbk.encode(content);
           File('$result/$filename').writeAsBytes(fData).then((File file) {
             alert(S.of(context).save_success);
@@ -380,16 +380,16 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   void _loadFileWeb() async {
-    FilePickerResult result = await FilePicker.platform
+    FilePickerResult? result = await FilePicker.platform
         .pickFiles(allowedExtensions: ['.pgn', '.PGN']);
 
     if (result != null) {
       print(result.files.single);
       if (result.files.single.path != null) {
-        File file = File(result.files.single.path);
+        File file = File(result.files.single.path!);
         print(file);
       } else {
-        String content = gbk.decode(result.files.single.bytes);
+        String content = gbk.decode(result.files.single.bytes!);
         print(content);
         gamer.loadPGN(content);
       }
@@ -411,7 +411,7 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   void _loadFileMobile() async {
-    String path = await FilesystemPicker.open(
+    String? path = await FilesystemPicker.open(
       title: S.of(context).select_pgn_file,
       context: context,
       rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),

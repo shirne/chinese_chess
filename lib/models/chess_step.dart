@@ -35,7 +35,7 @@ class ChessStep{
       List<String> rows = fen.split('/').reversed.toList();
       String row = rows[int.parse(move[1])];
       row = row.replaceAllMapped(RegExp(r'\d'), (i){
-        return List.filled(int.parse(i[0]), '0').join('');
+        return List.filled(int.parse(i[0]!), '0').join('');
       });
       int col = move.codeUnitAt(0) - ChessFen.colIndexBase;
       this.code = row[col];

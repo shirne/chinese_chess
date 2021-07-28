@@ -13,7 +13,7 @@ class ChessBox extends StatefulWidget {
   final String activeChr;
   final double height;
 
-  const ChessBox({Key key, this.itemChrs, this.activeChr = '', this.height}) : super(key: key);
+  const ChessBox({Key? key,required this.itemChrs, this.activeChr = '',required this.height}) : super(key: key);
 
   @override
   State<ChessBox> createState() => _ChessBoxState();
@@ -27,11 +27,11 @@ class _ChessBoxState extends State<ChessBox> {
   }
 
   setActive(String chr){
-    EditFenState parent = context.findAncestorStateOfType<EditFenState>();
+    EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.setActiveChr(chr);
   }
   clearAll(){
-    EditFenState parent = context.findAncestorStateOfType<EditFenState>();
+    EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.clearAll();
   }
 
@@ -82,14 +82,14 @@ class ItemWidget extends StatelessWidget {
   final int count;
   final bool isActive;
 
-  const ItemWidget({Key key, this.chr, this.count, this.isActive}) : super(key: key);
+  const ItemWidget({Key? key,required this.chr,required this.count, this.isActive = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     GameWrapperState wrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+        context.findAncestorStateOfType<GameWrapperState>()!;
     GameManager manager = wrapper.gamer;
-    _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>();
+    _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>()!;
     return GestureDetector(
       onTap: (){
         if(count > 0) {

@@ -14,7 +14,7 @@ class ChessSingleBox extends StatefulWidget {
   final double width;
   final int team;
 
-  const ChessSingleBox({Key key, this.itemChrs, this.activeChr = '', this.width, this.team = 0}) : super(key: key);
+  const ChessSingleBox({Key? key,required this.itemChrs, this.activeChr = '',required this.width, this.team = 0}) : super(key: key);
 
   @override
   State<ChessSingleBox> createState() => _ChessBoxState();
@@ -22,18 +22,18 @@ class ChessSingleBox extends StatefulWidget {
 
 class _ChessBoxState extends State<ChessSingleBox> {
   static String allItemChrs = 'kabcnrp';
-  GameManager gamer;
+  GameManager? gamer;
 
   int matchCount(String chr) {
     return RegExp(chr).allMatches(widget.itemChrs).length;
   }
 
   setActive(String chr){
-    EditFenState parent = context.findAncestorStateOfType<EditFenState>();
+    EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.setActiveChr(chr);
   }
   clearAll(){
-    EditFenState parent = context.findAncestorStateOfType<EditFenState>();
+    EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.clearAll();
   }
 
@@ -49,12 +49,12 @@ class _ChessBoxState extends State<ChessSingleBox> {
   Widget build(BuildContext context) {
     if(gamer == null) {
       GameWrapperState gameWrapper =
-      context.findAncestorStateOfType<GameWrapperState>();
+      context.findAncestorStateOfType<GameWrapperState>()!;
       gamer = gameWrapper.gamer;
     }
     return Container(
       width: widget.width,
-      height: gamer.skin.size * gamer.scale,
+      height: gamer!.skin.size * gamer!.scale,
       child: Flex(
         direction: Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,14 +84,14 @@ class ItemWidget extends StatelessWidget {
   final int count;
   final bool isActive;
 
-  const ItemWidget({Key key, this.chr, this.count, this.isActive}) : super(key: key);
+  const ItemWidget({Key? key,required this.chr,required this.count, this.isActive = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     GameWrapperState wrapper =
-    context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>()!;
     GameManager manager = wrapper.gamer;
-    _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>();
+    _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>()!;
     return GestureDetector(
       onTap: (){
         if(count > 0) {

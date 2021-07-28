@@ -10,10 +10,10 @@ import '../foundation/customer_notifier.dart';
 class Engine extends CustomNotifier<String>{
   String engine = 'eleeye.exe';
   List<Completer<String>> readyCompleters = [];
-  Completer<bool> stopCompleter;
-  bool ready;
+  Completer<bool>? stopCompleter;
+  bool ready = false;
 
-  Process process;
+  Process? process;
 
   Future<Process> init(){
     ready = false;
@@ -28,9 +28,9 @@ class Engine extends CustomNotifier<String>{
     return Process.start(path, [], mode: ProcessStartMode.normal).then((value){
       process = value;
       ready = true;
-      process.stdout.listen(onMessage);
-      process.stdin.writeln('ucci');
-      return process;
+      process?.stdout.listen(onMessage);
+      process?.stdin.writeln('ucci');
+      return process!;
     });
   }
 
@@ -54,8 +54,8 @@ class Engine extends CustomNotifier<String>{
         process = null;
       }else if(line.isNotEmpty && this.hasListeners) {
         if(line.startsWith('nobestmove') || line.startsWith('bestmove ') ){
-          if(stopCompleter != null && !stopCompleter.isCompleted){
-            stopCompleter.complete(true);
+          if(stopCompleter != null && !stopCompleter!.isCompleted){
+            stopCompleter!.complete(true);
           }else if(readyCompleters.length > 0){
             readyCompleters.removeAt(0).complete(line);
           }
@@ -85,7 +85,7 @@ class Engine extends CustomNotifier<String>{
       return;
     }
     print('command: $command');
-    process.stdin.writeln(command);
+    process?.stdin.writeln(command);
   }
 
   void setOption(String option){
@@ -121,12 +121,12 @@ class Engine extends CustomNotifier<String>{
   }
 
   Future<bool> stop(){
-    if(!ready || (stopCompleter != null && !stopCompleter.isCompleted)){
+    if(!ready || (stopCompleter != null && !stopCompleter!.isCompleted)){
       return Future.value(false);
     }
     stopCompleter = Completer();
     sendCommand('stop');
-    return stopCompleter.future;
+    return stopCompleter!.future;
   }
 
   void quit(){

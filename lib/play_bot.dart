@@ -9,7 +9,7 @@ import 'models/game_manager.dart';
 
 class PlayBot extends StatefulWidget{
 
-  const PlayBot({Key key}) : super(key: key);
+  const PlayBot({Key? key}) : super(key: key);
 
   @override
   State<PlayBot> createState() => PlayStepState();
@@ -17,14 +17,14 @@ class PlayBot extends StatefulWidget{
 
 class PlayStepState extends State<PlayBot> {
   List<String> botMessages = [ ];
-  ScrollController _controller;
-  GameManager gamer;
+  late ScrollController _controller;
+  late GameManager gamer;
 
   @override
   void initState() {
     super.initState();
     _controller = ScrollController(keepScrollOffset: true);
-    GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>();
+    GameWrapperState gameWrapper = context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
     gamer.messageNotifier.addListener(updateMessage);
   }

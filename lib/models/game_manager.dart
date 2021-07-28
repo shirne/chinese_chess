@@ -2,8 +2,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/material.dart';
-import 'package:gbk2utf8/gbk2utf8.dart';
 
 import '../driver/player_driver.dart';
 import 'chess_skin.dart';
@@ -18,15 +18,15 @@ import 'player.dart';
 
 class GameManager{
 
-  ChessSkin skin;
+  late ChessSkin skin;
   double scale = 1;
 
   // 当前对局
-  ChessManual manual;
+  late ChessManual manual;
   
   // 算法引擎
-  Engine engine;
-  bool engineOK;
+  Engine? engine;
+  bool engineOK = false;
 
   // 是否重新请求招法时的强制stop
   bool isStop = false;
@@ -48,30 +48,30 @@ class GameManager{
   int round = 0;
 
   // 走子事件
-  ValueNotifier<String> stepNotifier;
+  late ValueNotifier<String> stepNotifier;
 
   // 引擎消息事件
-  ValueNotifier<String> messageNotifier;
+  late ValueNotifier<String> messageNotifier;
 
   // 玩家事件
-  ValueNotifier<int> playerNotifier;
+  late ValueNotifier<int> playerNotifier;
 
   // 游戏加载事件
-  ValueNotifier<int> gameNotifier;
+  late ValueNotifier<int> gameNotifier;
 
   // 结果事件 包含将军
-  ValueNotifier<String> resultNotifier;
+  late ValueNotifier<String> resultNotifier;
 
   // 界面锁定通知
-  ValueNotifier<bool> lockNotifier;
+  late ValueNotifier<bool> lockNotifier;
 
   // 走棋通知
-  ValueNotifier<String> moveNotifier;
+  late ValueNotifier<String> moveNotifier;
 
   // 走子规则
-  ChessRule rule;
+  late ChessRule rule;
 
-  GameSetting setting;
+  late GameSetting setting;
 
   GameManager();
 
@@ -188,7 +188,7 @@ class GameManager{
   stop(){
     gameNotifier.value = -1;
     isStop = true;
-    if(engine != null)engine.stop();
+    engine?.stop();
     currentStep = 0;
     stepNotifier.value = '';
     messageNotifier.value = '';
@@ -224,7 +224,7 @@ class GameManager{
 
   _loadPGN(String pgn) async{
     isStop = true;
-    engine.stop();
+    engine?.stop();
 
     String content = '';
     if(!pgn.contains('\n')) {
@@ -432,8 +432,8 @@ class GameManager{
 
   dispose(){
     if(engine != null) {
-      engine.stop();
-      engine.quit();
+      engine?.stop();
+      engine?.quit();
       engine = null;
     }
   }
@@ -461,14 +461,10 @@ class GameManager{
     Completer<bool> engineFuture = Completer<bool>();
     engine = Engine();
     engineOK = false;
-    engine.init().then((v){
-      if(v != null) {
-        engineOK = true;
-        engine.addListener(parseMessage);
-        engineFuture.complete(true);
-      }else{
-        engineFuture.complete(false);
-      }
+    engine?.init().then((Process v){
+      engineOK = true;
+      engine?.addListener(parseMessage);
+      engineFuture.complete(true);
     });
     return engineFuture.future;
   }
@@ -485,9 +481,9 @@ class GameManager{
     }else {
       if(engineOK) {
         isStop = true;
-        engine.stop();
-        engine.position(fenStr);
-        engine.go(depth: 10);
+        engine?.stop();
+        engine?.position(fenStr);
+        engine?.go(depth: 10);
       }else{
         print('engine is not ok');
       }

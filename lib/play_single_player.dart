@@ -12,21 +12,21 @@ class PlaySinglePlayer extends StatefulWidget {
   final int team;
   final Alignment placeAt;
 
-  const PlaySinglePlayer({Key key, this.team, this.placeAt = Alignment.topCenter}) : super(key: key);
+  const PlaySinglePlayer({Key? key,required this.team, this.placeAt = Alignment.topCenter}) : super(key: key);
 
   @override
   State<PlaySinglePlayer> createState() => PlaySinglePlayerState();
 }
 
 class PlaySinglePlayerState extends State<PlaySinglePlayer> {
-  GameManager gamer;
+  late GameManager gamer;
   int currentTeam = 0;
 
   @override
   void initState() {
     super.initState();
     GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
     gamer.playerNotifier.addListener(onChangePlayer);
     gamer.gameNotifier.addListener(onReloadGame);
@@ -77,7 +77,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
         },
       );
     }
-    return null;
+    return SizedBox();
   }
 
   void changePlayDriver(int team, DriverType driverType) {

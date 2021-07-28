@@ -5,7 +5,7 @@ import 'chess_pos.dart';
 class ChessFen {
   static const initFen =
       'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR';
-  static int colIndexBase = 'a'.codeUnitAt(0);
+  static final colIndexBase = 'a'.codeUnitAt(0);
 
   static const nameMap = {
     '将': 'k',
@@ -47,7 +47,7 @@ class ChessFen {
   static const posIndex = ['前', '中', '后'];
 
   String _fen = '';
-  List<ChessFenRow> _rows;
+  late List<ChessFenRow> _rows;
 
   ChessFen([String fenStr = initFen]) {
     if (fenStr.isEmpty) {
@@ -73,7 +73,7 @@ class ChessFen {
   String get fen {
     if (_fen.isEmpty) {
       _fen = _rows.reversed.join('/').replaceAllMapped(
-          RegExp(r'0+'), (match) => match[0].length.toString());
+          RegExp(r'0+'), (match) => match[0]!.length.toString());
     }
     return _fen;
   }
@@ -84,7 +84,7 @@ class ChessFen {
     }
     this._rows = fenStr
         .replaceAllMapped(RegExp(r'\d'),
-            (match) => List<String>.filled(int.parse(match[0]), '0').join(''))
+            (match) => List<String>.filled(int.parse(match[0]!), '0').join(''))
         .split('/')
         .reversed
         .map<ChessFenRow>((row) => ChessFenRow(row))
@@ -158,8 +158,8 @@ class ChessFen {
     return false;
   }
 
-  ChessPos find(String matchCode) {
-    ChessPos pos;
+  ChessPos? find(String matchCode) {
+    ChessPos? pos;
     int rowNumber = 0;
     _rows.any((row) {
       int start = row.indexOf(matchCode);
@@ -254,14 +254,14 @@ class ChessFen {
   }
 
   String toPositionString(int team, String move) {
-    String code;
-    String matchCode;
+    late String code;
+    late String matchCode;
     int colIndex = -1;
 
     if (nameIndex.contains(move[0]) || posIndex.contains(move[0])) {
-      code = nameMap[move[1]];
+      code = nameMap[move[1]]!;
     } else {
-      code = nameMap[move[0]];
+      code = nameMap[move[0]]!;
       colIndex =
           team == 0 ? colRed.indexOf(move[1]) : colBlack.indexOf(move[1]);
     }
@@ -410,7 +410,7 @@ class ChessFen {
     String code = matchCode.toLowerCase();
 
     // 子名
-    String name = team == 0 ? nameRedMap[code] : nameBlackMap[code];
+    String name = team == 0 ? nameRedMap[code]! : nameBlackMap[code]!;
 
     if (code == 'k' || code == 'a' || code == 'b') {
       _chineseString =

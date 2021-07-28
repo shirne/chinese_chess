@@ -16,17 +16,17 @@ import 'models/game_manager.dart';
 class EditFen extends StatefulWidget {
   final String fen;
 
-  const EditFen({Key key, this.fen}) : super(key: key);
+  const EditFen({Key? key,required this.fen}) : super(key: key);
 
   @override
   State<EditFen> createState() => EditFenState();
 }
 
 class EditFenState extends State<EditFen> {
-  ChessManual manual;
-  GameManager gamer;
-  List<ChessItem> items;
-  ChessItem activeItem;
+  late ChessManual manual;
+  GameManager? gamer;
+  late List<ChessItem> items;
+  ChessItem? activeItem;
   String activeChr='';
   String dieChrs='';
 
@@ -68,12 +68,12 @@ class EditFenState extends State<EditFen> {
 
   bool onPointer(ChessPos toPosition) {
     ChessItem targetItem = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
-    if(targetItem == null || targetItem.isBlank){
+    if(targetItem.isBlank){
       if(activeItem != null){
         manual.doMove(
-            '${activeItem.position.toCode()}${toPosition.toCode()}');
+            '${activeItem!.position.toCode()}${toPosition.toCode()}');
         setState(() {
-          activeItem.position = toPosition;
+          activeItem!.position = toPosition;
           activeItem = null;
         });
         return true;
@@ -88,7 +88,7 @@ class EditFenState extends State<EditFen> {
       }
     }else{
       if(activeItem != null) {
-        if(activeItem.position == toPosition) {
+        if(activeItem!.position == toPosition) {
           manual.setItem(toPosition, '0');
             setState(() {
               items = manual.getChessItems();
@@ -100,7 +100,7 @@ class EditFenState extends State<EditFen> {
           //targetItem.position = ChessPos.fromCode('i4');
           //targetItem.isDie = true;
           manual.doMove(
-              '${activeItem.position.toCode()}${toPosition.toCode()}');
+              '${activeItem!.position.toCode()}${toPosition.toCode()}');
           setState(() {
             items = manual.getChessItems();
             activeItem = null;
@@ -154,8 +154,8 @@ class EditFenState extends State<EditFen> {
   }
 
   ChessPos pointTrans(Offset tapPoint) {
-    int x = (tapPoint.dx - gamer.skin.offset.dx * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
-    int y = 9 - (tapPoint.dy - gamer.skin.offset.dy * gamer.scale) ~/ (gamer.skin.size * gamer.scale);
+    int x = (tapPoint.dx - gamer!.skin.offset.dx * gamer!.scale) ~/ (gamer!.skin.size * gamer!.scale);
+    int y = 9 - (tapPoint.dy - gamer!.skin.offset.dy * gamer!.scale) ~/ (gamer!.skin.size * gamer!.scale);
     return ChessPos(x, y);
   }
 
@@ -163,7 +163,7 @@ class EditFenState extends State<EditFen> {
   Widget build(BuildContext context) {
     if(gamer == null) {
       GameWrapperState gameWrapper =
-      context.findAncestorStateOfType<GameWrapperState>();
+      context.findAncestorStateOfType<GameWrapperState>()!;
       gamer = gameWrapper.gamer;
     }
 
@@ -183,20 +183,20 @@ class EditFenState extends State<EditFen> {
         ],
       ),
       body: Center(
-        child: gamer.scale < 1 ? _mobileContainer() : _windowContainer()
+        child: gamer!.scale < 1 ? _mobileContainer() : _windowContainer()
       ),
     );
   }
 
   Widget _mobileContainer(){
     return Container(
-      width: gamer.skin.width * gamer.scale,
-      height: (gamer.skin.height + gamer.skin.size * 2 + 20) * gamer.scale,
+      width: gamer!.skin.width * gamer!.scale,
+      height: (gamer!.skin.height + gamer!.skin.size * 2 + 20) * gamer!.scale,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          ChessSingleBox(width:gamer.skin.width * gamer.scale, itemChrs: dieChrs, activeChr:activeChr),
+          ChessSingleBox(width:gamer!.skin.width * gamer!.scale, itemChrs: dieChrs, activeChr:activeChr),
           SizedBox(
             width: 10,
           ),
@@ -212,8 +212,8 @@ class EditFenState extends State<EditFen> {
 
             },
             child: Container(
-              width: gamer.skin.width * gamer.scale,
-              height: gamer.skin.height * gamer.scale,
+              width: gamer!.skin.width * gamer!.scale,
+              height: gamer!.skin.height * gamer!.scale,
               child: Stack(
                 alignment: Alignment.center,
                 children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
@@ -223,7 +223,7 @@ class EditFenState extends State<EditFen> {
           SizedBox(
             width: 10,
           ),
-          ChessSingleBox(width:gamer.skin.width * gamer.scale, itemChrs: dieChrs, activeChr:activeChr)
+          ChessSingleBox(width:gamer!.skin.width * gamer!.scale, itemChrs: dieChrs, activeChr:activeChr)
         ],
       ),
     );
@@ -231,7 +231,7 @@ class EditFenState extends State<EditFen> {
 
   Widget _windowContainer(){
     return Container(
-      width: gamer.skin.width + 10 + gamer.skin.size * 2 + 10,
+      width: gamer!.skin.width + 10 + gamer!.skin.size * 2 + 10,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -247,8 +247,8 @@ class EditFenState extends State<EditFen> {
 
             },
             child: Container(
-              width: gamer.skin.width,
-              height: gamer.skin.height,
+              width: gamer!.skin.width,
+              height: gamer!.skin.height,
               child: Stack(
                 alignment: Alignment.center,
                 children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
@@ -258,7 +258,7 @@ class EditFenState extends State<EditFen> {
           SizedBox(
             width: 10,
           ),
-          ChessBox(height:gamer.skin.height, itemChrs: dieChrs, activeChr:activeChr)
+          ChessBox(height:gamer!.skin.height, itemChrs: dieChrs, activeChr:activeChr)
         ],
       ),
     );

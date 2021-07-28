@@ -21,7 +21,7 @@ import 'widgets/game_wrapper.dart';
 class Chess extends StatefulWidget {
   final String skin;
 
-  const Chess({Key key, this.skin = 'woods'}) : super(key: key);
+  const Chess({Key? key, this.skin = 'woods'}) : super(key: key);
 
   @override
   State<Chess> createState() => ChessState();
@@ -29,18 +29,19 @@ class Chess extends StatefulWidget {
 
 class ChessState extends State<Chess> {
   // 当前激活的子
-  ChessItem activeItem;
+  ChessItem? activeItem;
   double skewStepper = 0;
 
   // 被吃的子
-  ChessItem dieFlash;
+  ChessItem? dieFlash;
 
   // 刚走过的位置
   String lastPosition = 'a0';
 
   // 可落点，包括吃子点
   List<String> movePoints = [];
-  GameManager gamer;
+  bool isInit = false;
+  late GameManager gamer;
   bool isLoading = true;
 
   // 棋局初始化时所有的子力
@@ -53,9 +54,10 @@ class ChessState extends State<Chess> {
   }
 
   initGamer() {
-    if (gamer != null) return;
+    if (isInit) return;
+    isInit = true;
     GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+        context.findAncestorStateOfType<GameWrapperState>()!;
     if (gameWrapper == null) return;
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
@@ -78,7 +80,7 @@ class ChessState extends State<Chess> {
       return;
     }
     List<String> parts = gamer.resultNotifier.value.split(' ');
-    String resultText =
+    String? resultText =
         (parts.length > 1 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
       case 'checkMate':
@@ -128,7 +130,7 @@ class ChessState extends State<Chess> {
                   !item.isBlank &&
                   item.position == ChessPos.fromCode(lastPosition),
               orElse: () => ChessItem('0'));
-          activeItem.position = activePos;
+          activeItem!.position = activePos;
         });
       });
     }
@@ -140,7 +142,7 @@ class ChessState extends State<Chess> {
 
   fetchMovePoints() async {
     setState(() {
-      movePoints = gamer.rule.movePoints(activeItem.position);
+      movePoints = gamer.rule.movePoints(activeItem!.position);
       // print('move points: $movePoints');
     });
   }
@@ -169,8 +171,8 @@ class ChessState extends State<Chess> {
     if (move == PlayerDriver.rstRqstRetract) {
       confirm(S.of(context).request_retract, S.of(context).agree_retract,
               S.of(context).disagree_retract)
-          .then((bool isAgree) {
-        gamer.player.completeMove(isAgree ? PlayerDriver.rstRetract : '');
+          .then((bool? isAgree) {
+        gamer.player.completeMove(isAgree == true ? PlayerDriver.rstRetract : '');
       });
       return;
     }
@@ -184,13 +186,13 @@ class ChessState extends State<Chess> {
         (item) => !item.isBlank && item.position == toPosition,
         orElse: () => ChessItem('0'));
     setState(() {
-      if (activeItem != null && !activeItem.isBlank) {
+      if (activeItem != null && !activeItem!.isBlank) {
         print('$activeItem => $move');
 
-        activeItem.position = ChessPos.fromCode(move.substring(2, 4));
+        activeItem!.position = ChessPos.fromCode(move.substring(2, 4));
         lastPosition = fromPos.toCode();
 
-        if (newActive != null && !newActive.isBlank) {
+        if (!newActive.isBlank) {
           print('eat $newActive');
           // 被吃的子的快照
           dieFlash = ChessItem(newActive.code, position: toPosition);
@@ -210,7 +212,7 @@ class ChessState extends State<Chess> {
   animateMove(ChessPos nextPosition) {
     print('$activeItem => $nextPosition');
     setState(() {
-      activeItem.position = nextPosition.copy();
+      activeItem!.position = nextPosition.copy();
     });
   }
 
@@ -223,7 +225,7 @@ class ChessState extends State<Chess> {
 
   /// 检测用户的输入位置是否有效
   Future<bool> checkCanMove(String activePos, ChessPos toPosition,
-      [ChessItem toItem]) async {
+      [ChessItem? toItem]) async {
     if (!movePoints.contains(toPosition.toCode())) {
       if (toItem != null) {
         toast('can\'t eat ${toItem.code} at $toPosition');
@@ -259,9 +261,9 @@ class ChessState extends State<Chess> {
         orElse: () => ChessItem('0'));
 
     int ticker = DateTime.now().millisecondsSinceEpoch;
-    if ((newActive == null || newActive.isBlank)) {
-      if (activeItem != null && activeItem.team == gamer.curHand) {
-        String activePos = activeItem.position.toCode();
+    if ( newActive.isBlank) {
+      if (activeItem != null && activeItem!.team == gamer.curHand) {
+        String activePos = activeItem!.position.toCode();
         animateMove(toPosition);
         checkCanMove(activePos, toPosition).then((canMove) {
           int delay = 250 - (DateTime.now().millisecondsSinceEpoch - ticker);
@@ -280,7 +282,7 @@ class ChessState extends State<Chess> {
           } else {
             Future.delayed(Duration(milliseconds: delay), () {
               setState(() {
-                activeItem.position = ChessPos.fromCode(activePos);
+                activeItem!.position = ChessPos.fromCode(activePos);
               });
             });
           }
@@ -292,7 +294,7 @@ class ChessState extends State<Chess> {
     }
 
     // 置空当前选中状态
-    if (activeItem != null && activeItem.position == toPosition) {
+    if (activeItem != null && activeItem!.position == toPosition) {
       Sound.play(Sound.click);
       setState(() {
         activeItem = null;
@@ -311,8 +313,8 @@ class ChessState extends State<Chess> {
       return true;
     } else {
       // 吃对方的子
-      if (activeItem != null && activeItem.team == gamer.curHand) {
-        String activePos = activeItem.position.toCode();
+      if (activeItem != null && activeItem!.team == gamer.curHand) {
+        String activePos = activeItem!.position.toCode();
         animateMove(toPosition);
         checkCanMove(activePos, toPosition, newActive).then((canMove) {
           int delay = 250 - (DateTime.now().millisecondsSinceEpoch - ticker);
@@ -338,7 +340,7 @@ class ChessState extends State<Chess> {
           } else {
             Future.delayed(Duration(milliseconds: delay), () {
               setState(() {
-                activeItem.position = ChessPos.fromCode(activePos);
+                activeItem!.position = ChessPos.fromCode(activePos);
               });
             });
           }
@@ -358,25 +360,25 @@ class ChessState extends State<Chess> {
     return ChessPos(x, y);
   }
 
-  void toast(String message, [SnackBarAction action, int duration = 3]) {
+  void toast(String message, [SnackBarAction? action, int duration = 3]) {
     MyDialog.of(context).snack(message, action: action, duration: duration);
   }
 
   alertResult(message) {
     confirm(message, S.of(context).one_more_game, S.of(context).let_me_see)
         .then((isConfirm) {
-      if (isConfirm) {
+      if (isConfirm ?? false) {
         gamer.newGame();
       }
     });
   }
 
-  Future<bool> confirm(String message, String agreeText, String cancelText) {
+  Future<bool?> confirm(String message, String agreeText, String cancelText) {
     return MyDialog.of(context)
         .confirm(message, buttonText: agreeText, cancelText: cancelText);
   }
 
-  Future<void> alert(String message) async {
+  Future<bool?> alert(String message) async {
     return MyDialog.of(context).alert(message);
   }
 
@@ -394,8 +396,8 @@ class ChessState extends State<Chess> {
     List<Widget> layer0 = [];
     if (dieFlash != null) {
       layer0.add(Align(
-        alignment: gamer.skin.getAlign(dieFlash.position),
-        child: Piece(item: dieFlash, isActive: false, isAblePoint: false),
+        alignment: gamer.skin.getAlign(dieFlash!.position),
+        child: Piece(item: dieFlash!, isActive: false, isAblePoint: false),
       ));
     }
     if (lastPosition.isNotEmpty) {

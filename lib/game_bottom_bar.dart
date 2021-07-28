@@ -7,7 +7,7 @@ import 'models/play_mode.dart';
 class GameBottomBar extends StatefulWidget{
   final PlayMode mode;
 
-  const GameBottomBar(this.mode, {Key key}) : super(key: key);
+  const GameBottomBar(this.mode, {Key? key}) : super(key: key);
 
   @override
   State<GameBottomBar> createState() => GameBottomBarState();

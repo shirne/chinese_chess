@@ -7,7 +7,7 @@ import '../widgets/game_wrapper.dart';
 
 class Board extends StatefulWidget{
 
-  const Board({Key key}) : super(key: key);
+  const Board({Key? key}) : super(key: key);
 
   @override
   State<Board> createState() => BoardState();
@@ -16,7 +16,7 @@ class Board extends StatefulWidget{
 class BoardState extends State<Board> {
   @override
   Widget build(BuildContext context) {
-    GameManager gamer = context.findAncestorStateOfType<GameWrapperState>().gamer;
+    GameManager gamer = context.findAncestorStateOfType<GameWrapperState>()!.gamer;
     return SizedBox(
       width: gamer.skin.width,
       height: gamer.skin.height,

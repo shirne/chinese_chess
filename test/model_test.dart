@@ -69,7 +69,7 @@ void main() {
     ByteData data = await rootBundle.load('assets/engines/BOOK.DAT');
     print(data.lengthInBytes);
 
-    int shortMAX = Math.pow(2, 16) - 1;
+    int shortMAX = Math.pow(2, 16).toInt() - 1;
     int row = data.getUint64(0, Endian.little);
 
     print([row >> 33, data.getUint32(0, Endian.little) >> 1]);
@@ -184,7 +184,7 @@ void main() {
 
       // 局面判断
       rule = ChessRule(manual.currentFen);
-      int eTeam = manual.getMove().hand == 0 ? 1 : 0;
+      int eTeam = manual.getMove()!.hand == 0 ? 1 : 0;
       if(rule.isCheck(eTeam)){
         if(rule.canParryKill(eTeam)){
           print('将军!');

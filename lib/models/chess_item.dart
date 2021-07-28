@@ -4,13 +4,11 @@ import 'chess_fen.dart';
 import 'chess_pos.dart';
 
 class ChessItem{
-  String _code;
+  final String _code;
   bool isDie = false;
   ChessPos position;
 
-  ChessItem(String code, {this.position}){
-    this._code = code;
-  }
+  ChessItem(String code, {ChessPos? position}):_code = code,position=position ?? ChessPos(0, 0);
 
   int get team{
     if(isBlank){
@@ -29,6 +27,6 @@ class ChessItem{
 
   @override
   String toString() {
-    return "$code@${position == null ? '' : position.toCode()}";
+    return "$code@${position.toCode()}";
   }
 }

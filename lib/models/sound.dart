@@ -21,23 +21,23 @@ class Sound{
   static AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
   static vlc.Player vlcPlayer = vlc.Player(id: 69420);
 
-  static GameSetting setting;
+  static GameSetting? setting;
 
   static Future<bool> play(String id) async{
     if(setting == null){
       setting = await GameSetting.getInstance();
     }
-    if(!setting.sound)return false;
+    if(!setting!.sound)return false;
 
     String asset = "assets/sounds/$id";
     if(kIsWeb) {
-      audioPlayer.setVolume(setting.soundVolume);
+      audioPlayer.setVolume(setting!.soundVolume);
       audioPlayer.open(Audio(asset));
     }else if(Platform.isLinux || Platform.isWindows){
-      vlcPlayer.setVolume(setting.soundVolume);
+      vlcPlayer.setVolume(setting!.soundVolume);
       vlcPlayer.open(await vlc.Media.asset(asset));
     }else{
-      audioPlayer.setVolume(setting.soundVolume);
+      audioPlayer.setVolume(setting!.soundVolume);
       audioPlayer.open(Audio(asset));
     }
     return true;

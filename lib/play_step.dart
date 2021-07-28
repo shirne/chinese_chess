@@ -5,10 +5,10 @@ import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
 
 class PlayStep extends StatefulWidget {
-  final BoxDecoration decoration;
+  final BoxDecoration? decoration;
   final double width;
 
-  const PlayStep({Key key, this.decoration, this.width}) : super(key: key);
+  const PlayStep({Key? key, this.decoration,required this.width}) : super(key: key);
 
   @override
   State<PlayStep> createState() => PlayStepState();
@@ -16,8 +16,8 @@ class PlayStep extends StatefulWidget {
 
 class PlayStepState extends State<PlayStep> {
   List<String> steps = [];
-  ScrollController _controller;
-  GameManager gamer;
+  late ScrollController _controller;
+  late GameManager gamer;
 
   int currentStep = 0;
 
@@ -26,7 +26,7 @@ class PlayStepState extends State<PlayStep> {
     super.initState();
     _controller = ScrollController(keepScrollOffset: true);
     GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
     gamer.stepNotifier.addListener(updateStep);
     steps = gamer.getSteps();

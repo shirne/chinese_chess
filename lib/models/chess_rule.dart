@@ -20,17 +20,15 @@ class ChessRule{
 
   ChessRule(this.fen);
 
-  ChessRule.fromFen([String fenStr = ChessFen.initFen]){
-    fen = ChessFen(fenStr);
-  }
+  ChessRule.fromFen([String fenStr = ChessFen.initFen]):fen = ChessFen(fenStr);
 
   int getChessWeight(ChessPos pos){
     String chess = fen[pos.y][pos.x];
     if(chess == '0')return 0;
-    int weight = chessWeight[chess.toLowerCase()];
+    int weight = chessWeight[chess.toLowerCase()]!;
 
     int chessCount = fen.getAllChr().length;
-    ChessPos kPos = fen.find(chess.codeUnitAt(0) > ChessFen.colIndexBase ? 'K' : 'k');
+    ChessPos kPos = fen.find(chess.codeUnitAt(0) > ChessFen.colIndexBase ? 'K' : 'k')!;
 
     // 开局，中局炮价值增加
     if(chess == 'c' || chess == 'C') {
@@ -102,7 +100,7 @@ class ChessRule{
 
   /// 是否可以解杀 [调用前确保正在被将]
   bool canParryKill(int team){
-    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k')!;
     if(kPos == null){
       // 老将没了
       return false;
@@ -132,14 +130,14 @@ class ChessRule{
 
   /// 老将是否照面
   bool isKingMeet(int team){
-    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k')!;
     if(kPos == null){
       // 老将没了
       return true;
     }
 
     // 是否与对方老将同列，并且中间无子
-    ChessPos enemyKing = fen.find(team == 0 ? 'k' : 'K');
+    ChessPos enemyKing = fen.find(team == 0 ? 'k' : 'K')!;
     if(enemyKing != null && kPos.x == enemyKing.x){
       List<ChessItem> items = fen.findByCol(kPos.x);
 
@@ -160,7 +158,7 @@ class ChessRule{
 
   /// 检查某个子是否能将军
   bool itemCanCheck(ChessPos pos, int team){
-    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K');
+    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K')!;
     if(kPos == null)return true;
     List<String> points = movePoints(pos, kPos);
     return points.any((point) {
@@ -177,7 +175,7 @@ class ChessRule{
 
   /// 检查是否被将军
   bool isCheck(int team){
-    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k');
+    ChessPos kPos = fen.find(team == 0 ? 'K' : 'k')!;
     if(kPos == null){
       // 老将没了
       return true;
@@ -245,7 +243,7 @@ class ChessRule{
             }
           }
         }
-        weight += chessWeight[code.toLowerCase()];
+        weight += chessWeight[code.toLowerCase()]!;
       }
     });
     return weight;
@@ -265,7 +263,7 @@ class ChessRule{
         }else{
           List<ChessItem> canEatMe = getBeEatList(item.position);
           for(ChessItem eItem in canEatMe){
-            if(chessWeight[eItem.code.toLowerCase()] < chessWeight[item.code.toLowerCase()]){
+            if(chessWeight[eItem.code.toLowerCase()]! < chessWeight[item.code.toLowerCase()]!){
               items.add(item);
               break;
             }
@@ -273,7 +271,7 @@ class ChessRule{
         }
       }
     });
-    items.sort((a, b)=> chessWeight[b.code.toLowerCase()].compareTo(chessWeight[a.code.toLowerCase()]));
+    items.sort((a, b)=> chessWeight[b.code.toLowerCase()]!.compareTo(chessWeight[a.code.toLowerCase()]!));
     return items;
   }
 
@@ -288,7 +286,7 @@ class ChessRule{
         items.add(ChessItem(chr, position: toPos));
       }
     });
-    items.sort((a, b)=> chessWeight[b.code.toLowerCase()].compareTo(chessWeight[a.code.toLowerCase()]));
+    items.sort((a, b)=> chessWeight[b.code.toLowerCase()]!.compareTo(chessWeight[a.code.toLowerCase()]!));
     return items;
   }
 
@@ -306,7 +304,7 @@ class ChessRule{
         }
       }
     });
-    items.sort((a, b)=> chessWeight[b.code.toLowerCase()].compareTo(chessWeight[a.code.toLowerCase()]));
+    items.sort((a, b)=> chessWeight[b.code.toLowerCase()]!.compareTo(chessWeight[a.code.toLowerCase()]!));
     return items;
   }
 
@@ -325,7 +323,7 @@ class ChessRule{
   List<String> getCheckMoves(int team){
     List<String> moves = [];
     // 对方老将
-    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K');
+    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K')!;
     if(kPos == null){
       // 老将没了
       return moves;
@@ -355,7 +353,7 @@ class ChessRule{
     List<String> fenHis = [];
 
     List<ChessItem> pieces = fen.getAll();
-    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K');
+    ChessPos kPos = fen.find(team == 0 ? 'k' : 'K')!;
 
     // 正在将军，直接查出吃老将的招法
     int enemyTeam = team == 0 ? 1 : 0;
@@ -393,7 +391,7 @@ class ChessRule{
   }
 
   /// 获取当前子力能移动的位置 target 为目标位置，如果传入了目标位置，则会优化检测
-  List<String> movePoints(ChessPos activePos, [ChessPos target]){
+  List<String> movePoints(ChessPos activePos, [ChessPos? target]){
     String code = fen[activePos.y][activePos.x];
     if(code.isEmpty || code =='0')return [];
     int team = code.codeUnitAt(0) < ChessFen.colIndexBase ? 0 : 1;
@@ -417,7 +415,7 @@ class ChessRule{
         return [];
     }
   }
-  List<String> moveP(int team, String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveP(int team, String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [[1,0],[0,1],[-1,0],[0,-1]].forEach((m) {
@@ -459,7 +457,7 @@ class ChessRule{
     return points;
   }
 
-  List<String> moveC(int team,String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveC(int team,String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [[-1,0],[1,0],[0,-1],[0,1]].forEach((step) {
@@ -492,7 +490,7 @@ class ChessRule{
     return points;
   }
 
-  List<String> moveR(int team,String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveR(int team,String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [[-1,0],[1,0],[0,-1],[0,1]].forEach((step) {
@@ -517,7 +515,7 @@ class ChessRule{
     return points;
   }
 
-  List<String> moveN(int team,String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveN(int team,String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [
@@ -554,7 +552,7 @@ class ChessRule{
     return points;
   }
 
-  List<String> moveB(int team,String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveB(int team,String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [[2,2],[-2,2],[-2,-2],[2,-2]].forEach((m) {
@@ -587,7 +585,7 @@ class ChessRule{
     return points;
   }
 
-  List<String> moveA(int team,String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveA(int team,String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [[1,1],[-1,1],[-1,-1],[1,-1]].forEach((m) {
@@ -616,7 +614,7 @@ class ChessRule{
     return points;
   }
 
-  List<String> moveK(int team,String code, ChessPos activePos, [ChessPos target]){
+  List<String> moveK(int team,String code, ChessPos activePos, [ChessPos? target]){
     List<String> points = [];
 
     [[1,0],[0,1],[-1,0],[0,-1]].forEach((m) {
@@ -642,7 +640,7 @@ class ChessRule{
         return;
       }
       // 是否与对方老将同列，并且中间无子
-      ChessPos enemyKing = fen.find(team == 0 ? 'k' : 'K');
+      ChessPos? enemyKing = fen.find(team == 0 ? 'k' : 'K');
       if(enemyKing != null && newPoint.x == enemyKing.x){
         List<ChessItem> items = fen.findByCol(newPoint.x);
 

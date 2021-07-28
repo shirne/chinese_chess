@@ -1,35 +1,36 @@
-import 'package:chinese_chess/driver/player_driver.dart';
-import 'package:chinese_chess/play_step.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess.dart';
-import 'generated/l10n.dart';
-import 'models/play_mode.dart';
+import 'play_step.dart';
 import 'play_single_player.dart';
-import 'widgets/game_wrapper.dart';
-import 'models/game_manager.dart';
 import 'play_bot.dart';
 import 'play_player.dart';
 import 'widgets/tab_card.dart';
+import 'widgets/game_wrapper.dart';
+import 'models/game_manager.dart';
+import 'models/play_mode.dart';
+import 'generated/l10n.dart';
+import 'driver/player_driver.dart';
 
 class PlayPage extends StatefulWidget {
   final PlayMode mode;
 
-  const PlayPage({Key key, this.mode}) : super(key: key);
+  const PlayPage({Key? key,required this.mode}) : super(key: key);
   @override
   State<StatefulWidget> createState() => PlayPageState();
 }
 
 class PlayPageState extends State<PlayPage> {
-  GameManager gamer;
+  late GameManager gamer;
   bool inited = false;
 
   @override
   void initState() {
     super.initState();
     GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
+        context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
   }
 

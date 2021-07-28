@@ -20,11 +20,8 @@ import 'player_driver.dart';
 
 class DriverRobot extends PlayerDriver {
   DriverRobot(Player player) : super(player);
-  Completer<String> requestMove;
+  late Completer<String> requestMove;
   bool isCleared = true;
-
-  Position position;
-  Search search;
 
   Future<bool> tryDraw() {
     return Future.value(true);
@@ -51,7 +48,7 @@ class DriverRobot extends PlayerDriver {
   getMoveFromEngine() async {
     player.manager.startEngine().then((v) {
       if (v) {
-        player.manager.engine
+        player.manager.engine!
             .requestMove(player.manager.fenStr, depth: 10)
             .then(onEngineMessage);
       } else {
@@ -72,7 +69,7 @@ class DriverRobot extends PlayerDriver {
           return;
         }
         if (!requestMove.isCompleted) {
-          player.manager.engine.removeListener(onEngineMessage);
+          player.manager.engine!.removeListener(onEngineMessage);
           getMove();
         }
         break;
@@ -81,7 +78,7 @@ class DriverRobot extends PlayerDriver {
           isCleared = true;
           return;
         }
-        player.manager.engine.removeListener(onEngineMessage);
+        player.manager.engine!.removeListener(onEngineMessage);
         completeMove(parts[1]);
         break;
       case 'info':
@@ -217,7 +214,7 @@ class DriverRobot extends PlayerDriver {
           if (toRootCount > 0) {
             wPower -= rule.getChessWeight(fromPos);
           }
-          moveWeight[move] += weights[5] * wPower;
+          moveWeight[move] = moveWeight[move]! + weights[5] * wPower;
         }
         int rootCount = rule.rootCount(fromPos, team);
         int eRootCount = rule.rootCount(fromPos, enemyTeam);
@@ -234,17 +231,17 @@ class DriverRobot extends PlayerDriver {
         if (chessCount > 28) {
           if (chess == 'p') {
             if (fen[fromPos.y + 1][fromPos.x] == 'n') {
-              moveWeight[move] += 9;
+              moveWeight[move] = moveWeight[move]! + 9;
             }
           } else if (chess == 'P') {
             if (fen[fromPos.y - 1][fromPos.x] == 'N') {
-              moveWeight[move] += 9;
+              moveWeight[move] = moveWeight[move]! + 9;
             }
           }
 
           // 开局先动马炮
           if (['c', 'C', 'n', 'N'].contains(chess)) {
-            moveWeight[move] += 9;
+            moveWeight[move] =  moveWeight[move]! + 9;
           }
         }
         if (chessCount > 20) {
@@ -255,49 +252,49 @@ class DriverRobot extends PlayerDriver {
               (chess == 'c' &&
                   fromPos.y == 7 &&
                   (fromPos.x == 1 || fromPos.x == 7))) {
-            moveWeight[move] += 19;
+            moveWeight[move] = moveWeight[move]! + 19;
           }
           if ((chess == 'N' && fromPos.y == 0) ||
               (chess == 'n' && fromPos.y == 9)) {
-            moveWeight[move] += 19;
+            moveWeight[move] = moveWeight[move]! + 19;
           }
           if ((chess == 'R' && fromPos.y == 0) ||
               (chess == 'r' && fromPos.y == 9)) {
-            moveWeight[move] += 9;
+            moveWeight[move] = moveWeight[move]! + 9;
           }
         }
 
         // 马往前跳权重增加
         if ((chess == 'n' && toPos.y < fromPos.y) ||
             (chess == 'N' && toPos.y > fromPos.y)) {
-          moveWeight[move] += 9;
+          moveWeight[move] = moveWeight[move]! + 9;
         }
 
         // 马在原位不动车
         if ((chess == 'r' && fromPos.y == 9) ||
             (chess == 'R' && fromPos.y == 0)) {
-          ChessPos nPos = rule.fen.find(chess == 'R' ? 'N' : 'n');
+          ChessPos nPos = rule.fen.find(chess == 'R' ? 'N' : 'n')!;
           if (fromPos.x == 0) {
             if (nPos.x == 1 && nPos.y == fromPos.y) {
-              moveWeight[move] -= rule.getChessWeight(nPos);
+              moveWeight[move] = moveWeight[move]! - rule.getChessWeight(nPos);
             }
           } else if (fromPos.x == 8) {
             if (nPos.x == 7 && nPos.y == fromPos.y) {
-              moveWeight[move] -= rule.getChessWeight(nPos);
+              moveWeight[move] = moveWeight[move]! - rule.getChessWeight(nPos);
             }
           }
         }
 
-        ChessPos ekPos = fen.find(enemyTeam == 0 ? 'K' : 'k');
+        ChessPos ekPos = fen.find(enemyTeam == 0 ? 'K' : 'k')!;
         // 炮是否应着老将
         if (chess == 'c' || chess == 'C') {
           if (fromPos.y == ekPos.y || fromPos.x == ekPos.x) {
             if (toPos.y != ekPos.y && toPos.x != ekPos.x) {
-              moveWeight[move] -= weights[0];
+              moveWeight[move] = moveWeight[move]! -weights[0];
             }
           } else {
             if (toPos.y == ekPos.y || toPos.x == ekPos.x) {
-              moveWeight[move] += weights[0];
+              moveWeight[move] = moveWeight[move]! +weights[0];
             }
           }
         }
@@ -315,10 +312,10 @@ class DriverRobot extends PlayerDriver {
             // 不能应将，就是杀招
             if (eRule.canParryKill(team)) {
               //print('$move 要被将军');
-              moveWeight[move] -= weights[0];
+              moveWeight[move] = moveWeight[move]! - weights[0];
             } else {
               print('$move 有杀招');
-              moveWeight[move] -= weights[1];
+              moveWeight[move] = moveWeight[move]! - weights[1];
             }
           });
         } else {
@@ -330,10 +327,10 @@ class DriverRobot extends PlayerDriver {
             if (bItem.position == fromPos) {
               // 走之后不被吃了
               if (eRootCount < 1) {
-                moveWeight[move] += mRule.getChessWeight(toPos) * weights[6];
+                moveWeight[move] = moveWeight[move]! + mRule.getChessWeight(toPos) * weights[6];
               } else if (rootCount > 0) {
                 List<ChessItem> eItems = mRule.getBeEatList(toPos);
-                moveWeight[move] += (mRule.getChessWeight(eItems[0].position) -
+                moveWeight[move] = moveWeight[move]! + (mRule.getChessWeight(eItems[0].position) -
                         mRule.getChessWeight(toPos)) *
                     weights[6];
               }
@@ -341,12 +338,12 @@ class DriverRobot extends PlayerDriver {
               // 不是被吃的子，但是也躲过去了
               int oRootCount = mRule.rootCount(bItem.position, enemyTeam);
               if (oRootCount < 1) {
-                moveWeight[move] +=
-                    mRule.getChessWeight(bItem.position) * weights[6];
+                moveWeight[move] =
+                    moveWeight[move]! + mRule.getChessWeight(bItem.position) * weights[6];
               } else {
                 // 有根了
                 List<ChessItem> eItems = mRule.getBeEatList(bItem.position);
-                moveWeight[move] += (mRule.getChessWeight(eItems[0].position) -
+                moveWeight[move] = moveWeight[move]! + (mRule.getChessWeight(eItems[0].position) -
                         mRule.getChessWeight(bItem.position)) *
                     weights[6];
               }
@@ -355,7 +352,7 @@ class DriverRobot extends PlayerDriver {
 
           // 走着后要被吃
           if ((rootCount == 0 && eRootCount > 0) || rootCount < eRootCount) {
-            moveWeight[move] -= mRule.getChessWeight(toPos) * weights[5];
+            moveWeight[move] = moveWeight[move]! - mRule.getChessWeight(toPos) * weights[5];
           }
 
           // 捉子优先
@@ -368,7 +365,7 @@ class DriverRobot extends PlayerDriver {
           canEatItems.forEach((oItem) {
             eatWeight -= mRule.getChessWeight(oItem.position) * weights[3];
           });
-          moveWeight[move] -= eatWeight;
+          moveWeight[move] = moveWeight[move]! - eatWeight;
         }
       });
     }
@@ -402,7 +399,7 @@ class DriverRobot extends PlayerDriver {
     String move = '';
     for (String key in groups.keys) {
       move = key;
-      curSum += groups[key];
+      curSum += groups[key]!;
       if (curSum > rand) {
         break;
       }

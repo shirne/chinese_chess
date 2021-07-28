@@ -8,14 +8,14 @@ class TabCard extends StatefulWidget{
   final MainAxisAlignment titleAlign;
   final Alignment bodyAlign;
   final FlexFit titleFit;
-  final EdgeInsetsGeometry titlePadding;
+  final EdgeInsetsGeometry? titlePadding;
   final BoxDecoration titleDecoration;
   final BoxDecoration titleActiveDecoration;
   final Axis direction;
 
-  const TabCard({Key key,
-    this.titles,
-    this.bodies,
+  const TabCard({Key? key,
+    required this.titles,
+    required this.bodies,
     this.direction = Axis.vertical,
     this.titleAlign = MainAxisAlignment.start,
     this.titlePadding,
@@ -32,9 +32,9 @@ class TabCard extends StatefulWidget{
 
 class TabCardState extends State<TabCard> {
   int index = 0;
-  List<Widget> titles;
+  late List<Widget> titles;
 
-  ValueNotifier<int> onTabChange;
+  late ValueNotifier<int> onTabChange;
 
   @override
   void initState() {
@@ -86,7 +86,7 @@ class TabCardTitleItem extends StatefulWidget{
   final int myIndex;
   final Widget child;
 
-  const TabCardTitleItem({Key key, this.myIndex, this.child}) : super(key: key);
+  const TabCardTitleItem({Key? key,required this.myIndex,required this.child}) : super(key: key);
 
   @override
   State<TabCardTitleItem> createState() => TabCardTitleItemState();
@@ -94,12 +94,12 @@ class TabCardTitleItem extends StatefulWidget{
 
 class TabCardTitleItemState extends State<TabCardTitleItem> {
   bool isActive = false;
-  TabCardState tabCard;
+  late TabCardState tabCard;
 
   @override
   void initState() {
     super.initState();
-    tabCard = context.findRootAncestorStateOfType<TabCardState>();
+    tabCard = context.findRootAncestorStateOfType<TabCardState>()!;
     if(tabCard != null) {
       if(widget.myIndex == tabCard.index){
         isActive = true;

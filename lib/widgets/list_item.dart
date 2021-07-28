@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 class ListItem extends StatelessWidget {
 
   final Widget title;
-  final Widget subtitle;
-  final Widget leading;
-  final Widget trailing;
+  final Widget? subtitle;
+  final Widget? leading;
+  final Widget? trailing;
   final CrossAxisAlignment titleAlign;
 
   const ListItem({
-    Key key,
-    this.title,
+    Key? key,
+    required this.title,
     this.subtitle,
     this.leading,
     this.trailing,
@@ -23,10 +23,10 @@ class ListItem extends StatelessWidget {
     List<Widget> children = [];
     List<Widget> titles = [title];
     if(leading != null){
-      children.add(leading);
+      children.add(leading!);
     }
     if(subtitle != null ){
-      titles.add(subtitle);
+      titles.add(subtitle!);
     }
     children.add(Expanded(
       flex: 1,
@@ -36,7 +36,7 @@ class ListItem extends StatelessWidget {
       ),
     ));
     if(trailing != null){
-      children.add(trailing);
+      children.add(trailing!);
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,

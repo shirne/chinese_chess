@@ -7,11 +7,11 @@ import 'models/chess_item.dart';
 
 class ChessPieces extends StatefulWidget {
   final List<ChessItem> items;
-  final ChessItem activeItem;
+  final ChessItem? activeItem;
 
   const ChessPieces({
-    Key key,
-    this.items,
+    Key? key,
+    required this.items,
     this.activeItem,
   }) : super(key: key);
 
@@ -20,7 +20,7 @@ class ChessPieces extends StatefulWidget {
 }
 
 class _ChessPiecesState extends State<ChessPieces> {
-  GameManager gamer;
+  GameManager? gamer;
   int curTeam = -1;
 
   @override
@@ -32,22 +32,22 @@ class _ChessPiecesState extends State<ChessPieces> {
   initGamer(){
     if(gamer != null)return;
     GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>();
+    context.findAncestorStateOfType<GameWrapperState>()!;
     if(gameWrapper == null)return;
     gamer = gameWrapper.gamer;
-    gamer.playerNotifier.addListener(onChangePlayer);
-    curTeam = gamer.curHand;
+    gamer!.playerNotifier.addListener(onChangePlayer);
+    curTeam = gamer!.curHand;
   }
 
   @override
   void dispose() {
-    gamer.playerNotifier.removeListener(onChangePlayer);
+    gamer!.playerNotifier.removeListener(onChangePlayer);
     super.dispose();
   }
 
   void onChangePlayer(){
     setState(() {
-      curTeam = gamer.playerNotifier.value;
+      curTeam = gamer!.playerNotifier.value;
     });
   }
 
@@ -63,7 +63,7 @@ class _ChessPiecesState extends State<ChessPieces> {
         if (item.isBlank) {
           //return;
         } else if (widget.activeItem != null) {
-          if (widget.activeItem.position == item.position) {
+          if (widget.activeItem!.position == item.position) {
             isActive = true;
             if(curTeam == item.team){
               isHover = true;
@@ -74,10 +74,10 @@ class _ChessPiecesState extends State<ChessPieces> {
         return AnimatedAlign(
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutQuint,
-          alignment: gamer.skin.getAlign(item.position),
+          alignment: gamer!.skin.getAlign(item.position),
           child: Container(
-            width: gamer.skin.size * gamer.scale,
-            height: gamer.skin.size * gamer.scale,
+            width: gamer!.skin.size * gamer!.scale,
+            height: gamer!.skin.size * gamer!.scale,
             //transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105 * skewStepper, 1 - skewStepper*0.1, 0, -0.004 * skewStepper, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
             child: Piece(
               item: item,

@@ -1,13 +1,13 @@
 
 
-import 'package:chinese_chess/models/engine_level.dart';
-import 'package:chinese_chess/models/game_setting.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 
 import 'generated/l10n.dart';
 import 'models/engine_type.dart';
+import 'models/engine_level.dart';
+import 'models/game_setting.dart';
 
 class SettingPage extends StatefulWidget{
   @override
@@ -16,7 +16,7 @@ class SettingPage extends StatefulWidget{
 }
 
 class _SettingPageState extends State<SettingPage> {
-  GameSetting setting;
+  GameSetting? setting;
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _SettingPageState extends State<SettingPage> {
         title: Text(S.of(context).setting_title),
         actions: [
           TextButton(onPressed: (){
-            setting.save().then((v){
+            setting?.save().then((v){
               Navigator.pop(context);
               MyDialog.of(context).toast('保存成功', icon:MyDialog.iconSuccess);
             });
@@ -56,11 +56,12 @@ class _SettingPageState extends State<SettingPage> {
                   title: Text('AI类型'),
                     trailing: CupertinoSegmentedControl(
                       onValueChanged: (value){
+                        if(value == null)return;
                         setState(() {
-                          setting.robotType = value;
+                          setting!.robotType = value as String;
                         });
                       },
-                      groupValue: setting.robotType,
+                      groupValue: setting!.robotType,
                       children: {
                         EngineType.builtIn: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('内置引擎'),),
                         EngineType.elephantEye: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('elephantEye'))
@@ -71,11 +72,12 @@ class _SettingPageState extends State<SettingPage> {
                   title: Text('AI级别'),
                     trailing: CupertinoSegmentedControl(
                       onValueChanged: (value){
+                        if(value == null)return;
                         setState(() {
-                          setting.robotLevel = value;
+                          setting!.robotLevel = value as int;
                         });
                       },
-                      groupValue: setting.robotLevel,
+                      groupValue: setting!.robotLevel,
                       children: {
                         EngineLevel.learn: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('初级'),),
                         EngineLevel.middle: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('中级')),
@@ -86,10 +88,10 @@ class _SettingPageState extends State<SettingPage> {
                 ListTile(
                   title: Text('游戏声音'),
                   trailing: CupertinoSwitch(
-                    value: setting.sound,
+                    value: setting!.sound,
                     onChanged: (v){
                       setState(() {
-                        setting.sound = v;
+                        setting!.sound = v;
                       });
                     },
                   ),
@@ -97,12 +99,12 @@ class _SettingPageState extends State<SettingPage> {
                 ListTile(
                   title: Text('游戏音量'),
                   trailing: CupertinoSlider(
-                    value: setting.soundVolume,
+                    value: setting!.soundVolume,
                     min: 0,
                     max: 1,
                     onChanged: (v){
                       setState(() {
-                        setting.soundVolume = v;
+                        setting!.soundVolume = v;
                       });
                     },
                   ),

@@ -450,8 +450,8 @@ class Position {
     }
   }
 
-  static int PreGen_zobristKeyPlayer;
-  static int PreGen_zobristLockPlayer;
+  static late int PreGen_zobristKeyPlayer;
+  static late int PreGen_zobristLockPlayer;
   static List<List<int>> PreGen_zobristKeyTable =
       List.filled(14, List.filled(256, 0));
   static List<List<int>> PreGen_zobristLockTable =
@@ -463,7 +463,7 @@ class Position {
   static List<int> bookLock = List.filled(MAX_BOOK_SIZE, 0);
   static List<int> bookMoveList = List.filled(MAX_BOOK_SIZE, 0);
   static List<int> bookValue = List.filled(MAX_BOOK_SIZE, 0);
-  static ByteData input;
+  static ByteData? input;
 
   static Future<bool> init() async {
     RC4 rc4 = new RC4(Uint8List.fromList([0]));
@@ -486,11 +486,11 @@ class Position {
       try {
         while (bookSize < MAX_BOOK_SIZE) {
           bookLock[bookSize] =
-              input.getUint32(bookSize * 8, Endian.little) >> 1;
+              input!.getUint32(bookSize * 8, Endian.little) >> 1;
           bookMoveList[bookSize] =
-              input.getUint16(bookSize * 8 + 4, Endian.little);
+              input!.getUint16(bookSize * 8 + 4, Endian.little);
           bookValue[bookSize] =
-              input.getUint16(bookSize * 8 + 6, Endian.little);
+              input!.getUint16(bookSize * 8 + 6, Endian.little);
           bookSize++;
         }
       } catch (e) {
@@ -500,13 +500,13 @@ class Position {
     return true;
   }
 
-  int sdPlayer;
+  int sdPlayer = 0;
   List<int> squares = List.filled(256, 0);
 
-  int zobristKey;
-  int zobristLock;
-  int vlWhite, vlBlack;
-  int moveNum, distance;
+  int zobristKey = 0;
+  int zobristLock = 0;
+  int vlWhite = 0, vlBlack = 0;
+  int moveNum = 0, distance = 0;
 
   List<int> mvList = List.filled(MAX_MOVE_NUM, 0);
   List<int> pcList = List.filled(MAX_MOVE_NUM, 0);
@@ -707,7 +707,7 @@ class Position {
     return generateMoves(mvs, null);
   }
 
-  int generateMoves(List<int> mvs, List<int> vls) {
+  int generateMoves(List<int> mvs, List<int>? vls) {
     int moves = 0;
     int pcSelfSide = SIDE_TAG(sdPlayer);
     int pcOppSide = OPP_SIDE_TAG(sdPlayer);

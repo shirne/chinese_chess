@@ -35,6 +35,13 @@ class HashItem {
   int flag;
   int vl; //short
   int mv, zobristLock;
+  HashItem({
+    this.depth = 0,
+    this.flag = 0,
+    this.vl = 0,
+    this.mv = 0,
+    this.zobristLock = 0,
+  });
 }
 
 class SortItem {
@@ -44,9 +51,9 @@ class SortItem {
   static const int PHASE_GEN_MOVES = 3;
   static const int PHASE_REST = 4;
 
-  int index, moves, phase;
-  int mvHash, mvKiller1, mvKiller2;
-  List<int> mvs, vls;
+  late int index, moves, phase;
+  late int mvHash, mvKiller1, mvKiller2;
+  late List<int> mvs, vls;
 
   bool singleReply = false;
 
@@ -142,7 +149,7 @@ class Search {
   static final int BAN_VALUE = Position.BAN_VALUE;
   static final int WIN_VALUE = Position.WIN_VALUE;
 
-  int hashMask, mvResult, allNodes, allMillis;
+  int hashMask, mvResult = 0, allNodes = 0, allMillis = 0;
   List<HashItem> hashTable;
 
   // public
@@ -150,11 +157,9 @@ class Search {
   List<int> historyTable = List.filled(4096, 0);
   List<List<int>> mvKiller = List.filled(LIMIT_DEPTH, List.filled(2, 0));
 
-  Search(Position pos, int hashLevel) {
-    this.pos = pos;
-    hashMask = (1 << hashLevel) - 1;
-    hashTable = List.filled(hashMask + 1, HashItem());
-  }
+  Search(this.pos, int hashLevel)
+      : hashMask = (1 << hashLevel) - 1,
+        hashTable = List.filled(1 << hashLevel, HashItem());
 
   HashItem getHashItem() {
     return hashTable[pos.zobristKey & hashMask];

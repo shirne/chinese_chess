@@ -1,5 +1,5 @@
 name: chinese_chess
-description: A new Flutter project.
+description: A ChineseChess game developed by Flutter.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -43,26 +43,24 @@ dependencies:
       url: git://github.com/google/flutter-desktop-embedding.git
       path: plugins/menubar
       ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
-  filesystem_picker: ^1.0.4
-    #path: ../fluttersamples/filesystem_picker/package
+  filesystem_picker: #^1.0.4
+    path: ../fluttersamples/filesystem_picker/package
   file_selector: ^0.8.2
   file_selector_windows: ^0.0.2
   file_selector_macos: ^0.0.4
   file_selector_linux: ^0.0.2
-  shirne_dialog: # ^1.0.1
-    git: https://github.com/shirne/shirne_dialog.git
-    #path: ../fluttersamples/shirne_dialog
-  gbk2utf8: ^1.0.1
-  universal_html: ^1.2.1
+  shirne_dialog:  ^1.4.1
+  fast_gbk: ^1.0.0-rc
+  universal_html: ^2.0.8
   shared_preferences: ^2.0.5
   #audioplayers: ^0.18.0
   assets_audio_player: ^3.0.3+3
   #flutter_audio_desktop:
     #git: https://github.com/shirne/flutter_audio_desktop
     #path: ../flutter/flutter_audio_desktop
-  dart_vlc: ^0.0.7
+  dart_vlc: #^0.1.0
     #git: https://github.com/alexmercerind/dart_vlc.git
-    #path: ../flutter/dart_vlc
+    path: ../flutter/dart_vlc
 
 dev_dependencies:
   flutter_test:
