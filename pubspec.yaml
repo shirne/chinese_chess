@@ -32,17 +32,18 @@ dependencies:
   intl: ^0.17.0
   cupertino_icons: ^1.0.2
   file_picker: ^3.0.1
+  bitsdojo_window: ^0.1.1+1
   #desktop_window: ^0.4.0
-  window_size:
-    git:
-      url: git://github.com/google/flutter-desktop-embedding.git
-      path: plugins/window_size
-      ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
-  menubar:
-    git:
-      url: git://github.com/google/flutter-desktop-embedding.git
-      path: plugins/menubar
-      ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
+  #window_size:
+  #  git:
+  #    url: git://github.com/google/flutter-desktop-embedding.git
+  #    path: plugins/window_size
+  #    ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
+  #menubar:
+  #  git:
+  #    url: git://github.com/google/flutter-desktop-embedding.git
+  #    path: plugins/menubar
+  #    ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
   filesystem_picker: #^1.0.4
     path: ../fluttersamples/filesystem_picker/package
   file_selector: ^0.8.2
@@ -54,11 +55,12 @@ dependencies:
   universal_html: ^2.0.8
   shared_preferences: ^2.0.5
   #audioplayers: ^0.18.0
-  assets_audio_player: ^3.0.3+3
+  libao: ^0.2.0
+  assets_audio_player: ^3.0.3+6
   #flutter_audio_desktop:
     #git: https://github.com/shirne/flutter_audio_desktop
     #path: ../flutter/flutter_audio_desktop
-  dart_vlc: #^0.1.0
+  dart_vlc: #^0.1.7
     #git: https://github.com/alexmercerind/dart_vlc.git
     path: ../flutter/dart_vlc
 

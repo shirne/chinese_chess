@@ -1,3 +1,4 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -7,6 +8,14 @@ import 'game_board.dart';
 
 void main() {
   runApp(MainApp());
+  doWhenWindowReady(() {
+    final win = appWindow;
+    final initialSize = Size(1024, 720);
+    win.minSize = initialSize;
+    win.size = initialSize;
+    win.alignment = Alignment.center;
+    win.show();
+  });
 }
 
 class MainApp extends StatelessWidget {
@@ -15,6 +24,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
         title: '',
         onGenerateTitle: (BuildContext context){
+          appWindow.title = S.of(context).app_title;
           return S.of(context).app_title;
         },
       localizationsDelegates: [
