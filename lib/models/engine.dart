@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:io';
 
@@ -7,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import '../foundation/customer_notifier.dart';
 
-class Engine extends CustomNotifier<String>{
+class Engine extends CustomNotifier<String> {
   String engine = 'eleeye.exe';
   List<Completer<String>> readyCompleters = [];
   Completer<bool>? stopCompleter;
@@ -15,17 +13,18 @@ class Engine extends CustomNotifier<String>{
 
   Process? process;
 
-  Future<Process> init(){
+  Future<Process?> init() {
     ready = false;
-    if(!isSupportEngine){
+    if (!isSupportEngine) {
       return Future.value(null);
     }
 
-    String path = Directory.current.path+'/assets/engines/$engine';
-    if(!File(path).existsSync()){
-      path = Directory.current.path+'/data/flutter_assets/assets/engines/$engine';
+    String path = Directory.current.path + '/assets/engines/$engine';
+    if (!File(path).existsSync()) {
+      path = Directory.current.path +
+          '/data/flutter_assets/assets/engines/$engine';
     }
-    return Process.start(path, [], mode: ProcessStartMode.normal).then((value){
+    return Process.start(path, [], mode: ProcessStartMode.normal).then((value) {
       process = value;
       ready = true;
       process?.stdout.listen(onMessage);
@@ -34,29 +33,29 @@ class Engine extends CustomNotifier<String>{
     });
   }
 
-  static bool get isSupportEngine{
-    if(kIsWeb){
+  static bool get isSupportEngine {
+    if (kIsWeb) {
       return false;
     }
-    if(Platform.isWindows){
+    if (Platform.isWindows) {
       return true;
     }
 
     return false;
   }
 
-  void onMessage(List<int> event){
+  void onMessage(List<int> event) {
     String lines = String.fromCharCodes(event).trim();
     lines.split('\n').forEach((line) {
       line = line.trim();
-      if(line == 'bye'){
+      if (line == 'bye') {
         ready = false;
         process = null;
-      }else if(line.isNotEmpty && this.hasListeners) {
-        if(line.startsWith('nobestmove') || line.startsWith('bestmove ') ){
-          if(stopCompleter != null && !stopCompleter!.isCompleted){
+      } else if (line.isNotEmpty && this.hasListeners) {
+        if (line.startsWith('nobestmove') || line.startsWith('bestmove ')) {
+          if (stopCompleter != null && !stopCompleter!.isCompleted) {
             stopCompleter!.complete(true);
-          }else if(readyCompleters.length > 0){
+          } else if (readyCompleters.length > 0) {
             readyCompleters.removeAt(0).complete(line);
           }
         }
@@ -65,22 +64,32 @@ class Engine extends CustomNotifier<String>{
     });
   }
 
-  Future<String> requestMove(String fen,{int time = 0, int increment = 0, String type = '', int depth = 0, int nodes = 0}){
+  Future<String> requestMove(String fen,
+      {int time = 0,
+      int increment = 0,
+      String type = '',
+      int depth = 0,
+      int nodes = 0}) {
     Completer<String> readyCompleter = Completer();
-    stop().then((bool){
-      if(bool){
+    stop().then((bool) {
+      if (bool) {
         readyCompleters.add(readyCompleter);
         position(fen);
-        go(time:time, increment:increment, type: type, depth: depth, nodes: nodes);
-      }else{
+        go(
+            time: time,
+            increment: increment,
+            type: type,
+            depth: depth,
+            nodes: nodes);
+      } else {
         readyCompleter.complete('isbusy');
       }
     });
     return readyCompleter.future;
   }
 
-  void sendCommand(String command){
-    if(!ready){
+  void sendCommand(String command) {
+    if (!ready) {
       print('Engine is not ready');
       return;
     }
@@ -88,40 +97,45 @@ class Engine extends CustomNotifier<String>{
     process?.stdin.writeln(command);
   }
 
-  void setOption(String option){
+  void setOption(String option) {
     sendCommand('setoption $option');
   }
 
-  void position(String fen){
+  void position(String fen) {
     sendCommand('position fen $fen');
   }
 
-  void banMoves(List<String> moveList){
+  void banMoves(List<String> moveList) {
     sendCommand('banmoves ${moveList.join(' ')}');
   }
 
-  void go({int time = 0, int increment = 0, String type = '', int depth = 0, int nodes = 0}){
-    if(time > 0) {
+  void go(
+      {int time = 0,
+      int increment = 0,
+      String type = '',
+      int depth = 0,
+      int nodes = 0}) {
+    if (time > 0) {
       sendCommand('go $type time $time increment $increment');
-    }else if(depth > 0){
+    } else if (depth > 0) {
       sendCommand('go depth $depth');
-    }else if(depth < 0){
+    } else if (depth < 0) {
       sendCommand('go depth infinite');
-    }else if(nodes > 0){
+    } else if (nodes > 0) {
       sendCommand('go nodes $depth');
     }
   }
 
-  void ponderHit(String type){
+  void ponderHit(String type) {
     sendCommand('ponderhit $type');
   }
 
-  void probe(String fen){
+  void probe(String fen) {
     sendCommand('probe $fen');
   }
 
-  Future<bool> stop(){
-    if(!ready || (stopCompleter != null && !stopCompleter!.isCompleted)){
+  Future<bool> stop() {
+    if (!ready || (stopCompleter != null && !stopCompleter!.isCompleted)) {
       return Future.value(false);
     }
     stopCompleter = Completer();
@@ -129,7 +143,7 @@ class Engine extends CustomNotifier<String>{
     return stopCompleter!.future;
   }
 
-  void quit(){
+  void quit() {
     sendCommand('quit');
     ready = false;
   }

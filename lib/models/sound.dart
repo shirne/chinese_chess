@@ -1,13 +1,15 @@
-
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:ffi/ffi.dart' if (dart.library.html) '../html/ffi.dart';
 import 'package:flutter/foundation.dart';
-import 'package:dart_vlc/dart_vlc.dart' as vlc;
+import 'package:flutter/services.dart';
+import 'package:win32/win32.dart' if (dart.library.html) '../html/win32.dart';
 
 import 'game_setting.dart';
 
-class Sound{
+class Sound {
   static const move = 'move2.wav';
   static const capture = 'capture2.wav';
   static const check = 'check2.wav';
@@ -19,24 +21,32 @@ class Sound{
   static const illegal = 'illegal.wav';
 
   static AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
-  static vlc.Player vlcPlayer = vlc.Player(id: 69420);
 
   static GameSetting? setting;
 
-  static Future<bool> play(String id) async{
-    if(setting == null){
+  static Future<bool> play(String id) async {
+    if (setting == null) {
       setting = await GameSetting.getInstance();
     }
-    if(!setting!.sound)return false;
+    if (!setting!.sound) return false;
 
     String asset = "assets/sounds/$id";
-    if(kIsWeb) {
+
+    // Platform.isLinux not support yet
+    if (kIsWeb) {
       audioPlayer.setVolume(setting!.soundVolume);
       audioPlayer.open(Audio(asset));
-    }else if(Platform.isLinux || Platform.isWindows){
-      vlcPlayer.setVolume(setting!.soundVolume);
-      vlcPlayer.open(await vlc.Media.asset(asset));
-    }else{
+    } else if (Platform.isWindows) {
+      File direct = File(Directory.systemTemp.absolute.path + "/$asset");
+      if (!direct.existsSync()) {
+        if (!direct.parent.existsSync()) {
+          direct.parent.createSync(recursive: true);
+        }
+        TypedData data = await rootBundle.load(asset);
+        await direct.writeAsBytes(data.buffer.asUint8List());
+      }
+      PlaySound(direct.path.toNativeUtf16(), NULL, SND_ASYNC | SND_FILENAME);
+    } else {
       audioPlayer.setVolume(setting!.soundVolume);
       audioPlayer.open(Audio(asset));
     }

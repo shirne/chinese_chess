@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -22,11 +25,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: '',
-        onGenerateTitle: (BuildContext context){
+      title: '',
+      onGenerateTitle: (BuildContext context) {
+        if (!kIsWeb &&
+            (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
           appWindow.title = S.of(context).app_title;
-          return S.of(context).app_title;
-        },
+        }
+        return S.of(context).app_title;
+      },
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -37,12 +43,12 @@ class MainApp extends StatelessWidget {
         const Locale('en', ''),
         const Locale('zh', 'CN'),
       ],
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: GameWrapper(
-          isMain: true,
-          child: GameBoard(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: GameWrapper(
+        isMain: true,
+        child: GameBoard(),
       ),
     );
   }

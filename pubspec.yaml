@@ -44,25 +44,20 @@ dependencies:
   #    url: git://github.com/google/flutter-desktop-embedding.git
   #    path: plugins/menubar
   #    ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
-  filesystem_picker: #^1.0.4
+  filesystem_picker: #^2.0.0-nullsafety.0
     path: ../fluttersamples/filesystem_picker/package
   file_selector: ^0.8.2
   file_selector_windows: ^0.0.2
   file_selector_macos: ^0.0.4
   file_selector_linux: ^0.0.2
-  shirne_dialog:  ^1.4.1
+  shirne_dialog:  ^1.6.0
   fast_gbk: ^1.0.0-rc
   universal_html: ^2.0.8
-  shared_preferences: ^2.0.5
-  #audioplayers: ^0.18.0
-  libao: ^0.2.0
-  assets_audio_player: ^3.0.3+6
-  #flutter_audio_desktop:
-    #git: https://github.com/shirne/flutter_audio_desktop
-    #path: ../flutter/flutter_audio_desktop
-  dart_vlc: #^0.1.7
-    #git: https://github.com/alexmercerind/dart_vlc.git
-    path: ../flutter/dart_vlc
+  shared_preferences: ^2.0.13
+  
+  assets_audio_player: ^3.0.4+1
+  ffi: 1.1.2
+  win32: 2.5.1
 
 dev_dependencies:
   flutter_test:

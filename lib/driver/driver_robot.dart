@@ -6,9 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../models/engine_type.dart';
+import '../models/game_setting.dart';
 import '../xqlite/util.dart';
-import '../xqlite/position.dart';
-import '../xqlite/search.dart';
 import '../models/chess_rule.dart';
 import '../models/chess_item.dart';
 import '../models/chess_fen.dart';
@@ -91,14 +90,17 @@ class DriverRobot extends PlayerDriver {
   }
 
   getBuiltInMove() async {
+    GameSetting setting = await GameSetting.getInstance();
+    XQIsoSearch.level = setting.robotLevel;
     await XQIsoSearch.init();
+    if (IsoMessage.bookData == null) {
+      IsoMessage.bookData = await rootBundle.load('assets/engines/BOOK.DAT');
+    }
+
     if (kIsWeb) {
       completeMove(
-          await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr, null)));
+          await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr)));
     } else {
-      if (IsoMessage.bookData == null) {
-        IsoMessage.bookData = await rootBundle.load('assets/engines/BOOK.DAT');
-      }
       ReceivePort rPort = ReceivePort();
       rPort.listen((message) {
         completeMove(message);
@@ -241,7 +243,7 @@ class DriverRobot extends PlayerDriver {
 
           // 开局先动马炮
           if (['c', 'C', 'n', 'N'].contains(chess)) {
-            moveWeight[move] =  moveWeight[move]! + 9;
+            moveWeight[move] = moveWeight[move]! + 9;
           }
         }
         if (chessCount > 20) {
@@ -290,11 +292,11 @@ class DriverRobot extends PlayerDriver {
         if (chess == 'c' || chess == 'C') {
           if (fromPos.y == ekPos.y || fromPos.x == ekPos.x) {
             if (toPos.y != ekPos.y && toPos.x != ekPos.x) {
-              moveWeight[move] = moveWeight[move]! -weights[0];
+              moveWeight[move] = moveWeight[move]! - weights[0];
             }
           } else {
             if (toPos.y == ekPos.y || toPos.x == ekPos.x) {
-              moveWeight[move] = moveWeight[move]! +weights[0];
+              moveWeight[move] = moveWeight[move]! + weights[0];
             }
           }
         }
@@ -327,32 +329,36 @@ class DriverRobot extends PlayerDriver {
             if (bItem.position == fromPos) {
               // 走之后不被吃了
               if (eRootCount < 1) {
-                moveWeight[move] = moveWeight[move]! + mRule.getChessWeight(toPos) * weights[6];
+                moveWeight[move] = moveWeight[move]! +
+                    mRule.getChessWeight(toPos) * weights[6];
               } else if (rootCount > 0) {
                 List<ChessItem> eItems = mRule.getBeEatList(toPos);
-                moveWeight[move] = moveWeight[move]! + (mRule.getChessWeight(eItems[0].position) -
-                        mRule.getChessWeight(toPos)) *
-                    weights[6];
+                moveWeight[move] = moveWeight[move]! +
+                    (mRule.getChessWeight(eItems[0].position) -
+                            mRule.getChessWeight(toPos)) *
+                        weights[6];
               }
             } else {
               // 不是被吃的子，但是也躲过去了
               int oRootCount = mRule.rootCount(bItem.position, enemyTeam);
               if (oRootCount < 1) {
-                moveWeight[move] =
-                    moveWeight[move]! + mRule.getChessWeight(bItem.position) * weights[6];
+                moveWeight[move] = moveWeight[move]! +
+                    mRule.getChessWeight(bItem.position) * weights[6];
               } else {
                 // 有根了
                 List<ChessItem> eItems = mRule.getBeEatList(bItem.position);
-                moveWeight[move] = moveWeight[move]! + (mRule.getChessWeight(eItems[0].position) -
-                        mRule.getChessWeight(bItem.position)) *
-                    weights[6];
+                moveWeight[move] = moveWeight[move]! +
+                    (mRule.getChessWeight(eItems[0].position) -
+                            mRule.getChessWeight(bItem.position)) *
+                        weights[6];
               }
             }
           });
 
           // 走着后要被吃
           if ((rootCount == 0 && eRootCount > 0) || rootCount < eRootCount) {
-            moveWeight[move] = moveWeight[move]! - mRule.getChessWeight(toPos) * weights[5];
+            moveWeight[move] =
+                moveWeight[move]! - mRule.getChessWeight(toPos) * weights[5];
           }
 
           // 捉子优先

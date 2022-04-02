@@ -20,12 +20,13 @@ class IsoMessage {
 class XQIsoSearch {
   static late Position position;
   static Search? search;
+  static int level = 0;
 
   static init() async {
     if (search == null) {
       position = Position();
-      GameSetting setting = await GameSetting.getInstance();
-      search = Search(position, setting.robotLevel);
+
+      search = Search(position, level);
       await Position.init();
     }
   }
@@ -53,7 +54,9 @@ class RC4 {
     state[j] = t;
   }
 
-  RC4(Uint8List key):x=0,y=0 {
+  RC4(Uint8List key)
+      : x = 0,
+        y = 0 {
     int j = 0;
     for (int i = 0; i < 256; i++) {
       j = (j + state[i] + key[i % key.length]) & 0xff;
