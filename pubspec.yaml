@@ -54,7 +54,7 @@ dependencies:
   universal_html: ^2.0.8
   shared_preferences: ^2.0.13
   
-  assets_audio_player: ^3.0.4+1
+  assets_audio_player: ^3.0.4+3
   ffi: 1.2.1
   win32: 2.6.1
 
