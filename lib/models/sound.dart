@@ -46,6 +46,8 @@ class Sound {
         await direct.writeAsBytes(data.buffer.asUint8List());
       }
       PlaySound(direct.path.toNativeUtf16(), NULL, SND_ASYNC | SND_FILENAME);
+    } else if (Platform.isLinux) {
+      return true;
     } else {
       audioPlayer.setVolume(setting!.soundVolume);
       audioPlayer.open(Audio(asset));
