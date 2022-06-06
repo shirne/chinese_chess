@@ -32,7 +32,7 @@ dependencies:
   intl: ^0.17.0
   cupertino_icons: ^1.0.2
   file_picker: ^3.0.1
-  bitsdojo_window: ^0.1.1+1
+  bitsdojo_window: ^0.1.2
   #desktop_window: ^0.4.0
   #window_size:
   #  git:
@@ -44,8 +44,7 @@ dependencies:
   #    url: git://github.com/google/flutter-desktop-embedding.git
   #    path: plugins/menubar
   #    ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
-  filesystem_picker: #^2.0.0-nullsafety.0
-    path: ../fluttersamples/filesystem_picker/package
+  filesystem_picker: ^2.0.1
   file_selector: ^0.8.2
   file_selector_windows: ^0.0.2
   file_selector_macos: ^0.0.4
@@ -55,9 +54,9 @@ dependencies:
   universal_html: ^2.0.8
   shared_preferences: ^2.0.13
   
-  assets_audio_player: ^3.0.4+1
-  ffi: 1.1.2
-  win32: 2.5.1
+  assets_audio_player: ^3.0.4+3
+  ffi: 1.2.1
+  win32: 2.6.1
 
 dev_dependencies:
   flutter_test:
