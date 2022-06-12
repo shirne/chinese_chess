@@ -1,17 +1,16 @@
-
-
 import 'dart:async';
 
 import '../models/player.dart';
 
 import 'player_driver.dart';
 
-class DriverUser extends PlayerDriver{
+class DriverUser extends PlayerDriver {
   late Completer<String> requestMove;
 
   DriverUser(Player player) : super(player);
 
-  Future<bool> tryDraw(){
+  @override
+  Future<bool> tryDraw() {
     return Future.value(true);
   }
 

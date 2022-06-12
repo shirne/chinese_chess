@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'driver/player_driver.dart';
@@ -8,7 +7,6 @@ import 'models/game_manager.dart';
 import 'widgets/tab_card.dart';
 
 class PlayPlayer extends StatefulWidget {
-
   const PlayPlayer({Key? key}) : super(key: key);
 
   @override
@@ -102,9 +100,7 @@ class PlayPlayerState extends State<PlayPlayer> {
             subtitle: Text(currentTeam == 1 ? S.of(context).thinking : ''),
             trailing: switchRobot(1),
           ),
-          SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           ListTile(
             leading: Icon(Icons.person,
                 color: currentTeam == 0 ? Colors.blueAccent : Colors.black12),
@@ -112,9 +108,7 @@ class PlayPlayerState extends State<PlayPlayer> {
             subtitle: Text(currentTeam == 0 ? S.of(context).thinking : ''),
             trailing: switchRobot(0),
           ),
-          SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Container(
               decoration: decoration,
@@ -126,26 +120,24 @@ class PlayPlayerState extends State<PlayPlayer> {
                   ],
                   bodies: [
                     Center(
-                      child: Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(gamer.manual.event),
-                            Text(
-                                '${gamer.manual.red} (${gamer.manual.chineseResult}) ${gamer.manual.black}'),
-                            Text(gamer.manual.ecco.isEmpty
-                                ? ''
-                                : '${gamer.manual.opening}(${gamer.manual.ecco})'),
-                          ],
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(gamer.manual.event),
+                          Text(
+                              '${gamer.manual.red} (${gamer.manual.chineseResult}) ${gamer.manual.black}'),
+                          Text(gamer.manual.ecco.isEmpty
+                              ? ''
+                              : '${gamer.manual.opening}(${gamer.manual.ecco})'),
+                        ],
                       ),
                     ),
                     Container(
                       padding: EdgeInsets.all(10),
                       child: Table(
                         border: null,
-                        columnWidths: {
+                        columnWidths: const {
                           0: IntrinsicColumnWidth(),
                           1: FlexColumnWidth(),
                         },
@@ -156,10 +148,14 @@ class PlayPlayerState extends State<PlayPlayer> {
                             Text(S.of(context).the_event),
                             Text(gamer.manual.event)
                           ]),
-                          TableRow(
-                              children: [Text(S.of(context).the_site), Text(gamer.manual.site)]),
-                          TableRow(
-                              children: [Text(S.of(context).the_date), Text(gamer.manual.date)]),
+                          TableRow(children: [
+                            Text(S.of(context).the_site),
+                            Text(gamer.manual.site)
+                          ]),
+                          TableRow(children: [
+                            Text(S.of(context).the_date),
+                            Text(gamer.manual.date)
+                          ]),
                           TableRow(children: [
                             Text(S.of(context).the_round),
                             Text(gamer.manual.round)

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:shirne_dialog/shirne_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
@@ -10,7 +9,7 @@ class GameWrapper extends StatefulWidget {
   final Widget child;
   final bool isMain;
 
-  const GameWrapper({Key? key,required this.child, this.isMain = false})
+  const GameWrapper({Key? key, required this.child, this.isMain = false})
       : super(key: key);
 
   static GameWrapperState of(BuildContext context) {
@@ -76,7 +75,7 @@ class GameWrapperState extends State<GameWrapper> {
       onWillPop: widget.isMain ? _willPop : null,
       child: inited
           ? widget.child
-          : Scaffold(
+          : const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             ),
     );

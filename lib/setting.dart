@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -9,10 +7,11 @@ import 'models/engine_type.dart';
 import 'models/engine_level.dart';
 import 'models/game_setting.dart';
 
-class SettingPage extends StatefulWidget{
+class SettingPage extends StatefulWidget {
+  const SettingPage({Key? key}) : super(key: key);
+
   @override
   State<SettingPage> createState() => _SettingPageState();
-
 }
 
 class _SettingPageState extends State<SettingPage> {
@@ -21,13 +20,15 @@ class _SettingPageState extends State<SettingPage> {
   @override
   void initState() {
     super.initState();
-    GameSetting.getInstance().then((value) => setState((){setting = value;}));
+    GameSetting.getInstance().then((value) => setState(() {
+          setting = value;
+        }));
   }
 
   @override
   Widget build(BuildContext context) {
     double width = 500;
-    if(MediaQuery.of(context).size.width < width){
+    if (MediaQuery.of(context).size.width < width) {
       width = MediaQuery.of(context).size.width;
     }
 
@@ -35,86 +36,111 @@ class _SettingPageState extends State<SettingPage> {
       appBar: AppBar(
         title: Text(S.of(context).setting_title),
         actions: [
-          TextButton(onPressed: (){
-            setting?.save().then((v){
-              Navigator.pop(context);
-              MyDialog.of(context).toast('保存成功', icon:MyDialog.iconSuccess);
-            });
-          }, child: Text('保存', style: TextStyle(color: Colors.white),)
-          ),
+          TextButton(
+              onPressed: () {
+                setting?.save().then((v) {
+                  Navigator.pop(context);
+                  MyDialog.of(context)
+                      .toast('保存成功', icon: MyDialog.iconSuccess);
+                });
+              },
+              child: Text(
+                '保存',
+                style: TextStyle(color: Colors.white),
+              )),
         ],
       ),
       body: Center(
-        child: setting == null ? CircularProgressIndicator()
+        child: setting == null
+            ? CircularProgressIndicator()
             : Container(
-          width: width,
-          padding: EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                ListTile(
-                  title: Text('AI类型'),
-                    trailing: CupertinoSegmentedControl(
-                      onValueChanged: (value){
-                        if(value == null)return;
-                        setState(() {
-                          setting!.robotType = value as String;
-                        });
-                      },
-                      groupValue: setting!.robotType,
-                      children: {
-                        EngineType.builtIn: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('内置引擎'),),
-                        EngineType.elephantEye: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('elephantEye'))
-                      },
-                    )
-                ),
-                ListTile(
-                  title: Text('AI级别'),
-                    trailing: CupertinoSegmentedControl(
-                      onValueChanged: (value){
-                        if(value == null)return;
-                        setState(() {
-                          setting!.robotLevel = value as int;
-                        });
-                      },
-                      groupValue: setting!.robotLevel,
-                      children: {
-                        EngineLevel.learn: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('初级'),),
-                        EngineLevel.middle: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('中级')),
-                        EngineLevel.master: Padding(padding: EdgeInsets.symmetric(horizontal: 10,),child: Text('大师'))
-                      },
-                    )
-                ),
-                ListTile(
-                  title: Text('游戏声音'),
-                  trailing: CupertinoSwitch(
-                    value: setting!.sound,
-                    onChanged: (v){
-                      setState(() {
-                        setting!.sound = v;
-                      });
-                    },
+                width: width,
+                padding: EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: ListBody(
+                    children: [
+                      ListTile(
+                          title: Text('AI类型'),
+                          trailing: CupertinoSegmentedControl(
+                            onValueChanged: (value) {
+                              if (value == null) return;
+                              setState(() {
+                                setting!.robotType = value as String;
+                              });
+                            },
+                            groupValue: setting!.robotType,
+                            children: const {
+                              EngineType.builtIn: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                child: Text('内置引擎'),
+                              ),
+                              EngineType.elephantEye: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: Text('elephantEye'))
+                            },
+                          )),
+                      ListTile(
+                          title: Text('AI级别'),
+                          trailing: CupertinoSegmentedControl(
+                            onValueChanged: (value) {
+                              if (value == null) return;
+                              setState(() {
+                                setting!.robotLevel = value as int;
+                              });
+                            },
+                            groupValue: setting!.robotLevel,
+                            children: const {
+                              EngineLevel.learn: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                child: Text('初级'),
+                              ),
+                              EngineLevel.middle: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: Text('中级')),
+                              EngineLevel.master: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: Text('大师'))
+                            },
+                          )),
+                      ListTile(
+                        title: Text('游戏声音'),
+                        trailing: CupertinoSwitch(
+                          value: setting!.sound,
+                          onChanged: (v) {
+                            setState(() {
+                              setting!.sound = v;
+                            });
+                          },
+                        ),
+                      ),
+                      ListTile(
+                        title: Text('游戏音量'),
+                        trailing: CupertinoSlider(
+                          value: setting!.soundVolume,
+                          min: 0,
+                          max: 1,
+                          onChanged: (v) {
+                            setState(() {
+                              setting!.soundVolume = v;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                ListTile(
-                  title: Text('游戏音量'),
-                  trailing: CupertinoSlider(
-                    value: setting!.soundVolume,
-                    min: 0,
-                    max: 1,
-                    onChanged: (v){
-                      setState(() {
-                        setting!.soundVolume = v;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
-
 }

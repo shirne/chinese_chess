@@ -112,7 +112,7 @@ class GameManager {
   }
 
   String get lastMove {
-    if (manual.moves.length < 1 || currentStep == 0) {
+    if (manual.moves.isEmpty || currentStep == 0) {
       return '';
     }
     return manual.moves[currentStep - 1].move;
@@ -159,7 +159,7 @@ class GameManager {
     switch (first) {
       case 'depth':
         String msg = infos[0];
-        if (infos.length > 0) {
+        if (infos.isNotEmpty) {
           String sub = infos.removeAt(0);
           while (sub.isNotEmpty) {
             if (sub == 'score') {
@@ -169,20 +169,17 @@ class GameManager {
               msg += fen.toChineseTree(infos).join(' ');
               break;
             }
-            if (infos.length < 1) break;
+            if (infos.isEmpty) break;
             sub = infos.removeAt(0);
           }
         }
         return msg;
-        break;
       case 'time':
         return '耗时：${infos[0]}(ms)' +
             (infos.length > 2 ? ' 节点数 ${infos[2]}' : '');
-        break;
       case 'currmove':
         return '当前招法: ${fen.toChineseString(infos[0])}' +
             (infos.length > 2 ? ' ${infos[2]}' : '');
-        break;
       case 'message':
       default:
         return infos.join(' ');
@@ -233,7 +230,7 @@ class GameManager {
     String content = '';
     if (!pgn.contains('\n')) {
       File file = File(pgn);
-      if (file != null) {
+      if (file.existsSync()) {
         //content = file.readAsStringSync(encoding: Encoding.getByName('gbk'));
         content = gbk.decode(file.readAsBytesSync());
       }
@@ -244,7 +241,7 @@ class GameManager {
     hands[0].title = manual.red;
     hands[1].title = manual.black;
     // 加载步数
-    if (manual.moves.length > 0) {
+    if (manual.moves.isNotEmpty) {
       // print(manual.moves);
       stepNotifier.value =
           manual.moves.map<String>((e) => e.toChineseString()).join('\n');
@@ -413,7 +410,7 @@ class GameManager {
         }
         Sound.play(Sound.check);
         resultNotifier.value = 'checkMate';
-        Future.delayed(Duration(milliseconds: 30))
+        Future.delayed(const Duration(milliseconds: 30))
             .then((value) => resultNotifier.value = '');
       } else {
         setResult(

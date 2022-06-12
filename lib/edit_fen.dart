@@ -1,5 +1,3 @@
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_box.dart';
@@ -16,7 +14,7 @@ import 'models/game_manager.dart';
 class EditFen extends StatefulWidget {
   final String fen;
 
-  const EditFen({Key? key,required this.fen}) : super(key: key);
+  const EditFen({Key? key, required this.fen}) : super(key: key);
 
   @override
   State<EditFen> createState() => EditFenState();
@@ -27,8 +25,8 @@ class EditFenState extends State<EditFen> {
   GameManager? gamer;
   late List<ChessItem> items;
   ChessItem? activeItem;
-  String activeChr='';
-  String dieChrs='';
+  String activeChr = '';
+  String dieChrs = '';
 
   @override
   initState() {
@@ -36,21 +34,20 @@ class EditFenState extends State<EditFen> {
     manual = ChessManual();
     manual.diePosition = ChessPos(9, 5);
     manual.diePositions = {
-      'k':ChessPos(9, 9),
-      'a':ChessPos(10, 9),
-      'b':ChessPos(9, 8),
-      'c':ChessPos(10, 8),
-      'n':ChessPos(9, 7),
-      'r':ChessPos(10, 7),
-      'p':ChessPos(9, 6),
-
-      'K':ChessPos(9, 4),
-      'A':ChessPos(10, 4),
-      'B':ChessPos(9, 3),
-      'C':ChessPos(10, 3),
-      'N':ChessPos(9, 2),
-      'R':ChessPos(10, 2),
-      'P':ChessPos(9, 1),
+      'k': ChessPos(9, 9),
+      'a': ChessPos(10, 9),
+      'b': ChessPos(9, 8),
+      'c': ChessPos(10, 8),
+      'n': ChessPos(9, 7),
+      'r': ChessPos(10, 7),
+      'p': ChessPos(9, 6),
+      'K': ChessPos(9, 4),
+      'A': ChessPos(10, 4),
+      'B': ChessPos(9, 3),
+      'C': ChessPos(10, 3),
+      'N': ChessPos(9, 2),
+      'R': ChessPos(10, 2),
+      'P': ChessPos(9, 1),
     };
     manual.setFen(widget.fen);
     items = manual.getChessItems();
@@ -67,17 +64,18 @@ class EditFenState extends State<EditFen> {
   }
 
   bool onPointer(ChessPos toPosition) {
-    ChessItem targetItem = items.firstWhere((item) => !item.isBlank && item.position == toPosition, orElse:()=> ChessItem('0'));
-    if(targetItem.isBlank){
-      if(activeItem != null){
-        manual.doMove(
-            '${activeItem!.position.toCode()}${toPosition.toCode()}');
+    ChessItem targetItem = items.firstWhere(
+        (item) => !item.isBlank && item.position == toPosition,
+        orElse: () => ChessItem('0'));
+    if (targetItem.isBlank) {
+      if (activeItem != null) {
+        manual.doMove('${activeItem!.position.toCode()}${toPosition.toCode()}');
         setState(() {
           activeItem!.position = toPosition;
           activeItem = null;
         });
         return true;
-      }else if(activeChr.isNotEmpty){
+      } else if (activeChr.isNotEmpty) {
         manual.setItem(toPosition, activeChr);
         setState(() {
           items = manual.getChessItems();
@@ -86,38 +84,37 @@ class EditFenState extends State<EditFen> {
         });
         return true;
       }
-    }else{
-      if(activeItem != null) {
-        if(activeItem!.position == toPosition) {
+    } else {
+      if (activeItem != null) {
+        if (activeItem!.position == toPosition) {
           manual.setItem(toPosition, '0');
-            setState(() {
-              items = manual.getChessItems();
-              activeItem = null;
-              dieChrs = manual.currentFen.getDieChr();
-            });
-
-        }else {
+          setState(() {
+            items = manual.getChessItems();
+            activeItem = null;
+            dieChrs = manual.currentFen.getDieChr();
+          });
+        } else {
           //targetItem.position = ChessPos.fromCode('i4');
           //targetItem.isDie = true;
-          manual.doMove(
-              '${activeItem!.position.toCode()}${toPosition.toCode()}');
+          manual
+              .doMove('${activeItem!.position.toCode()}${toPosition.toCode()}');
           setState(() {
             items = manual.getChessItems();
             activeItem = null;
           });
         }
         return true;
-      }else if(activeChr.isNotEmpty && activeChr != targetItem.code) {
-          //targetItem.position = ChessPos.fromCode('i4');
+      } else if (activeChr.isNotEmpty && activeChr != targetItem.code) {
+        //targetItem.position = ChessPos.fromCode('i4');
         bool seted = manual.setItem(toPosition, activeChr);
-        if(seted) {
+        if (seted) {
           setState(() {
             items = manual.getChessItems();
             activeChr = '';
             dieChrs = manual.currentFen.getDieChr();
           });
         }
-      }else{
+      } else {
         setState(() {
           activeItem = targetItem;
           activeChr = '';
@@ -127,7 +124,7 @@ class EditFenState extends State<EditFen> {
     return false;
   }
 
-  removeItem(ChessPos fromPosition){
+  removeItem(ChessPos fromPosition) {
     manual.currentFen[fromPosition.y][fromPosition.x] = '0';
     setState(() {
       items = manual.getChessItems();
@@ -136,13 +133,14 @@ class EditFenState extends State<EditFen> {
     });
   }
 
-  setActiveChr(String chr){
+  setActiveChr(String chr) {
     setState(() {
       activeItem = null;
       activeChr = chr;
     });
   }
-  clearAll(){
+
+  clearAll() {
     manual.setFen('4k4/9/9/9/9/9/9/9/9/4K4');
     setState(() {
       items = manual.getChessItems();
@@ -150,20 +148,22 @@ class EditFenState extends State<EditFen> {
       activeChr = '';
       activeItem = null;
     });
-
   }
 
   ChessPos pointTrans(Offset tapPoint) {
-    int x = (tapPoint.dx - gamer!.skin.offset.dx * gamer!.scale) ~/ (gamer!.skin.size * gamer!.scale);
-    int y = 9 - (tapPoint.dy - gamer!.skin.offset.dy * gamer!.scale) ~/ (gamer!.skin.size * gamer!.scale);
+    int x = (tapPoint.dx - gamer!.skin.offset.dx * gamer!.scale) ~/
+        (gamer!.skin.size * gamer!.scale);
+    int y = 9 -
+        (tapPoint.dy - gamer!.skin.offset.dy * gamer!.scale) ~/
+            (gamer!.skin.size * gamer!.scale);
     return ChessPos(x, y);
   }
 
   @override
   Widget build(BuildContext context) {
-    if(gamer == null) {
+    if (gamer == null) {
       GameWrapperState gameWrapper =
-      context.findAncestorStateOfType<GameWrapperState>()!;
+          context.findAncestorStateOfType<GameWrapperState>()!;
       gamer = gameWrapper.gamer;
     }
 
@@ -177,18 +177,17 @@ class EditFenState extends State<EditFen> {
             },
             child: Text(
               S.of(context).save,
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           )
         ],
       ),
       body: Center(
-        child: gamer!.scale < 1 ? _mobileContainer() : _windowContainer()
-      ),
+          child: gamer!.scale < 1 ? _mobileContainer() : _windowContainer()),
     );
   }
 
-  Widget _mobileContainer(){
+  Widget _mobileContainer() {
     return Container(
       width: gamer!.skin.width * gamer!.scale,
       height: (gamer!.skin.height + gamer!.skin.size * 2 + 20) * gamer!.scale,
@@ -196,69 +195,78 @@ class EditFenState extends State<EditFen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          ChessSingleBox(width:gamer!.skin.width * gamer!.scale, itemChrs: dieChrs, activeChr:activeChr),
-          SizedBox(
-            width: 10,
-          ),
+          ChessSingleBox(
+              width: gamer!.skin.width * gamer!.scale,
+              itemChrs: dieChrs,
+              activeChr: activeChr),
+          const SizedBox(width: 10),
           GestureDetector(
-            onTapUp: (detail){
+            onTapUp: (detail) {
               onPointer(pointTrans(detail.localPosition));
             },
-            onLongPressEnd: (detail){
+            onLongPressEnd: (detail) {
               print('longPressEnd $detail');
-
             },
-            onPanEnd: (detail){
-
-            },
+            onPanEnd: (detail) {},
             child: Container(
               width: gamer!.skin.width * gamer!.scale,
               height: gamer!.skin.height * gamer!.scale,
               child: Stack(
                 alignment: Alignment.center,
-                children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
+                children: [
+                  const Board(),
+                  ChessPieces(
+                    items: items,
+                    activeItem: activeItem,
+                  )
+                ],
               ),
             ),
           ),
-          SizedBox(
-            width: 10,
-          ),
-          ChessSingleBox(width:gamer!.skin.width * gamer!.scale, itemChrs: dieChrs, activeChr:activeChr)
+          const SizedBox(width: 10),
+          ChessSingleBox(
+              width: gamer!.skin.width * gamer!.scale,
+              itemChrs: dieChrs,
+              activeChr: activeChr)
         ],
       ),
     );
   }
 
-  Widget _windowContainer(){
+  Widget _windowContainer() {
     return Container(
       width: gamer!.skin.width + 10 + gamer!.skin.size * 2 + 10,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
-            onTapUp: (detail){
+            onTapUp: (detail) {
               onPointer(pointTrans(detail.localPosition));
             },
-            onLongPressEnd: (detail){
+            onLongPressEnd: (detail) {
               print('longPressEnd $detail');
-
             },
-            onPanEnd: (detail){
-
-            },
+            onPanEnd: (detail) {},
             child: Container(
               width: gamer!.skin.width,
               height: gamer!.skin.height,
               child: Stack(
                 alignment: Alignment.center,
-                children: [Board(), ChessPieces(items: items, activeItem: activeItem,)],
+                children: [
+                  const Board(),
+                  ChessPieces(
+                    items: items,
+                    activeItem: activeItem,
+                  )
+                ],
               ),
             ),
           ),
-          SizedBox(
-            width: 10,
-          ),
-          ChessBox(height:gamer!.skin.height, itemChrs: dieChrs, activeChr:activeChr)
+          const SizedBox(width: 10),
+          ChessBox(
+              height: gamer!.skin.height,
+              itemChrs: dieChrs,
+              activeChr: activeChr)
         ],
       ),
     );

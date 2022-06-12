@@ -1,22 +1,19 @@
-
-
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_pos.dart';
 import 'game_manager.dart';
 
-class ChessSkin{
+class ChessSkin {
   GameManager manager;
   String folder = "";
 
   double width = 521;
   double height = 577;
   double size = 57;
-  Offset offset = Offset(4, 3);
+  Offset offset = const Offset(4, 3);
 
   String board = "board.jpg";
   String blank = "blank.png";
@@ -41,7 +38,7 @@ class ChessSkin{
 
   late ValueNotifier<bool> readyNotifier;
 
-  ChessSkin(this.folder, this.manager){
+  ChessSkin(this.folder, this.manager) {
     readyNotifier = ValueNotifier(false);
     String jsonfile = "assets/skins/$folder/config.json";
     rootBundle.loadString(jsonfile).then((String fileContents) {
@@ -52,10 +49,10 @@ class ChessSkin{
     });
   }
 
-  loadJson(String content){
-    Map<String, dynamic> json = JsonDecoder().convert(content);
+  loadJson(String content) {
+    Map<String, dynamic> json = jsonDecode(content);
     json.forEach((key, value) {
-      switch(key){
+      switch (key) {
         case 'width':
           width = value.toDouble();
           break;
@@ -85,33 +82,33 @@ class ChessSkin{
     readyNotifier.value = true;
   }
 
-  String get boardImage{
+  String get boardImage {
     return "assets/skins/$folder/$board";
   }
 
-  String getRedChess(String code){
-    if(!redMap.containsKey(code.toUpperCase())){
+  String getRedChess(String code) {
+    if (!redMap.containsKey(code.toUpperCase())) {
       print('Code error: $code');
       return "assets/skins/$folder/$blank";
     }
     return "assets/skins/$folder/${redMap[code.toUpperCase()]}";
   }
-  String getBlackChess(String code){
-    if(!blackMap.containsKey(code.toLowerCase())){
+
+  String getBlackChess(String code) {
+    if (!blackMap.containsKey(code.toLowerCase())) {
       print('Code error: $code');
       return "assets/skins/$folder/$blank";
     }
     return "assets/skins/$folder/${blackMap[code.toLowerCase()]}";
   }
 
-  Alignment getAlign(ChessPos pos){
-    if(pos == null){
-      return Alignment(1.2, 0);
+  Alignment getAlign(ChessPos? pos) {
+    if (pos == null) {
+      return const Alignment(1.2, 0);
     }
     return Alignment(
-      ((pos.x * size + offset.dx) * 2 ) / (width - size) - 1,
-      (((9 - pos.y) * size + offset.dy) * 2 ) / (height - size) - 1,
+      ((pos.x * size + offset.dx) * 2) / (width - size) - 1,
+      (((9 - pos.y) * size + offset.dy) * 2) / (height - size) - 1,
     );
   }
-
 }

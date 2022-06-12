@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'edit_fen.dart';
@@ -13,7 +12,12 @@ class ChessBox extends StatefulWidget {
   final String activeChr;
   final double height;
 
-  const ChessBox({Key? key,required this.itemChrs, this.activeChr = '',required this.height}) : super(key: key);
+  const ChessBox(
+      {Key? key,
+      required this.itemChrs,
+      this.activeChr = '',
+      required this.height})
+      : super(key: key);
 
   @override
   State<ChessBox> createState() => _ChessBoxState();
@@ -26,11 +30,12 @@ class _ChessBoxState extends State<ChessBox> {
     return RegExp(chr).allMatches(widget.itemChrs).length;
   }
 
-  setActive(String chr){
+  setActive(String chr) {
     EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.setActiveChr(chr);
   }
-  clearAll(){
+
+  clearAll() {
     EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.clearAll();
   }
@@ -42,7 +47,7 @@ class _ChessBoxState extends State<ChessBox> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 114,
       height: widget.height,
       child: Flex(
@@ -52,23 +57,30 @@ class _ChessBoxState extends State<ChessBox> {
           Wrap(
             children: allItemChrs
                 .split('')
-                .map<Widget>((String chr) =>
-                    ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr,))
+                .map<Widget>((String chr) => ItemWidget(
+                      chr: chr,
+                      count: matchCount(chr),
+                      isActive: widget.activeChr == chr,
+                    ))
                 .toList(),
           ),
           Wrap(
             children: allItemChrs
                 .toUpperCase()
                 .split('')
-                .map<Widget>((String chr) =>
-                    ItemWidget(chr: chr, count: matchCount(chr), isActive: widget.activeChr == chr))
+                .map<Widget>((String chr) => ItemWidget(
+                    chr: chr,
+                    count: matchCount(chr),
+                    isActive: widget.activeChr == chr))
                 .toList(),
           ),
           Wrap(
             children: [
-              ElevatedButton(onPressed: (){
-                clearAll();
-              }, child: Text(S.of(context).clear_all))
+              ElevatedButton(
+                  onPressed: () {
+                    clearAll();
+                  },
+                  child: Text(S.of(context).clear_all))
             ],
           )
         ],
@@ -82,7 +94,9 @@ class ItemWidget extends StatelessWidget {
   final int count;
   final bool isActive;
 
-  const ItemWidget({Key? key,required this.chr,required this.count, this.isActive = false}) : super(key: key);
+  const ItemWidget(
+      {Key? key, required this.chr, required this.count, this.isActive = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -91,19 +105,21 @@ class ItemWidget extends StatelessWidget {
     GameManager manager = wrapper.gamer;
     _ChessBoxState parent = context.findAncestorStateOfType<_ChessBoxState>()!;
     return GestureDetector(
-      onTap: (){
-        if(count > 0) {
+      onTap: () {
+        if (count > 0) {
           parent.setActive(chr);
         }
       },
-      child: Container(
+      child: SizedBox(
         width: manager.skin.size * manager.scale,
         height: manager.skin.size * manager.scale,
         child: Stack(
           children: [
             Piece(
               isActive: isActive,
-              item: ChessItem(chr,),
+              item: ChessItem(
+                chr,
+              ),
             ),
             Align(
                 alignment: Alignment.topRight,
@@ -112,15 +128,18 @@ class ItemWidget extends StatelessWidget {
                   height: 20,
                   decoration: BoxDecoration(
                       color: count > 0 ? Colors.red : Colors.grey,
-                      borderRadius: BorderRadius.all(Radius.circular(10))
-                  ),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
                   child: Center(
-                    child: Text(count.toString(),style: TextStyle(color: Colors.white),),
+                    child: Text(
+                      count.toString(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ))
           ],
         ),
       ),
-    ) ;
+    );
   }
 }

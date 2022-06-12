@@ -1,14 +1,13 @@
-
-
 import '../models/player.dart';
 import 'player_driver.dart';
 
-class DriverOnline extends PlayerDriver{
-  DriverOnline(Player player) : super(player){
+class DriverOnline extends PlayerDriver {
+  DriverOnline(Player player) : super(player) {
     canBacktrace = false;
   }
 
-  Future<bool> tryDraw(){
+  @override
+  Future<bool> tryDraw() {
     return Future.value(true);
   }
 

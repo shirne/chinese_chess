@@ -1,12 +1,10 @@
-
-
 import '../models/player.dart';
 
 import 'driver_online.dart';
 import 'driver_robot.dart';
 import 'driver_user.dart';
 
-abstract class PlayerDriver{
+abstract class PlayerDriver {
   final Player player;
   bool canBacktrace = true;
 
@@ -21,23 +19,27 @@ abstract class PlayerDriver{
   // 同意悔棋
   static const rstRetract = 'retract';
 
-  static const rstActions = [rstGiveUp, rstRqstDraw, rstRqstRetract, rstDraw, rstRetract];
+  static const rstActions = [
+    rstGiveUp,
+    rstRqstDraw,
+    rstRqstRetract,
+    rstDraw,
+    rstRetract
+  ];
 
-  static bool isAction(String move){
+  static bool isAction(String move) {
     return rstActions.contains(move) || move.contains(rstRqstDraw);
   }
 
   PlayerDriver(this.player);
 
-
-  static PlayerDriver createDriver(Player manager,[DriverType type = DriverType.user]){
-    switch(type){
+  static PlayerDriver createDriver(Player manager,
+      [DriverType type = DriverType.user]) {
+    switch (type) {
       case DriverType.robot:
         return DriverRobot(manager);
-        break;
       case DriverType.online:
         return DriverOnline(manager);
-        break;
       default:
         return DriverUser(manager);
     }
@@ -53,7 +55,7 @@ abstract class PlayerDriver{
   completeMove(String move);
 }
 
-class DriverType{
+class DriverType {
   final String type;
 
   static const user = DriverType('user');

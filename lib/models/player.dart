@@ -1,7 +1,4 @@
-
-
 import '../driver/player_driver.dart';
-import 'chess_item.dart';
 import 'game_manager.dart';
 
 class Player {
@@ -19,12 +16,12 @@ class Player {
 
   Player(this.team, this.manager,
       {this.title = '', DriverType type = DriverType.user}) {
-    this.driverType = type;
+    driverType = type;
   }
 
   set driverType(DriverType type) {
     _driverType = type;
-    this.driver = PlayerDriver.createDriver(this, _driverType);
+    driver = PlayerDriver.createDriver(this, _driverType);
   }
 
   DriverType get driverType {
@@ -48,8 +45,8 @@ class Player {
     print('onmove');
     manager.moveNotifier.value = move;
 
-    if ( move.isNotEmpty) {
-      Future.delayed(Duration(milliseconds: 500)).then((v) {
+    if (move.isNotEmpty) {
+      Future.delayed(const Duration(milliseconds: 500)).then((v) {
         manager.moveNotifier.value = '';
       });
     }

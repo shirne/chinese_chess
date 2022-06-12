@@ -8,7 +8,8 @@ class PlayStep extends StatefulWidget {
   final BoxDecoration? decoration;
   final double width;
 
-  const PlayStep({Key? key, this.decoration,required this.width}) : super(key: key);
+  const PlayStep({Key? key, this.decoration, required this.width})
+      : super(key: key);
 
   @override
   State<PlayStep> createState() => PlayStepState();
@@ -26,7 +27,7 @@ class PlayStepState extends State<PlayStep> {
     super.initState();
     _controller = ScrollController(keepScrollOffset: true);
     GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>()!;
+        context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
     gamer.stepNotifier.addListener(updateStep);
     steps = gamer.getSteps();
@@ -49,7 +50,7 @@ class PlayStepState extends State<PlayStep> {
           steps.removeRange(currentStep + 1, steps.length);
         }
       });
-    }else if(message == 'step'){
+    } else if (message == 'step') {
       setState(() {
         currentStep = gamer.currentStep;
       });
@@ -62,7 +63,8 @@ class PlayStepState extends State<PlayStep> {
       });
     }
     Future.delayed(Duration(milliseconds: 16)).then((value) {
-      ScrollPositionWithSingleContext position  = _controller.position as ScrollPositionWithSingleContext;
+      ScrollPositionWithSingleContext position =
+          _controller.position as ScrollPositionWithSingleContext;
       _controller.animateTo(position.maxScrollExtent,
           duration: Duration(milliseconds: 100), curve: Curves.easeOut);
     });
@@ -70,7 +72,7 @@ class PlayStepState extends State<PlayStep> {
 
   @override
   Widget build(BuildContext context) {
-    if(steps.length < 1){
+    if (steps.isEmpty) {
       steps.insert(0, S.of(context).step_start);
     }
     int step = 0;
@@ -84,7 +86,7 @@ class PlayStepState extends State<PlayStep> {
           int myIndex = step;
           return GestureDetector(
             onTap: () {
-              if(!gamer.canBacktrace)return;
+              if (!gamer.canBacktrace) return;
               gamer.loadHistory(myIndex);
               setState(() {
                 currentStep = myIndex;
@@ -93,11 +95,11 @@ class PlayStepState extends State<PlayStep> {
             child: Container(
               height: 23,
               padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-              decoration:
-                BoxDecoration(
-                    color: currentStep == myIndex ?
-                      Colors.black26 : Colors.transparent,
-                ),
+              decoration: BoxDecoration(
+                color: currentStep == myIndex
+                    ? Colors.black26
+                    : Colors.transparent,
+              ),
               child: Row(
                 children: [
                   (step++ > 0 && step % 2 == 0)

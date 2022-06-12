@@ -22,6 +22,8 @@ import 'play.dart';
 import 'edit_fen.dart';
 
 class GameBoard extends StatefulWidget {
+  const GameBoard({Key? key}) : super(key: key);
+
   @override
   State<GameBoard> createState() => _GameBoardState();
 }
@@ -405,7 +407,7 @@ class _GameBoardState extends State<GameBoard> {
     );
     final files = await FileSelectorPlatform.instance
         .openFiles(acceptedTypeGroups: [typeGroup]);
-    if (files != null && files.length > 0) {
+    if (files.isNotEmpty) {
       gamer.loadPGN(files[0].path);
     }
   }
@@ -425,7 +427,7 @@ class _GameBoardState extends State<GameBoard> {
       print(path);
       gamer.loadPGN(path);
     } else {
-      print(path);
+      // cancel
     }
   }
 }

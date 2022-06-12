@@ -25,9 +25,7 @@ class Sound {
   static GameSetting? setting;
 
   static Future<bool> play(String id) async {
-    if (setting == null) {
-      setting = await GameSetting.getInstance();
-    }
+    setting ??= await GameSetting.getInstance();
     if (!setting!.sound) return false;
 
     String asset = "assets/sounds/$id";
@@ -37,7 +35,7 @@ class Sound {
       audioPlayer.setVolume(setting!.soundVolume);
       audioPlayer.open(Audio(asset));
     } else if (Platform.isWindows) {
-      File direct = File(Directory.systemTemp.absolute.path + "/$asset");
+      File direct = File("${Directory.systemTemp.absolute.path}/$asset");
       if (!direct.existsSync()) {
         if (!direct.parent.existsSync()) {
           direct.parent.createSync(recursive: true);

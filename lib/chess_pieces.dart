@@ -29,11 +29,11 @@ class _ChessPiecesState extends State<ChessPieces> {
     initGamer();
   }
 
-  initGamer(){
-    if(gamer != null)return;
-    GameWrapperState gameWrapper =
-    context.findAncestorStateOfType<GameWrapperState>()!;
-    if(gameWrapper == null)return;
+  initGamer() {
+    if (gamer != null) return;
+    GameWrapperState? gameWrapper =
+        context.findAncestorStateOfType<GameWrapperState>();
+    if (gameWrapper == null) return;
     gamer = gameWrapper.gamer;
     gamer!.playerNotifier.addListener(onChangePlayer);
     curTeam = gamer!.curHand;
@@ -45,7 +45,7 @@ class _ChessPiecesState extends State<ChessPieces> {
     super.dispose();
   }
 
-  void onChangePlayer(){
+  void onChangePlayer() {
     setState(() {
       curTeam = gamer!.playerNotifier.value;
     });
@@ -55,7 +55,7 @@ class _ChessPiecesState extends State<ChessPieces> {
   Widget build(BuildContext context) {
     initGamer();
     return Stack(
-      alignment: Alignment(0, 0),
+      alignment: Alignment.center,
       fit: StackFit.expand,
       children: widget.items.map<Widget>((ChessItem item) {
         bool isActive = false;
@@ -65,17 +65,17 @@ class _ChessPiecesState extends State<ChessPieces> {
         } else if (widget.activeItem != null) {
           if (widget.activeItem!.position == item.position) {
             isActive = true;
-            if(curTeam == item.team){
+            if (curTeam == item.team) {
               isHover = true;
             }
           }
         }
 
         return AnimatedAlign(
-          duration: Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutQuint,
           alignment: gamer!.skin.getAlign(item.position),
-          child: Container(
+          child: SizedBox(
             width: gamer!.skin.size * gamer!.scale,
             height: gamer!.skin.size * gamer!.scale,
             //transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105 * skewStepper, 1 - skewStepper*0.1, 0, -0.004 * skewStepper, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),

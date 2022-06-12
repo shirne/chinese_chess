@@ -1,12 +1,10 @@
-
-class CustomNotifier<T>{
-
+class CustomNotifier<T> {
   List<void Function(T _value)> callBacks = [];
   bool _lockList = false;
 
-  void addListener(void Function(T _value) func){
-    if(_lockList){
-      Future.delayed(Duration(milliseconds: 1)).then((v){
+  void addListener(void Function(T _value) func) {
+    if (_lockList) {
+      Future.delayed(Duration(milliseconds: 1)).then((v) {
         addListener(func);
       });
       return;
@@ -15,12 +13,12 @@ class CustomNotifier<T>{
     callBacks.add(func);
     _lockList = false;
   }
-  bool get hasListeners{
-    return callBacks.length > 0;
-  }
-  void removeListener(void Function(T _value) func){
-    if(_lockList){
-      Future.delayed(Duration(milliseconds: 1)).then((v){
+
+  bool get hasListeners => callBacks.isNotEmpty;
+
+  void removeListener(void Function(T _value) func) {
+    if (_lockList) {
+      Future.delayed(const Duration(milliseconds: 1)).then((v) {
         removeListener(func);
       });
       return;
@@ -30,23 +28,23 @@ class CustomNotifier<T>{
     _lockList = false;
   }
 
-  void notifyListeners(T _value){
-    if(_lockList){
-      Future.delayed(Duration(milliseconds: 1)).then((v){
+  void notifyListeners(T _value) {
+    if (_lockList) {
+      Future.delayed(Duration(milliseconds: 1)).then((v) {
         notifyListeners(_value);
       });
       return;
     }
     _lockList = true;
-    callBacks.forEach((element) {
+    for (var element in callBacks) {
       element(_value);
-    });
+    }
     _lockList = false;
   }
 
-  dispose(){
-    if(_lockList){
-      Future.delayed(Duration(milliseconds: 1)).then((v){
+  dispose() {
+    if (_lockList) {
+      Future.delayed(Duration(milliseconds: 1)).then((v) {
         dispose();
       });
       return;

@@ -1,5 +1,3 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess.dart';
@@ -17,7 +15,7 @@ import 'driver/player_driver.dart';
 class PlayPage extends StatefulWidget {
   final PlayMode mode;
 
-  const PlayPage({Key? key,required this.mode}) : super(key: key);
+  const PlayPage({Key? key, required this.mode}) : super(key: key);
   @override
   State<StatefulWidget> createState() => PlayPageState();
 }
@@ -52,22 +50,28 @@ class PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     initGame();
-    return MediaQuery.of(context).size.width < 980 ? _mobileContainer() : _windowContainer();
+    return MediaQuery.of(context).size.width < 980
+        ? _mobileContainer()
+        : _windowContainer();
   }
 
   Widget _mobileContainer() {
-
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          PlaySinglePlayer(team: 1,),
-           Container(
-              width: gamer.skin.width * gamer.scale,
-              height: gamer.skin.height * gamer.scale,
-              child: Chess(),
-            ),
-          PlaySinglePlayer(team: 0,placeAt: Alignment.bottomCenter,),
+          const PlaySinglePlayer(
+            team: 1,
+          ),
+          Container(
+            width: gamer.skin.width * gamer.scale,
+            height: gamer.skin.height * gamer.scale,
+            child: const Chess(),
+          ),
+          const PlaySinglePlayer(
+            team: 0,
+            placeAt: Alignment.bottomCenter,
+          ),
         ],
       ),
     );
@@ -87,12 +91,12 @@ class PlayPageState extends State<PlayPage> {
         children: [
           Container(
             width: 521,
-            child: Chess(),
+            child: const Chess(),
           ),
           Container(
             width: 439,
             padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(2)),
                 boxShadow: [
@@ -127,19 +131,19 @@ class PlayPageState extends State<PlayPage> {
                   height: 180,
                   decoration: decoration,
                   child: TabCard(
-                      titleFit: FlexFit.tight,
-                      titlePadding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 30),
-                      titles: [
-                        Text(S.of(context).recommend_move),
-                        Text(S.of(context).remark)
-                      ],
-                      bodies: [
-                        PlayBot(),
-                        Center(
-                          child: Text(S.of(context).no_remark),
-                        )
-                      ],
+                    titleFit: FlexFit.tight,
+                    titlePadding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                    titles: [
+                      Text(S.of(context).recommend_move),
+                      Text(S.of(context).remark)
+                    ],
+                    bodies: [
+                      PlayBot(),
+                      Center(
+                        child: Text(S.of(context).no_remark),
+                      )
+                    ],
                   ),
                 )
               ],

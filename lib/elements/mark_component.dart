@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class MarkComponent extends StatelessWidget {
   final double size;
 
-  const MarkComponent({Key? key,required this.size}) : super(key: key);
+  const MarkComponent({Key? key, required this.size}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class MarkComponent extends StatelessWidget {
             child: Container(
               width: 15,
               height: 15,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   color: Color.fromRGBO(255, 255, 255, .8),
                   borderRadius: BorderRadius.all(Radius.circular(15))),
             ),

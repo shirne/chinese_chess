@@ -1,10 +1,6 @@
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:flutter/services.dart';
-
-import '../models/game_setting.dart';
-
 import 'position.dart';
 import 'search.dart';
 
@@ -83,27 +79,22 @@ class RC4 {
 }
 
 class Util {
-  static int MIN_MAX(int min, int mid, int max) {
-    return mid < min
-        ? min
-        : mid > max
-            ? max
-            : mid;
-  }
+  static int minOrMax(int min, int mid, int max) => mid < min
+      ? min
+      : mid > max
+          ? max
+          : mid;
 
-  static Uint8List POP_COUNT_16_LIST =
-      Uint8List.fromList(List.generate(65536, (i) {
+  static final popCount16List = Uint8List.fromList(List.generate(65536, (i) {
     int n = ((i >> 1) & 0x5555) + (i & 0x5555);
     n = ((n >> 2) & 0x3333) + (n & 0x3333);
     n = ((n >> 4) & 0x0f0f) + (n & 0x0f0f);
     return ((n >> 8) + (n & 0x00ff));
   }));
 
-  static int POP_COUNT_16(int data) {
-    return POP_COUNT_16_LIST[data];
-  }
+  static int popCount16(int data) => popCount16List[data];
 
-  @deprecated
+  @Deprecated("")
   static int readShort(ByteData input) {
     int b0 = input.getInt8(0);
     int b1 = input.getInt8(1);
@@ -113,7 +104,7 @@ class Util {
     return b0 | (b1 << 8);
   }
 
-  @deprecated
+  @Deprecated("")
   static int readInt(ByteData input) {
     int b0 = input.getInt8(0);
     int b1 = input.getInt8(1);

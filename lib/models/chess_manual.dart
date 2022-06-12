@@ -1,17 +1,22 @@
-
+// ignore_for_file: unnecessary_this
 
 import 'chess_fen.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
 import 'chess_step.dart';
 
-class ChessManual{
-  static const startFen = ChessFen.initFen + ' w - - 0 1';
+class ChessManual {
+  static const startFen = '${ChessFen.initFen} w - - 0 1';
   static const resultFstWin = '1-0';
   static const resultFstLoose = '0-1';
   static const resultFstDraw = '1/2-1/2';
   static const resultUnknown = '*';
-  static const results = [resultFstWin, resultFstLoose, resultFstDraw, resultUnknown];
+  static const results = [
+    resultFstWin,
+    resultFstLoose,
+    resultFstDraw,
+    resultUnknown
+  ];
 
   // 游戏类型
   String game = 'Chinese Chess';
@@ -36,10 +41,11 @@ class ChessManual{
   // RedTitle、RedElo、RedType
 
   // 别名
-  String get redNA{
+  String get redNA {
     return redTeam;
   }
-  set redNA(String value){
+
+  set redNA(String value) {
     redTeam = value;
   }
 
@@ -49,7 +55,7 @@ class ChessManual{
 
   // 比赛结果 1-0 0-1 1/2-1/2 *
   String result = '*';
-  String get chineseResult{
+  String get chineseResult {
     return ChessFen.getChineseResult(result);
   }
 
@@ -88,7 +94,7 @@ class ChessManual{
   int step = 0;
 
   ChessPos? diePosition;
-  Map<String,ChessPos>? diePositions;
+  Map<String, ChessPos>? diePositions;
 
   ChessManual({
     this.fen = startFen,
@@ -102,11 +108,11 @@ class ChessManual{
     this.round = '1',
     this.ecco = '',
     this.timeControl = '',
-  }){
-    initFen(this.fen);
+  }) {
+    initFen(fen);
   }
 
-  initDefault(){
+  initDefault() {
     fen = startFen;
     red = 'Red';
     black = 'Black';
@@ -122,43 +128,42 @@ class ChessManual{
     //fenPosition = null;
   }
 
-  initFen(String fenStr){
+  initFen(String fenStr) {
     List<String> fenParts = fenStr.split(' ');
-    this.currentFen = ChessFen(fenParts[0]);
+    currentFen = ChessFen(fenParts[0]);
     this.fenPosition = this.currentFen.position();
-    if(fenParts.length > 1){
-      if(fenParts[1] == 'b' || fenParts[1] == 'B'){
+    if (fenParts.length > 1) {
+      if (fenParts[1] == 'b' || fenParts[1] == 'B') {
         startHand = 1;
-      }else{
+      } else {
         startHand = 0;
       }
     }
     print('clear items');
-    _items=[];
+    _items = [];
   }
 
-  ChessManual.load(String content){
+  ChessManual.load(String content) {
     int idx = 0;
     String line = '';
     String description = '';
     content = content.replaceAllMapped(
         RegExp('[${ChessFen.replaceNumber.join('')}]'),
-            (match) => ChessFen.replaceNumber.indexOf(match[0]!).toString()
-    );
-    while(true){
+        (match) => ChessFen.replaceNumber.indexOf(match[0]!).toString());
+    while (true) {
       String chr = content[idx];
-      switch(chr){
+      switch (chr) {
         case '[':
           int endIdx = content.indexOf(']', idx);
-          if(endIdx > idx){
-            line = content.substring(idx + 1, endIdx-1);
+          if (endIdx > idx) {
+            line = content.substring(idx + 1, endIdx - 1);
             List<String> parts = line.trim().split(RegExp(r'\s+'));
             String value = parts[1].trim();
-            if(value[0] == '"'){
+            if (value[0] == '"') {
               int lastIndex = value.lastIndexOf('"');
               value = value.substring(1, lastIndex > 1 ? lastIndex - 1 : null);
             }
-            switch(parts[0].toLowerCase()){
+            switch (parts[0].toLowerCase()) {
               case 'game':
                 this.game = value;
                 break;
@@ -212,7 +217,7 @@ class ChessManual{
                 this.termination = value;
                 break;
             }
-          }else{
+          } else {
             print('Analysis pgn failed at $idx');
             break;
           }
@@ -228,33 +233,33 @@ class ChessManual{
         case '\t':
         case '\n':
         case '\r':
-          if(line.isNotEmpty){
-            if(line.endsWith('.')){
+          if (line.isNotEmpty) {
+            if (line.endsWith('.')) {
               // step = int.tryParse(line.substring(0, line.length - 2)) ?? 0;
               line = '';
-            }else{
+            } else {
               addMove(line, description: description);
               description = '';
               line = '';
             }
           }
           break;
-          // 这几个当作结尾注释吧
+        // 这几个当作结尾注释吧
         case '=':
           return;
         default:
           line += chr;
-          if(this.currentFen == null){
-            if(fen == null || fen.isEmpty){
+          if (this.currentFen == null) {
+            if (fen == null || fen.isEmpty) {
               fen = startFen;
             }
             initFen(fen);
           }
       }
 
-      idx ++;
-      if(idx >= content.length){
-        if(line.isNotEmpty){
+      idx++;
+      if (idx >= content.length) {
+        if (line.isNotEmpty) {
           addMove(line, description: description);
         }
         break;
@@ -262,7 +267,7 @@ class ChessManual{
     }
   }
 
-  String export(){
+  String export() {
     List<String> lines = [];
     lines.add('[Game "$game"]');
     lines.add('[Event "$event"]');
@@ -277,14 +282,17 @@ class ChessManual{
     lines.add('[ECCO "$ecco"]');
     lines.add('[Opening "$opening"]');
     lines.add('[Variation "$variation"]');
-    if(fen != startFen && fen != ChessFen.initFen){
+    if (fen != startFen && fen != ChessFen.initFen) {
       lines.add('[FEN "$fen"]');
     }
 
-    for(int myStep = 0; myStep<moves.length; myStep += 2){
-      lines.add('${(myStep ~/ 2) + 1}. ${moves[myStep].toChineseString()} '+(myStep < moves.length-1 ? moves[myStep+1].toChineseString() : result));
+    for (int myStep = 0; myStep < moves.length; myStep += 2) {
+      lines.add('${(myStep ~/ 2) + 1}. ${moves[myStep].toChineseString()} ' +
+          (myStep < moves.length - 1
+              ? moves[myStep + 1].toChineseString()
+              : result));
     }
-    if(moves.length % 2 == 0){
+    if (moves.length % 2 == 0) {
       lines.add(result);
     }
 
@@ -293,36 +301,36 @@ class ChessManual{
     return lines.join("\n");
   }
 
-  loadHistory(int index){
-    if(index < 1){
+  loadHistory(int index) {
+    if (index < 1) {
       currentFen.fen = fen.split(' ')[0];
       fenPosition = currentFen.position();
-    }else {
-      currentFen.fen = moves[index-1].fen;
-      fenPosition.fen = moves[index-1].fenPosition;
-      doMove(moves[index-1].move);
+    } else {
+      currentFen.fen = moves[index - 1].fen;
+      fenPosition.fen = moves[index - 1].fenPosition;
+      doMove(moves[index - 1].move);
     }
     step = index;
   }
 
-  setFen(String fenStr){
+  setFen(String fenStr) {
     ChessFen startFen = ChessFen(fen);
     String initChrs = startFen.getAllChr();
     String initPositions = startFen.position().getAllChr();
 
     currentFen.fen = fenStr;
-    fenPosition.fen = currentFen.fen.replaceAllMapped(
-        RegExp(r'[^0-9\\/]'), (match){
-          String chr = initPositions[initChrs.indexOf(match[0]!)];
-          initChrs = initChrs.replaceFirst(match[0]!, '0');
-          return chr;
-        });
+    fenPosition.fen =
+        currentFen.fen.replaceAllMapped(RegExp(r'[^0-9\\/]'), (match) {
+      String chr = initPositions[initChrs.indexOf(match[0]!)];
+      initChrs = initChrs.replaceFirst(match[0]!, '0');
+      return chr;
+    });
   }
 
   /// 设置某个位置，设置为空必真，设置为子会根据初始局面查找当前没在局面中的子的位置，未查找到会设置失败
-  bool setItem(ChessPos pos, String chr){
+  bool setItem(ChessPos pos, String chr) {
     String posChr = '0';
-    if(chr != '0'){
+    if (chr != '0') {
       ChessFen startFen = ChessFen(fen);
       String initChrs = startFen.getAllChr();
       String initPositions = startFen.position().getAllChr();
@@ -330,15 +338,15 @@ class ChessManual{
       String positions = fenPosition.getAllChr();
 
       int index = initChrs.indexOf(chr);
-      while(index > -1){
+      while (index > -1) {
         String curPosChr = initPositions[index];
-        if(positions.indexOf(curPosChr) < 0){
+        if (!positions.contains(curPosChr)) {
           posChr = curPosChr;
           break;
         }
-        index = initChrs.indexOf(chr, index+1);
+        index = initChrs.indexOf(chr, index + 1);
       }
-      if(posChr == '0'){
+      if (posChr == '0') {
         return false;
       }
     }
@@ -350,31 +358,32 @@ class ChessManual{
     return true;
   }
 
-  doMove(String move){
+  doMove(String move) {
     currentFen.move(move);
     fenPosition.move(move);
   }
 
-  bool get hasNext{
+  bool get hasNext {
     return step < moves.length;
   }
-  String next(){
-    if(step < moves.length) {
+
+  String next() {
+    if (step < moves.length) {
       step++;
       String move = moves[step - 1].move;
       String result = currentFen.toChineseString(move);
       doMove(move);
       return result;
-    }else{
+    } else {
       return ChessFen.getChineseResult(result);
     }
   }
 
   List<ChessItem> _items = [];
-  List<ChessItem> getChessItems(){
+  List<ChessItem> getChessItems() {
     ChessFen startFen = ChessFen(fen);
 
-    if(_items.length < 1) {
+    if (_items.isEmpty) {
       _items = startFen.getAll();
     }
 
@@ -384,76 +393,73 @@ class ChessManual{
     String positions = fenPosition.getAllChr();
     int index = 0;
 
-    _items.forEach((item) {
+    for (var item in _items) {
       // 当前子对应的初始序号
       String chr = initPositions[index];
       // 序号当前的位置
       int newIndex = positions.indexOf(chr);
 
-      if(newIndex > -1){
+      if (newIndex > -1) {
         // print('${item.code}@${item.position.toCode()}: $chr @ $index => $newIndex');
         item.position = fenPosition.find(chr)!;
         item.isDie = false;
-      }else{
+      } else {
         // print('${item.code}@${item.position.toCode()}: $chr @ $index --');
-        if(diePositions != null && diePositions!.containsKey(item.code)){
+        if (diePositions != null && diePositions!.containsKey(item.code)) {
           item.position = diePositions![item.code]!.copy();
-        }else if(diePosition != null){
+        } else if (diePosition != null) {
           item.position = diePosition!.copy();
         }
         item.isDie = true;
       }
       index++;
-    });
+    }
 
     return _items;
   }
 
   // 获取当前招法
-  ChessStep? getMove(){
-    if(step < 1)return null;
-    if(step > moves.length) return null;
-    return moves[step-1];
+  ChessStep? getMove() {
+    if (step < 1) return null;
+    if (step > moves.length) return null;
+    return moves[step - 1];
   }
 
-  clearMove([int fromStep = 0]){
-    if(fromStep < 1) {
+  clearMove([int fromStep = 0]) {
+    if (fromStep < 1) {
       moves.clear();
-    }else{
+    } else {
       moves.removeRange(fromStep, moves.length);
     }
     print('Clear moves $fromStep $moves');
   }
 
-  addMoves(List<String> moves){
-    moves.forEach((move) {
+  addMoves(List<String> moves) {
+    for (var move in moves) {
       addMove(move);
-    });
+    }
   }
 
-  addMove(String move, {String description = '', int addStep = -1}){
-    if(results.contains(move)){
+  addMove(String move, {String description = '', int addStep = -1}) {
+    if (results.contains(move)) {
       result = move;
-    }else {
-      if(addStep > -1){
+    } else {
+      if (addStep > -1) {
         clearMove(addStep);
       }
       int team = moves.length % 2;
 
       // todo 自动解析所有格式
-      if(isChineseMove(move)) {
+      if (isChineseMove(move)) {
         move = currentFen.toPositionString(team, move);
       }
 
-      moves.add(ChessStep(
-          team,
-          move,
+      moves.add(ChessStep(team, move,
           code: currentFen.itemAt(move),
           description: description,
           round: (moves.length ~/ 2) + 1,
           fen: currentFen.fen,
-          fenPosition: fenPosition.fen
-      ));
+          fenPosition: fenPosition.fen));
 
       doMove(move);
 
@@ -461,15 +467,15 @@ class ChessManual{
     }
   }
 
-  int repeatRound(){
+  int repeatRound() {
     int rewind = step - 1;
     int round = 0;
 
-    while(rewind > 1){
-      if(moves[rewind].fen == moves[rewind - 1].fen &&
-          moves[rewind].move == moves[rewind - 1].move){
+    while (rewind > 1) {
+      if (moves[rewind].fen == moves[rewind - 1].fen &&
+          moves[rewind].move == moves[rewind - 1].move) {
         round++;
-      }else{
+      } else {
         break;
       }
       rewind -= 2;
@@ -477,14 +483,15 @@ class ChessManual{
     return round;
   }
 
-  static isNumberMove(String move){
+  static isNumberMove(String move) {
     return RegExp(r'[abcrnkpABCRNKP][0-9a-e][+\-\.][0-9]').hasMatch(move);
   }
-  static isPosMove(String move){
+
+  static isPosMove(String move) {
     return RegExp(r'[a-iA-I][0-9]-?[a-iA-I][0-9]').hasMatch(move);
   }
-  static isChineseMove(String move){
+
+  static isChineseMove(String move) {
     return !isNumberMove(move) && !isPosMove(move);
   }
-
 }

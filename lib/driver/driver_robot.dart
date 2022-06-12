@@ -22,6 +22,7 @@ class DriverRobot extends PlayerDriver {
   late Completer<String> requestMove;
   bool isCleared = true;
 
+  @override
   Future<bool> tryDraw() {
     return Future.value(true);
   }
@@ -31,7 +32,7 @@ class DriverRobot extends PlayerDriver {
     requestMove = Completer<String>();
 
     // 网页版用不了引擎
-    Future.delayed(Duration(seconds: 1)).then((value) {
+    Future.delayed(const Duration(seconds: 1)).then((value) {
       if (Engine.isSupportEngine &&
           player.manager.setting.robotType == EngineType.elephantEye) {
         getMoveFromEngine();
@@ -93,9 +94,7 @@ class DriverRobot extends PlayerDriver {
     GameSetting setting = await GameSetting.getInstance();
     XQIsoSearch.level = setting.robotLevel;
     await XQIsoSearch.init();
-    if (IsoMessage.bookData == null) {
-      IsoMessage.bookData = await rootBundle.load('assets/engines/BOOK.DAT');
-    }
+    IsoMessage.bookData ??= await rootBundle.load('assets/engines/BOOK.DAT');
 
     if (kIsWeb) {
       completeMove(
@@ -116,16 +115,16 @@ class DriverRobot extends PlayerDriver {
     print('thinking');
     int team = player.team == 'r' ? 0 : 1;
     List<String> moves = await getAbleMoves(player.manager.fen, team);
-    if (moves.length < 1) {
+    if (moves.isEmpty) {
       completeMove('giveup');
       return;
     }
     //print(moves);
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
     Map<String, int> moveGroups =
         await checkMoves(player.manager.fen, team, moves);
     //print(moveGroups);
-    await Future.delayed(Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 100));
 
     String move = await pickMove(moveGroups);
     //print(move);
@@ -136,7 +135,7 @@ class DriverRobot extends PlayerDriver {
   Future<List<String>> getAbleMoves(ChessFen fen, int team) async {
     List<String> moves = [];
     List<ChessItem> items = fen.getAll();
-    items.forEach((item) {
+    for (var item in items) {
       if (item.team == team) {
         List<String> curMoves = ChessRule(fen)
             .movePoints(item.position)
@@ -154,11 +153,11 @@ class DriverRobot extends PlayerDriver {
           }
           return true;
         }).toList();
-        if (curMoves.length > 0) {
+        if (curMoves.isNotEmpty) {
           moves += curMoves;
         }
       }
-    });
+    }
 
     return moves;
   }
@@ -185,7 +184,7 @@ class DriverRobot extends PlayerDriver {
     // 被将军的局面，生成的都是挡着
     if (rule.isCheck(team)) {
       // 计算挡着后果
-      moves.forEach((move) {
+      for (var move in moves) {
         ChessRule nRule = ChessRule(fen.copy());
         nRule.fen.move(move);
 
@@ -196,12 +195,12 @@ class DriverRobot extends PlayerDriver {
         } else {
           moveWeight[move] = weights[2] * 3;
         }
-      });
+      }
     } else {
       // 获取要被吃的子
       List<ChessItem> willBeEaten = rule.getBeEatenList(team);
 
-      moves.forEach((move) {
+      for (var move in moves) {
         moveWeight[move] = 0;
         ChessPos fromPos = ChessPos.fromCode(move.substring(0, 2));
         ChessPos toPos = ChessPos.fromCode(move.substring(2, 4));
@@ -308,7 +307,7 @@ class DriverRobot extends PlayerDriver {
         if (mRule.teamCanCheck(enemyTeam)) {
           List<String> checkMoves = mRule.getCheckMoves(enemyTeam);
           //print('将军招法: $checkMoves');
-          checkMoves.forEach((eMove) {
+          for (var eMove in checkMoves) {
             ChessRule eRule = ChessRule(mRule.fen.copy());
             eRule.fen.move(eMove);
             // 不能应将，就是杀招
@@ -319,12 +318,12 @@ class DriverRobot extends PlayerDriver {
               print('$move 有杀招');
               moveWeight[move] = moveWeight[move]! - weights[1];
             }
-          });
+          }
         } else {
           rootCount = mRule.rootCount(toPos, team);
           eRootCount = mRule.rootCount(toPos, enemyTeam);
 
-          willBeEaten.forEach((bItem) {
+          for (var bItem in willBeEaten) {
             // 当前走的子就是被吃的子
             if (bItem.position == fromPos) {
               // 走之后不被吃了
@@ -353,7 +352,7 @@ class DriverRobot extends PlayerDriver {
                         weights[6];
               }
             }
-          });
+          }
 
           // 走着后要被吃
           if ((rootCount == 0 && eRootCount > 0) || rootCount < eRootCount) {
@@ -365,15 +364,15 @@ class DriverRobot extends PlayerDriver {
           List<ChessItem> canEatItems = mRule.getEatList(toPos);
           List<ChessItem> oldCanEatItems = rule.getEatList(fromPos);
           int eatWeight = 0;
-          oldCanEatItems.forEach((oItem) {
+          for (var oItem in oldCanEatItems) {
             eatWeight += mRule.getChessWeight(oItem.position) * weights[3];
-          });
-          canEatItems.forEach((oItem) {
+          }
+          for (var oItem in canEatItems) {
             eatWeight -= mRule.getChessWeight(oItem.position) * weights[3];
-          });
+          }
           moveWeight[move] = moveWeight[move]! - eatWeight;
         }
-      });
+      }
     }
     int minWeight = 0;
     moveWeight.forEach((key, value) {
@@ -392,11 +391,11 @@ class DriverRobot extends PlayerDriver {
   /// todo 从分组好的招法中随机筛选一个
   Future<String> pickMove(Map<String, int> groups) async {
     int totalSum = 0;
-    groups.values.forEach((wgt) {
+    for (var wgt in groups.values) {
       wgt += 1;
       if (wgt < 0) wgt = 0;
       totalSum += wgt;
-    });
+    }
 
     Random random = Random(DateTime.now().millisecondsSinceEpoch);
 

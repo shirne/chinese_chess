@@ -40,7 +40,18 @@ class ChessFen {
     'p': '卒',
   };
   static const colRed = ['九', '八', '七', '六', '五', '四', '三', '二', '一'];
-  static const replaceNumber = ['０', '１', '２', '３', '４', '５', '６', '７', '８', '９'];
+  static const replaceNumber = [
+    '０',
+    '１',
+    '２',
+    '３',
+    '４',
+    '５',
+    '６',
+    '７',
+    '８',
+    '９'
+  ];
   static const colBlack = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
   static const nameIndex = ['一', '二', '三', '四', '五'];
   static const stepIndex = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
@@ -53,7 +64,7 @@ class ChessFen {
     if (fenStr.isEmpty) {
       fenStr = initFen;
     }
-    this.fen = fenStr;
+    fen = fenStr;
   }
 
   ChessFenRow operator [](int key) {
@@ -61,7 +72,7 @@ class ChessFen {
   }
 
   /// 强制刷新 在使用 []设置单个位置时，本类里只能走读操作，不会清缓存
-  clearFen(){
+  clearFen() {
     _fen = '';
   }
 
@@ -82,7 +93,7 @@ class ChessFen {
     if (fenStr.contains(' ')) {
       fenStr = fenStr.split(' ')[0];
     }
-    this._rows = fenStr
+    _rows = fenStr
         .replaceAllMapped(RegExp(r'\d'),
             (match) => List<String>.filled(int.parse(match[0]!), '0').join(''))
         .split('/')
@@ -176,33 +187,33 @@ class ChessFen {
   List<ChessPos> findAll(String matchCode) {
     List<ChessPos> items = [];
     int rowNumber = 0;
-    _rows.forEach((row) {
+    for (var row in _rows) {
       int start = row.indexOf(matchCode);
       while (start > -1) {
         items.add(ChessPos(start, rowNumber));
         start = row.indexOf(matchCode, start + 1);
       }
       rowNumber++;
-    });
+    }
     return items;
   }
 
   List<ChessItem> findByCol(int col) {
     List<ChessItem> items = [];
     int rowNumber = 0;
-    _rows.forEach((row) {
+    for (var row in _rows) {
       if (row[col] != '0') {
         items.add(ChessItem(row[col], position: ChessPos(col, rowNumber)));
       }
       rowNumber++;
-    });
+    }
     return items;
   }
 
   List<ChessItem> getAll() {
     List<ChessItem> items = [];
     int rowNumber = 0;
-    _rows.forEach((row) {
+    for (var row in _rows) {
       int start = 0;
       while (start < row.fenRow.length) {
         if (row[start] != '0') {
@@ -213,14 +224,14 @@ class ChessFen {
       }
 
       rowNumber++;
-    });
+    }
     return items;
   }
 
-  String getDieChr(){
+  String getDieChr() {
     String fullChrs = initFen.replaceAll(RegExp(r'[1-9/]'), '');
     String currentChrs = getAllChr();
-    if(fullChrs.length > currentChrs.length){
+    if (fullChrs.length > currentChrs.length) {
       currentChrs.split('').forEach((chr) {
         fullChrs = fullChrs.replaceFirst(chr, '');
       });
@@ -315,9 +326,9 @@ class ChessFen {
         } else {
           curItem = nItems[0];
         }
-      } else if(nItems.length > 0) {
+      } else if (nItems.isNotEmpty) {
         curItem = nItems[0];
-      }else{
+      } else {
         print('招法加载错误 $team $move');
         return '';
       }
@@ -380,13 +391,13 @@ class ChessFen {
     return '未知';
   }
 
-  List<String> toChineseTree(List<String> moves){
+  List<String> toChineseTree(List<String> moves) {
     ChessFen start = copy();
     List<String> results = [];
-    moves.forEach((move) {
+    for (var move in moves) {
       results.add(start.toChineseString(move));
       start.move(move);
-    });
+    }
     return results;
   }
 
@@ -421,14 +432,14 @@ class ChessFen {
 
       List<int> rowIndexs = [];
 
-      _rows.forEach((row) {
+      for (var row in _rows) {
         if (row[posFrom.x] == matchCode) {
           colCount++;
 
           rowIndexs.add(rowNumber);
         }
         rowNumber++;
-      });
+      }
       if (colCount > 3) {
         int idx = rowIndexs.indexOf(posFrom.y);
         // print([colCount, idx]);
@@ -449,23 +460,23 @@ class ChessFen {
         nPawns.sort(posSort);
 
         int idx = nPawns.indexOf(posFrom);
-        if(nPawns.length == 2) {
+        if (nPawns.length == 2) {
           if (team == 0) {
             _chineseString = (idx == 0 ? '前' : '后') + name;
           } else {
             _chineseString = (idx == 1 ? '前' : '后') + name;
           }
-        }else if(nPawns.length == 3){
-          if(idx == 1){
-            _chineseString = '中' + name;
-          }else {
+        } else if (nPawns.length == 3) {
+          if (idx == 1) {
+            _chineseString = '中$name';
+          } else {
             if (team == 0) {
               _chineseString = (idx == 0 ? '前' : '后') + name;
             } else {
               _chineseString = (idx == 2 ? '前' : '后') + name;
             }
           }
-        }else {
+        } else {
           if (team == 0) {
             _chineseString = nameIndex[idx] + name;
           } else {
@@ -484,7 +495,7 @@ class ChessFen {
       }
     }
     if (posFrom.y == posTo.y) {
-      _chineseString += '平' + (team == 0 ? colRed[posTo.x] : colBlack[posTo.x]);
+      _chineseString += '平${team == 0 ? colRed[posTo.x] : colBlack[posTo.x]}';
     } else {
       if ((team == 0 && posFrom.y < posTo.y) ||
           (team == 1 && posFrom.y > posTo.y)) {

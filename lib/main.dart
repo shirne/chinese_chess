@@ -10,10 +10,10 @@ import 'widgets/game_wrapper.dart';
 import 'game_board.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MainApp());
   doWhenWindowReady(() {
     final win = appWindow;
-    final initialSize = Size(1024, 720);
+    const initialSize = Size(1024, 720);
     win.minSize = initialSize;
     win.size = initialSize;
     win.alignment = Alignment.center;
@@ -22,6 +22,8 @@ void main() {
 }
 
 class MainApp extends StatelessWidget {
+  const MainApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,20 +35,20 @@ class MainApp extends StatelessWidget {
         }
         return S.of(context).app_title;
       },
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
         S.delegate,
       ],
-      supportedLocales: [
-        const Locale('en', ''),
-        const Locale('zh', 'CN'),
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('zh', 'CN'),
       ],
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: GameWrapper(
+      home: const GameWrapper(
         isMain: true,
         child: GameBoard(),
       ),

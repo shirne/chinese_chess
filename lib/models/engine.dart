@@ -19,10 +19,10 @@ class Engine extends CustomNotifier<String> {
       return Future.value(null);
     }
 
-    String path = Directory.current.path + '/assets/engines/$engine';
+    String path = '${Directory.current.path}/assets/engines/$engine';
     if (!File(path).existsSync()) {
-      path = Directory.current.path +
-          '/data/flutter_assets/assets/engines/$engine';
+      path =
+          '${Directory.current.path}/data/flutter_assets/assets/engines/$engine';
     }
     return Process.start(path, [], mode: ProcessStartMode.normal).then((value) {
       process = value;
@@ -51,15 +51,15 @@ class Engine extends CustomNotifier<String> {
       if (line == 'bye') {
         ready = false;
         process = null;
-      } else if (line.isNotEmpty && this.hasListeners) {
+      } else if (line.isNotEmpty && hasListeners) {
         if (line.startsWith('nobestmove') || line.startsWith('bestmove ')) {
           if (stopCompleter != null && !stopCompleter!.isCompleted) {
             stopCompleter!.complete(true);
-          } else if (readyCompleters.length > 0) {
+          } else if (readyCompleters.isNotEmpty) {
             readyCompleters.removeAt(0).complete(line);
           }
         }
-        this.notifyListeners(line);
+        notifyListeners(line);
       }
     });
   }
@@ -71,8 +71,8 @@ class Engine extends CustomNotifier<String> {
       int depth = 0,
       int nodes = 0}) {
     Completer<String> readyCompleter = Completer();
-    stop().then((bool) {
-      if (bool) {
+    stop().then((b) {
+      if (b) {
         readyCompleters.add(readyCompleter);
         position(fen);
         go(

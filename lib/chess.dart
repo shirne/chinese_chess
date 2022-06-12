@@ -56,8 +56,8 @@ class ChessState extends State<Chess> {
   initGamer() {
     if (isInit) return;
     isInit = true;
-    GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>()!;
+    GameWrapperState? gameWrapper =
+        context.findAncestorStateOfType<GameWrapperState>();
     if (gameWrapper == null) return;
     gamer = gameWrapper.gamer;
     gamer.gameNotifier.addListener(reloadGame);
@@ -172,7 +172,8 @@ class ChessState extends State<Chess> {
       confirm(S.of(context).request_retract, S.of(context).agree_retract,
               S.of(context).disagree_retract)
           .then((bool? isAgree) {
-        gamer.player.completeMove(isAgree == true ? PlayerDriver.rstRetract : '');
+        gamer.player
+            .completeMove(isAgree == true ? PlayerDriver.rstRetract : '');
       });
       return;
     }
@@ -261,7 +262,7 @@ class ChessState extends State<Chess> {
         orElse: () => ChessItem('0'));
 
     int ticker = DateTime.now().millisecondsSinceEpoch;
-    if ( newActive.isBlank) {
+    if (newActive.isBlank) {
       if (activeItem != null && activeItem!.team == gamer.curHand) {
         String activePos = activeItem!.position.toCode();
         animateMove(toPosition);
@@ -386,12 +387,12 @@ class ChessState extends State<Chess> {
   Widget build(BuildContext context) {
     initGamer();
     if (isLoading) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
-    List<Widget> widgets = [Board()];
+    List<Widget> widgets = [const Board()];
 
     List<Widget> layer0 = [];
     if (dieFlash != null) {
@@ -411,7 +412,7 @@ class ChessState extends State<Chess> {
       ));
     }
     widgets.add(Stack(
-      alignment: Alignment(0, 0),
+      alignment: Alignment.center,
       fit: StackFit.expand,
       children: layer0,
     ));
@@ -422,16 +423,16 @@ class ChessState extends State<Chess> {
     ));
 
     List<Widget> layer2 = [];
-    movePoints.forEach((element) {
+    for (var element in movePoints) {
       ChessItem emptyItem =
           ChessItem('0', position: ChessPos.fromCode(element));
       layer2.add(Align(
         alignment: gamer.skin.getAlign(emptyItem.position),
         child: PointComponent(size: gamer.skin.size * gamer.scale),
       ));
-    });
+    }
     widgets.add(Stack(
-      alignment: Alignment(0, 0),
+      alignment: Alignment.center,
       fit: StackFit.expand,
       children: layer2,
     ));
@@ -447,7 +448,7 @@ class ChessState extends State<Chess> {
         width: gamer.skin.width,
         height: gamer.skin.height,
         child: Stack(
-          alignment: Alignment(0, 0),
+          alignment: Alignment.center,
           fit: StackFit.expand,
           children: widgets,
         ),

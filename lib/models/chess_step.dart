@@ -1,8 +1,6 @@
-
 import 'chess_fen.dart';
 
-class ChessStep{
-
+class ChessStep {
   // 当前回合数
   int round = 0;
 
@@ -30,26 +28,32 @@ class ChessStep{
   // 该步是否将军
   bool isCheckMate = false;
 
-  ChessStep(this.hand, this.move, {this.code = '', this.fen = '', this.fenPosition = '', this.description = '', this.isEat = false, this.isCheckMate = false, this.round = 0}){
-    if(this.code.isEmpty && fen.isNotEmpty){
+  ChessStep(this.hand, this.move,
+      {this.code = '',
+      this.fen = '',
+      this.fenPosition = '',
+      this.description = '',
+      this.isEat = false,
+      this.isCheckMate = false,
+      this.round = 0}) {
+    if (code.isEmpty && fen.isNotEmpty) {
       List<String> rows = fen.split('/').reversed.toList();
       String row = rows[int.parse(move[1])];
-      row = row.replaceAllMapped(RegExp(r'\d'), (i){
+      row = row.replaceAllMapped(RegExp(r'\d'), (i) {
         return List.filled(int.parse(i[0]!), '0').join('');
       });
       int col = move.codeUnitAt(0) - ChessFen.colIndexBase;
-      this.code = row[col];
+      code = row[col];
     }
   }
-
 
   @override
   String toString() {
     String moveString = '$code $move ';
-    if(isEat){
+    if (isEat) {
       moveString += '吃 ';
     }
-    if(isCheckMate){
+    if (isCheckMate) {
       moveString += '将 ';
     }
     return moveString;
@@ -57,7 +61,7 @@ class ChessStep{
 
   String _chineseString = '';
   String toChineseString() {
-    if(_chineseString.isNotEmpty){
+    if (_chineseString.isNotEmpty) {
       return _chineseString;
     }
 

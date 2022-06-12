@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 import 'dart:core';
 
-import 'dart:math' as Math;
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -457,7 +457,7 @@ class Position {
   static List<List<int>> PreGen_zobristLockTable =
       List.filled(14, List.filled(256, 0));
 
-  static Math.Random random = Math.Random();
+  static math.Random random = math.Random();
 
   static int bookSize = 0;
   static List<int> bookLock = List.filled(MAX_BOOK_SIZE, 0);
