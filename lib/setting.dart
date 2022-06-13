@@ -7,6 +7,7 @@ import 'models/engine_type.dart';
 import 'models/engine_level.dart';
 import 'models/game_setting.dart';
 
+/// 设置页
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
 

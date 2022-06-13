@@ -126,44 +126,44 @@ void main() {
         'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
 
     List<ChessItem> beEatens = rule.getBeEatenList(0);
-    beEatens.forEach((item) {
+    for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
       print(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
-    });
+    }
     print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     rule.fen.fen =
         'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/NC5CN/9/1RBAKABR1 w - - 0 1';
     beEatens = rule.getBeEatenList(0);
-    beEatens.forEach((item) {
+    for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
       print(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
-    });
+    }
     print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     rule.fen.fen =
         '4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1';
     beEatens = rule.getBeEatenList(0);
-    beEatens.forEach((item) {
+    for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
       print(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
-    });
+    }
     print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     rule.fen.fen =
         'C1bak4/7R1/2n1b4/1N4p1p/2pn1r3/P2R2P2/2P1cr2P/2C1B4/4A4/2BAK4 w - - 0 1';
     beEatens = rule.getBeEatenList(0);
-    beEatens.forEach((item) {
+    for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
       print(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
-    });
+    }
     print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
   });
@@ -185,10 +185,10 @@ void main() {
 
   test('test Future', () async {
     print(DateTime.now().millisecondsSinceEpoch);
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 5));
     print(DateTime.now().millisecondsSinceEpoch);
 
-    Future.delayed(Duration(seconds: 5)).then((value) {
+    Future.delayed(const Duration(seconds: 5)).then((value) {
       print(DateTime.now().millisecondsSinceEpoch);
     });
   });
@@ -279,12 +279,12 @@ void main() {
     print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
-    [
+    for (var step in [
       ['f6d7', 'e9d9'],
       ['a0d0', 'c1d1'],
       ['f4f9', 'e8e9'],
       ['d7f8', '1-0']
-    ].forEach((step) {
+    ]) {
       print(rule.fen.toChineseString(step[0]));
       rule.fen.move(step[0]);
       isCheck = rule.isCheck(1);
@@ -301,7 +301,7 @@ void main() {
       }
       print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
       startMillionSec = DateTime.now().millisecondsSinceEpoch;
-    });
+    }
   });
 
   test('test Pos', () {

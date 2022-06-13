@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'generated/l10n.dart';
-import 'widgets/game_wrapper.dart';
-import 'models/game_manager.dart';
+import '../generated/l10n.dart';
+import '../widgets/game_wrapper.dart';
+import '../models/game_manager.dart';
 
+/// 着法列表
 class PlayStep extends StatefulWidget {
   final BoxDecoration? decoration;
   final double width;

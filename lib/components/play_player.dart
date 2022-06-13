@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'driver/player_driver.dart';
-import 'generated/l10n.dart';
-import 'widgets/game_wrapper.dart';
-import 'models/game_manager.dart';
-import 'widgets/tab_card.dart';
+import '../driver/player_driver.dart';
+import '../generated/l10n.dart';
+import '../widgets/game_wrapper.dart';
+import '../models/game_manager.dart';
+import '../widgets/tab_card.dart';
 
+/// 组合玩家框及对局双方信息框
 class PlayPlayer extends StatefulWidget {
   const PlayPlayer({Key? key}) : super(key: key);
 
@@ -54,7 +55,7 @@ class PlayPlayerState extends State<PlayPlayer> {
   Widget switchRobot(int team) {
     if (gamer.hands[team].isUser) {
       return IconButton(
-        icon: Icon(Icons.android),
+        icon: const Icon(Icons.android),
         tooltip: S.of(context).trusteeship_to_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
@@ -62,7 +63,7 @@ class PlayPlayerState extends State<PlayPlayer> {
       );
     } else if (gamer.hands[team].isRobot) {
       return IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.android,
           color: Colors.blueAccent,
         ),
@@ -86,8 +87,8 @@ class PlayPlayerState extends State<PlayPlayer> {
   Widget build(BuildContext context) {
     BoxDecoration decoration = BoxDecoration(
         border: Border.all(color: Colors.grey, width: 0.5),
-        borderRadius: BorderRadius.all(Radius.circular(2)));
-    return Container(
+        borderRadius: const BorderRadius.all(Radius.circular(2)));
+    return SizedBox(
       width: 229,
       child: Column(
         children: [

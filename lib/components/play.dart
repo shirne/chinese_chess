@@ -5,13 +5,14 @@ import 'play_step.dart';
 import 'play_single_player.dart';
 import 'play_bot.dart';
 import 'play_player.dart';
-import 'widgets/tab_card.dart';
-import 'widgets/game_wrapper.dart';
-import 'models/game_manager.dart';
-import 'models/play_mode.dart';
-import 'generated/l10n.dart';
-import 'driver/player_driver.dart';
+import '../widgets/tab_card.dart';
+import '../widgets/game_wrapper.dart';
+import '../models/game_manager.dart';
+import '../models/play_mode.dart';
+import '../generated/l10n.dart';
+import '../driver/player_driver.dart';
 
+/// 游戏布局框
 class PlayPage extends StatefulWidget {
   final PlayMode mode;
 
@@ -56,32 +57,30 @@ class PlayPageState extends State<PlayPage> {
   }
 
   Widget _mobileContainer() {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const PlaySinglePlayer(
-            team: 1,
-          ),
-          Container(
-            width: gamer.skin.width * gamer.scale,
-            height: gamer.skin.height * gamer.scale,
-            child: const Chess(),
-          ),
-          const PlaySinglePlayer(
-            team: 0,
-            placeAt: Alignment.bottomCenter,
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        const PlaySinglePlayer(
+          team: 1,
+        ),
+        SizedBox(
+          width: gamer.skin.width * gamer.scale,
+          height: gamer.skin.height * gamer.scale,
+          child: const Chess(),
+        ),
+        const PlaySinglePlayer(
+          team: 0,
+          placeAt: Alignment.bottomCenter,
+        ),
+      ],
     );
   }
 
   Widget _windowContainer() {
     BoxDecoration decoration = BoxDecoration(
         border: Border.all(color: Colors.grey, width: 0.5),
-        borderRadius: BorderRadius.all(Radius.circular(2)));
-    return Container(
+        borderRadius: const BorderRadius.all(Radius.circular(2)));
+    return SizedBox(
       width: 980,
       height: 577,
       child: Row(
@@ -89,9 +88,9 @@ class PlayPageState extends State<PlayPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          Container(
+          const SizedBox(
             width: 521,
-            child: const Chess(),
+            child: Chess(),
           ),
           Container(
             width: 439,
@@ -113,10 +112,8 @@ class PlayPageState extends State<PlayPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      PlayPlayer(),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      const PlayPlayer(),
+                      const SizedBox(width: 10),
                       PlayStep(
                         decoration: decoration,
                         width: 180,
@@ -124,9 +121,7 @@ class PlayPageState extends State<PlayPage> {
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Container(
                   height: 180,
                   decoration: decoration,

@@ -449,7 +449,7 @@ class ChessManual {
       }
       int team = moves.length % 2;
 
-      // todo 自动解析所有格式
+      // TODO 自动解析所有格式
       if (isChineseMove(move)) {
         move = currentFen.toPositionString(team, move);
       }

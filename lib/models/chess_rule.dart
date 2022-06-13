@@ -352,7 +352,7 @@ class ChessRule {
     return moves;
   }
 
-  /// todo 获取杀招 ，连将，连将过程中局面不会复原，不会被解将
+  /// TODO 获取杀招 ，连将，连将过程中局面不会复原，不会被解将
   List<String> getCheckMate(int team, [int depth = 10]) {
     List<String> moves = [];
     List<String> fenHis = [];

@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'chess_box.dart';
 import 'chess_pieces.dart';
 import 'chess_single_box.dart';
-import 'elements/board.dart';
-import 'generated/l10n.dart';
-import 'models/chess_item.dart';
-import 'models/chess_manual.dart';
-import 'models/chess_pos.dart';
-import 'widgets/game_wrapper.dart';
-import 'models/game_manager.dart';
+import '../elements/board.dart';
+import '../generated/l10n.dart';
+import '../models/chess_item.dart';
+import '../models/chess_manual.dart';
+import '../models/chess_pos.dart';
+import '../widgets/game_wrapper.dart';
+import '../models/game_manager.dart';
 
+/// 编辑局面
 class EditFen extends StatefulWidget {
   final String fen;
 
@@ -188,7 +189,7 @@ class EditFenState extends State<EditFen> {
   }
 
   Widget _mobileContainer() {
-    return Container(
+    return SizedBox(
       width: gamer!.skin.width * gamer!.scale,
       height: (gamer!.skin.height + gamer!.skin.size * 2 + 20) * gamer!.scale,
       child: Row(
@@ -208,7 +209,7 @@ class EditFenState extends State<EditFen> {
               print('longPressEnd $detail');
             },
             onPanEnd: (detail) {},
-            child: Container(
+            child: SizedBox(
               width: gamer!.skin.width * gamer!.scale,
               height: gamer!.skin.height * gamer!.scale,
               child: Stack(
@@ -234,7 +235,7 @@ class EditFenState extends State<EditFen> {
   }
 
   Widget _windowContainer() {
-    return Container(
+    return SizedBox(
       width: gamer!.skin.width + 10 + gamer!.skin.size * 2 + 10,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -247,7 +248,7 @@ class EditFenState extends State<EditFen> {
               print('longPressEnd $detail');
             },
             onPanEnd: (detail) {},
-            child: Container(
+            child: SizedBox(
               width: gamer!.skin.width,
               height: gamer!.skin.height,
               child: Stack(

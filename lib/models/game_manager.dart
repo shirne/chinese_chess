@@ -150,8 +150,8 @@ class GameManager {
   }
 
   String parseBaseMove(List<String> infos) {
-    return "推荐着法: ${fen.toChineseString(infos[0])}" +
-        (infos.length > 2 ? ' 猜测对方: ${fen.toChineseString(infos[2])}' : '');
+    return "推荐着法: ${fen.toChineseString(infos[0])}"
+        "${infos.length > 2 ? ' 猜测对方: ${fen.toChineseString(infos[2])}' : ''}";
   }
 
   String parseInfo(List<String> infos) {
@@ -175,11 +175,9 @@ class GameManager {
         }
         return msg;
       case 'time':
-        return '耗时：${infos[0]}(ms)' +
-            (infos.length > 2 ? ' 节点数 ${infos[2]}' : '');
+        return '耗时：${infos[0]}(ms)${infos.length > 2 ? ' 节点数 ${infos[2]}' : ''}';
       case 'currmove':
-        return '当前招法: ${fen.toChineseString(infos[0])}' +
-            (infos.length > 2 ? ' ${infos[2]}' : '');
+        return '当前招法: ${fen.toChineseString(infos[0])}${infos.length > 2 ? ' ${infos[2]}' : ''}';
       case 'message':
       default:
         return infos.join(' ');
@@ -502,8 +500,8 @@ class GameManager {
   }
 
   String get fenStr {
-    return '${manual.currentFen.fen} ${curHand > 0 ? 'b' : 'w'} - - $unEatCount ' +
-        (manual.moves.length ~/ 2).toString();
+    return '${manual.currentFen.fen} ${curHand > 0 ? 'b' : 'w'}'
+        ' - - $unEatCount ${manual.moves.length ~/ 2}';
   }
 
   Player get player {

@@ -132,16 +132,16 @@ class Util {
     return -1;
   }
 
-  static final List<int> SHELL_STEP = [0, 1, 4, 13, 40, 121, 364, 1093];
+  static const shellStep = [0, 1, 4, 13, 40, 121, 364, 1093];
 
   static void shellSort(List<int> mvs, List<int> vls, int from, int to) {
     int stepLevel = 1;
-    while (SHELL_STEP[stepLevel] < to - from) {
+    while (shellStep[stepLevel] < to - from) {
       stepLevel++;
     }
     stepLevel--;
     while (stepLevel > 0) {
-      int step = SHELL_STEP[stepLevel];
+      int step = shellStep[stepLevel];
       for (int i = from + step; i < to; i++) {
         int mvBest = mvs[i];
         int vlBest = vls[i];

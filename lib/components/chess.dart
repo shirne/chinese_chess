@@ -3,20 +3,20 @@ import 'dart:async';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
-import 'generated/l10n.dart';
-import 'models/sound.dart';
-import 'models/chess_manual.dart';
-import 'elements/board.dart';
-import 'models/chess_item.dart';
-import 'elements/piece.dart';
-import 'models/chess_pos.dart';
-import 'models/chess_rule.dart';
-import 'models/game_manager.dart';
+import '../generated/l10n.dart';
+import '../models/sound.dart';
+import '../models/chess_manual.dart';
+import '../elements/board.dart';
+import '../models/chess_item.dart';
+import '../elements/piece.dart';
+import '../models/chess_pos.dart';
+import '../models/chess_rule.dart';
+import '../models/game_manager.dart';
 import 'chess_pieces.dart';
-import 'driver/player_driver.dart';
-import 'elements/mark_component.dart';
-import 'elements/point_component.dart';
-import 'widgets/game_wrapper.dart';
+import '../driver/player_driver.dart';
+import '../elements/mark_component.dart';
+import '../elements/point_component.dart';
+import '../widgets/game_wrapper.dart';
 
 class Chess extends StatefulWidget {
   final String skin;
@@ -121,7 +121,7 @@ class ChessState extends State<Chess> {
     String position = gamer.lastMove;
     if (position.isNotEmpty) {
       print('last move $position');
-      Future.delayed(Duration(milliseconds: 32)).then((value) {
+      Future.delayed(const Duration(milliseconds: 32)).then((value) {
         setState(() {
           lastPosition = position.substring(0, 2);
           ChessPos activePos = ChessPos.fromCode(position.substring(2, 4));
@@ -151,7 +151,7 @@ class ChessState extends State<Chess> {
   onMove() {
     String move = gamer.moveNotifier.value;
     print('onmove $move');
-    if (move == null || move.isEmpty) return;
+    if (move.isEmpty) return;
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
       toast(
@@ -198,7 +198,7 @@ class ChessState extends State<Chess> {
           // 被吃的子的快照
           dieFlash = ChessItem(newActive.code, position: toPosition);
           newActive.isDie = true;
-          Future.delayed(Duration(milliseconds: 250), () {
+          Future.delayed(const Duration(milliseconds: 250), () {
             setState(() {
               dieFlash = null;
             });
@@ -444,7 +444,7 @@ class ChessState extends State<Chess> {
           onPointer(pointTrans(detail.localPosition));
         });
       },
-      child: Container(
+      child: SizedBox(
         width: gamer.skin.width,
         height: gamer.skin.height,
         child: Stack(

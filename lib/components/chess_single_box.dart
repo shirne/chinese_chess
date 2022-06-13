@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 
 import 'edit_fen.dart';
-import 'generated/l10n.dart';
-import 'models/chess_item.dart';
-import 'elements/piece.dart';
-import 'models/game_manager.dart';
-import 'widgets/game_wrapper.dart';
+import '../generated/l10n.dart';
+import '../models/chess_item.dart';
+import '../elements/piece.dart';
+import '../models/game_manager.dart';
+import '../widgets/game_wrapper.dart';
 
+/// 棋子盒 单方
 class ChessSingleBox extends StatefulWidget {
   final String itemChrs;
   final String activeChr;
   final double width;
   final int team;
 
-  const ChessSingleBox(
-      {Key? key,
-      required this.itemChrs,
-      this.activeChr = '',
-      required this.width,
-      this.team = 0})
-      : super(key: key);
+  const ChessSingleBox({
+    Key? key,
+    required this.itemChrs,
+    this.activeChr = '',
+    required this.width,
+    this.team = 0,
+  }) : super(key: key);
 
   @override
   State<ChessSingleBox> createState() => _ChessBoxState();
@@ -95,9 +96,12 @@ class ItemWidget extends StatelessWidget {
   final int count;
   final bool isActive;
 
-  const ItemWidget(
-      {Key? key, required this.chr, required this.count, this.isActive = false})
-      : super(key: key);
+  const ItemWidget({
+    Key? key,
+    required this.chr,
+    required this.count,
+    this.isActive = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -128,8 +132,9 @@ class ItemWidget extends StatelessWidget {
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                    color: count > 0 ? Colors.red : Colors.grey,
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                  color: count > 0 ? Colors.red : Colors.grey,
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                ),
                 child: Center(
                   child: Text(
                     count.toString(),

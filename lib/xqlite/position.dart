@@ -30,32 +30,32 @@ import 'package:flutter/services.dart';
 import 'util.dart';
 
 class Position {
-  static const int MATE_VALUE = 10000;
-  static const int BAN_VALUE = MATE_VALUE - 100;
-  static const int WIN_VALUE = MATE_VALUE - 200;
-  static const int NULL_SAFE_MARGIN = 400;
-  static const int NULL_OKAY_MARGIN = 200;
-  static const int DRAW_VALUE = 20;
-  static const int ADVANCED_VALUE = 3;
+  static const int gMateValue = 10000;
+  static const int gBanValue = gMateValue - 100;
+  static const int gWinValue = gMateValue - 200;
+  static const int nullSafeMargin = 400;
+  static const int nullOkayMargin = 200;
+  static const int gDrawValue = 20;
+  static const int gAdvancedValue = 3;
 
-  static const int MAX_MOVE_NUM = 256;
-  static const int MAX_GEN_MOVES = 128;
-  static const int MAX_BOOK_SIZE = 16384;
+  static const int maxMoveNum = 256;
+  static const int maxGenMoves = 128;
+  static const int maxBookSize = 16384;
 
-  static const int PIECE_KING = 0;
-  static const int PIECE_ADVISOR = 1;
-  static const int PIECE_BISHOP = 2;
-  static const int PIECE_KNIGHT = 3;
-  static const int PIECE_ROOK = 4;
-  static const int PIECE_CANNON = 5;
-  static const int PIECE_PAWN = 6;
+  static const int pieceKing = 0;
+  static const int pieceAdvisor = 1;
+  static const int pieceBishop = 2;
+  static const int pieceKnight = 3;
+  static const int pieceRook = 4;
+  static const int pieceCannon = 5;
+  static const int piecePawn = 6;
 
-  static const int RANK_TOP = 3;
-  static const int RANK_BOTTOM = 12;
-  static const int FILE_LEFT = 3;
-  static const int FILE_RIGHT = 11;
+  static const int rankTop = 3;
+  static const int rankBottom = 12;
+  static const int fileLeft = 3;
+  static const int fileRight = 11;
 
-  static final List<int> IN_BOARD = [
+  static const inBoard = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -74,7 +74,7 @@ class Position {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
 
-  static final List<int> IN_FORT = [
+  static const inFort = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -93,7 +93,7 @@ class Position {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
 
-  static final List<int> LEGAL_SPAN = [
+  static const legalSpan = [
     0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -129,7 +129,7 @@ class Position {
     0, 0, 0, 0, 0, 0, 0,
   ];
 
-  static final List<int> KNIGHT_PIN = [
+  static const knightPin = [
     0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -165,23 +165,23 @@ class Position {
     0, 0, 0, 0, 0, 0, 0
   ];
 
-  static final List<int> KING_DELTA = [-16, -1, 1, 16];
-  static final List<int> ADVISOR_DELTA = [-17, -15, 15, 17];
-  static final List<List<int>> KNIGHT_DELTA = [
+  static const kingDelta = [-16, -1, 1, 16];
+  static const advisorDelta = [-17, -15, 15, 17];
+  static const knightDelta = [
     [-33, -31],
     [-18, 14],
     [-14, 18],
     [31, 33],
   ];
-  static final List<List<int>> KNIGHT_CHECK_DELTA = [
+  static const knightCheckDelta = [
     [-33, -18],
     [-31, -14],
     [14, 31],
     [18, 33],
   ];
-  static final List<int> MVV_VALUE = [50, 10, 10, 30, 40, 30, 20, 0];
+  static const mvvValue = [50, 10, 10, 30, 40, 30, 20, 0];
 
-  static final List<List<int>> PIECE_VALUE = [
+  static const pieceValue = [
     [
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -310,181 +310,127 @@ class Position {
     ],
   ];
 
-  static final List<String> STARTUP_FEN = [
+  static const startupFen = [
     "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",
     "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/R1BAKABNR w - - 0 1",
     "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/R1BAKAB1R w - - 0 1",
     "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/9/1C5C1/9/RN2K2NR w - - 0 1",
   ];
 
-  static bool isIN_BOARD(int sq) {
-    return IN_BOARD[sq] != 0;
-  }
+  static bool isInBoard(int sq) => inBoard[sq] != 0;
 
-  static bool isIN_FORT(int sq) {
-    return IN_FORT[sq] != 0;
-  }
+  static bool isInFort(int sq) => inFort[sq] != 0;
 
-  static int RANK_Y(int sq) {
-    return sq >> 4;
-  }
+  static int rankY(int sq) => sq >> 4;
 
-  static int FILE_X(int sq) {
-    return sq & 15;
-  }
+  static int fileX(int sq) => sq & 15;
 
-  static int COORD_XY(int x, int y) {
-    return x + (y << 4);
-  }
+  static int coordXY(int x, int y) => x + (y << 4);
 
-  static int SQUARE_FLIP(int sq) {
-    return 254 - sq;
-  }
+  static int squareFlip(int sq) => 254 - sq;
 
-  static int FILE_FLIP(int x) {
-    return 14 - x;
-  }
+  static int fileFlip(int x) => 14 - x;
 
-  static int RANK_FLIP(int y) {
-    return 15 - y;
-  }
+  static int rankFlip(int y) => 15 - y;
 
-  static int MIRROR_SQUARE(int sq) {
-    return COORD_XY(FILE_FLIP(FILE_X(sq)), RANK_Y(sq));
-  }
+  static int mirrotSquare(int sq) => coordXY(fileFlip(fileX(sq)), rankY(sq));
 
-  static int SQUARE_FORWARD(int sq, int sd) {
-    return sq - 16 + (sd << 5);
-  }
+  static int squareForward(int sq, int sd) => sq - 16 + (sd << 5);
 
-  static bool KING_SPAN(int sqSrc, int sqDst) {
-    return LEGAL_SPAN[sqDst - sqSrc + 256] == 1;
-  }
+  static bool kingSpan(int sqSrc, int sqDst) =>
+      legalSpan[sqDst - sqSrc + 256] == 1;
 
-  static bool ADVISOR_SPAN(int sqSrc, int sqDst) {
-    return LEGAL_SPAN[sqDst - sqSrc + 256] == 2;
-  }
+  static bool advisorSpan(int sqSrc, int sqDst) =>
+      legalSpan[sqDst - sqSrc + 256] == 2;
 
-  static bool BISHOP_SPAN(int sqSrc, int sqDst) {
-    return LEGAL_SPAN[sqDst - sqSrc + 256] == 3;
-  }
+  static bool bishopSpan(int sqSrc, int sqDst) =>
+      legalSpan[sqDst - sqSrc + 256] == 3;
 
-  static int BISHOP_PIN(int sqSrc, int sqDst) {
-    return (sqSrc + sqDst) >> 1;
-  }
+  static int bishopPin(int sqSrc, int sqDst) => (sqSrc + sqDst) >> 1;
 
-  static int getKNIGHT_PIN(int sqSrc, int sqDst) {
-    return sqSrc + KNIGHT_PIN[sqDst - sqSrc + 256];
-  }
+  static int getKnightPin(int sqSrc, int sqDst) =>
+      sqSrc + knightPin[sqDst - sqSrc + 256];
 
-  static bool HOME_HALF(int sq, int sd) {
-    return (sq & 0x80) != (sd << 7);
-  }
+  static bool homeHalf(int sq, int sd) => (sq & 0x80) != (sd << 7);
 
-  static bool AWAY_HALF(int sq, int sd) {
-    return (sq & 0x80) == (sd << 7);
-  }
+  static bool awayHalf(int sq, int sd) => (sq & 0x80) == (sd << 7);
 
-  static bool SAME_HALF(int sqSrc, int sqDst) {
-    return ((sqSrc ^ sqDst) & 0x80) == 0;
-  }
+  static bool sameHalf(int sqSrc, int sqDst) => ((sqSrc ^ sqDst) & 0x80) == 0;
 
-  static bool SAME_RANK(int sqSrc, int sqDst) {
-    return ((sqSrc ^ sqDst) & 0xf0) == 0;
-  }
+  static bool sameRank(int sqSrc, int sqDst) => ((sqSrc ^ sqDst) & 0xf0) == 0;
 
-  static bool SAME_FILE(int sqSrc, int sqDst) {
-    return ((sqSrc ^ sqDst) & 0x0f) == 0;
-  }
+  static bool sameFile(int sqSrc, int sqDst) => ((sqSrc ^ sqDst) & 0x0f) == 0;
 
-  static int SIDE_TAG(int sd) {
-    return 8 + (sd << 3);
-  }
+  static int sideTag(int sd) => 8 + (sd << 3);
 
-  static int OPP_SIDE_TAG(int sd) {
-    return 16 - (sd << 3);
-  }
+  static int oppSideTag(int sd) => 16 - (sd << 3);
 
-  static int SRC(int mv) {
-    return mv & 255;
-  }
+  static int src(int mv) => mv & 255;
 
-  static int DST(int mv) {
-    return mv >> 8;
-  }
+  static int dst(int mv) => mv >> 8;
 
-  static int MOVE(int sqSrc, int sqDst) {
-    return sqSrc + (sqDst << 8);
-  }
+  static int move(int sqSrc, int sqDst) => sqSrc + (sqDst << 8);
 
-  static int MIRROR_MOVE(int mv) {
-    return MOVE(MIRROR_SQUARE(SRC(mv)), MIRROR_SQUARE(DST(mv)));
-  }
+  static int mirrorMove(int mv) =>
+      move(mirrotSquare(src(mv)), mirrotSquare(dst(mv)));
 
-  static int MVV_LVA(int pc, int lva) {
-    return MVV_VALUE[pc & 7] - lva;
-  }
+  static int mvvLva(int pc, int lva) => mvvValue[pc & 7] - lva;
 
-  static final String FEN_PIECE = "        KABNRCP kabnrcp ";
+  static const fenPiece = "        KABNRCP kabnrcp ";
 
-  static int CHAR_TO_PIECE(String c) {
+  static int charToPiece(String c) {
     switch (c) {
       case 'K':
-        return PIECE_KING;
+        return pieceKing;
       case 'A':
-        return PIECE_ADVISOR;
+        return pieceAdvisor;
       case 'B':
       case 'E':
-        return PIECE_BISHOP;
+        return pieceBishop;
       case 'H':
       case 'N':
-        return PIECE_KNIGHT;
+        return pieceKnight;
       case 'R':
-        return PIECE_ROOK;
+        return pieceRook;
       case 'C':
-        return PIECE_CANNON;
+        return pieceCannon;
       case 'P':
-        return PIECE_PAWN;
+        return piecePawn;
       default:
         return -1;
     }
   }
 
-  static late int PreGen_zobristKeyPlayer;
-  static late int PreGen_zobristLockPlayer;
-  static List<List<int>> PreGen_zobristKeyTable =
-      List.filled(14, List.filled(256, 0));
-  static List<List<int>> PreGen_zobristLockTable =
-      List.filled(14, List.filled(256, 0));
+  static late int preGenZobristKeyPlayer;
+  static late int preGenZobristLockPlayer;
+  static final preGenZobristKeyTable = List.filled(14, List.filled(256, 0));
+  static final preGenZobristLockTable = List.filled(14, List.filled(256, 0));
 
-  static math.Random random = math.Random();
+  static final random = math.Random();
 
   static int bookSize = 0;
-  static List<int> bookLock = List.filled(MAX_BOOK_SIZE, 0);
-  static List<int> bookMoveList = List.filled(MAX_BOOK_SIZE, 0);
-  static List<int> bookValue = List.filled(MAX_BOOK_SIZE, 0);
+  static final bookLock = List.filled(maxBookSize, 0);
+  static final bookMoveList = List.filled(maxBookSize, 0);
+  static final bookValue = List.filled(maxBookSize, 0);
   static ByteData? input;
 
   static Future<bool> init() async {
-    RC4 rc4 = new RC4(Uint8List.fromList([0]));
-    PreGen_zobristKeyPlayer = rc4.nextLong();
+    RC4 rc4 = RC4(Uint8List.fromList([0]));
+    preGenZobristKeyPlayer = rc4.nextLong();
     rc4.nextLong(); // Skip ZobristLock0
-    PreGen_zobristLockPlayer = rc4.nextLong();
+    preGenZobristLockPlayer = rc4.nextLong();
     for (int i = 0; i < 14; i++) {
       for (int j = 0; j < 256; j++) {
-        PreGen_zobristKeyTable[i][j] = rc4.nextLong();
+        preGenZobristKeyTable[i][j] = rc4.nextLong();
         rc4.nextLong(); // Skip ZobristLock0
-        PreGen_zobristLockTable[i][j] = rc4.nextLong();
+        preGenZobristLockTable[i][j] = rc4.nextLong();
       }
     }
 
-    if (input == null) {
-      //InputStream input = rc4.getClass().getResourceAsStream("/book/BOOK.DAT");
-      input = await rootBundle.load('assets/engines/BOOK.DAT');
-    }
+    input ??= await rootBundle.load('assets/engines/BOOK.DAT');
     if (input != null) {
       try {
-        while (bookSize < MAX_BOOK_SIZE) {
+        while (bookSize < maxBookSize) {
           bookLock[bookSize] =
               input!.getUint32(bookSize * 8, Endian.little) >> 1;
           bookMoveList[bookSize] =
@@ -508,10 +454,10 @@ class Position {
   int vlWhite = 0, vlBlack = 0;
   int moveNum = 0, distance = 0;
 
-  List<int> mvList = List.filled(MAX_MOVE_NUM, 0);
-  List<int> pcList = List.filled(MAX_MOVE_NUM, 0);
-  List<int> keyList = List.filled(MAX_MOVE_NUM, 0);
-  List<bool> chkList = List.filled(MAX_MOVE_NUM, false);
+  List<int> mvList = List.filled(maxMoveNum, 0);
+  List<int> pcList = List.filled(maxMoveNum, 0);
+  List<int> keyList = List.filled(maxMoveNum, 0);
+  List<bool> chkList = List.filled(maxMoveNum, false);
 
   void clearBoard() {
     sdPlayer = 0;
@@ -534,16 +480,16 @@ class Position {
     squares[sq] = (del ? 0 : pc);
     if (pc < 16) {
       pcAdjust = pc - 8;
-      vlWhite += del ? -PIECE_VALUE[pcAdjust][sq] : PIECE_VALUE[pcAdjust][sq];
+      vlWhite += del ? -pieceValue[pcAdjust][sq] : pieceValue[pcAdjust][sq];
     } else {
       pcAdjust = pc - 16;
       vlBlack += del
-          ? -PIECE_VALUE[pcAdjust][SQUARE_FLIP(sq)]
-          : PIECE_VALUE[pcAdjust][SQUARE_FLIP(sq)];
+          ? -pieceValue[pcAdjust][squareFlip(sq)]
+          : pieceValue[pcAdjust][squareFlip(sq)];
       pcAdjust += 7;
     }
-    zobristKey ^= PreGen_zobristKeyTable[pcAdjust][sq];
-    zobristLock ^= PreGen_zobristLockTable[pcAdjust][sq];
+    zobristKey ^= preGenZobristKeyTable[pcAdjust][sq];
+    zobristLock ^= preGenZobristLockTable[pcAdjust][sq];
   }
 
   void delPiece(int sq, int pc) {
@@ -551,8 +497,8 @@ class Position {
   }
 
   void movePiece() {
-    int sqSrc = SRC(mvList[moveNum]);
-    int sqDst = DST(mvList[moveNum]);
+    int sqSrc = src(mvList[moveNum]);
+    int sqDst = dst(mvList[moveNum]);
     pcList[moveNum] = squares[sqDst];
     if (pcList[moveNum] > 0) {
       delPiece(sqDst, pcList[moveNum]);
@@ -563,8 +509,8 @@ class Position {
   }
 
   void undoMovePiece() {
-    int sqSrc = SRC(mvList[moveNum]);
-    int sqDst = DST(mvList[moveNum]);
+    int sqSrc = src(mvList[moveNum]);
+    int sqDst = dst(mvList[moveNum]);
     int pc = squares[sqDst];
     delPiece(sqDst, pc);
     addPiece(sqSrc, pc);
@@ -575,8 +521,8 @@ class Position {
 
   void changeSide() {
     sdPlayer = 1 - sdPlayer;
-    zobristKey ^= PreGen_zobristKeyPlayer;
-    zobristLock ^= PreGen_zobristLockPlayer;
+    zobristKey ^= preGenZobristKeyPlayer;
+    zobristLock ^= preGenZobristLockPlayer;
   }
 
   bool makeMove(int mv) {
@@ -618,8 +564,8 @@ class Position {
 
   void fromFen(String fen) {
     clearBoard();
-    int y = RANK_TOP;
-    int x = FILE_LEFT;
+    int y = rankTop;
+    int x = fileLeft;
     int index = 0;
     if (index == fen.length) {
       setIrrev();
@@ -628,9 +574,9 @@ class Position {
     String c = fen[index];
     while (c != ' ') {
       if (c == '/') {
-        x = FILE_LEFT;
+        x = fileLeft;
         y++;
-        if (y > RANK_BOTTOM) {
+        if (y > rankBottom) {
           break;
         }
       } else if (c.codeUnitAt(0) >= '1'.codeUnitAt(0) &&
@@ -638,20 +584,20 @@ class Position {
         x += (c.codeUnitAt(0) - '0'.codeUnitAt(0));
       } else if (c.codeUnitAt(0) >= 'A'.codeUnitAt(0) &&
           c.codeUnitAt(0) <= 'Z'.codeUnitAt(0)) {
-        if (x <= FILE_RIGHT) {
-          int pt = CHAR_TO_PIECE(c);
+        if (x <= fileRight) {
+          int pt = charToPiece(c);
           if (pt >= 0) {
-            addPiece(COORD_XY(x, y), pt + 8);
+            addPiece(coordXY(x, y), pt + 8);
           }
           x++;
         }
       } else if (c.codeUnitAt(0) >= 'a'.codeUnitAt(0) &&
           c.codeUnitAt(0) <= 'z'.codeUnitAt(0)) {
-        if (x <= FILE_RIGHT) {
-          int pt = CHAR_TO_PIECE(String.fromCharCode(
+        if (x <= fileRight) {
+          int pt = charToPiece(String.fromCharCode(
               c.codeUnitAt(0) + 'A'.codeUnitAt(0) - 'a'.codeUnitAt(0)));
           if (pt >= 0) {
-            addPiece(COORD_XY(x, y), pt + 16);
+            addPiece(coordXY(x, y), pt + 16);
           }
           x++;
         }
@@ -675,17 +621,17 @@ class Position {
   }
 
   String toFen() {
-    StringBuffer fen = new StringBuffer();
-    for (int y = RANK_TOP; y <= RANK_BOTTOM; y++) {
+    StringBuffer fen = StringBuffer();
+    for (int y = rankTop; y <= rankBottom; y++) {
       int k = 0;
-      for (int x = FILE_LEFT; x <= FILE_RIGHT; x++) {
-        int pc = squares[COORD_XY(x, y)];
+      for (int x = fileLeft; x <= fileRight; x++) {
+        int pc = squares[coordXY(x, y)];
         if (pc > 0) {
           if (k > 0) {
             fen.write(String.fromCharCode('0'.codeUnitAt(0) + k));
             k = 0;
           }
-          fen.write(FEN_PIECE[pc]);
+          fen.write(fenPiece[pc]);
         } else {
           k++;
         }
@@ -693,7 +639,7 @@ class Position {
       if (k > 0) {
         fen.write(String.fromCharCode('0'.codeUnitAt(0) + k));
       }
-      if (y == RANK_BOTTOM) {
+      if (y == rankBottom) {
         fen.write(' ');
       } else {
         fen.write('/');
@@ -709,115 +655,115 @@ class Position {
 
   int generateMoves(List<int> mvs, List<int>? vls) {
     int moves = 0;
-    int pcSelfSide = SIDE_TAG(sdPlayer);
-    int pcOppSide = OPP_SIDE_TAG(sdPlayer);
+    int pcSelfSide = sideTag(sdPlayer);
+    int pcOppSide = oppSideTag(sdPlayer);
     for (int sqSrc = 0; sqSrc < 256; sqSrc++) {
       int pcSrc = squares[sqSrc];
       if ((pcSrc & pcSelfSide) == 0) {
         continue;
       }
       switch (pcSrc - pcSelfSide) {
-        case PIECE_KING:
+        case pieceKing:
           for (int i = 0; i < 4; i++) {
-            int sqDst = sqSrc + KING_DELTA[i];
-            if (!isIN_FORT(sqDst)) {
+            int sqDst = sqSrc + kingDelta[i];
+            if (!isInFort(sqDst)) {
               continue;
             }
             int pcDst = squares[sqDst];
             if (vls == null) {
               if ((pcDst & pcSelfSide) == 0) {
-                mvs[moves] = MOVE(sqSrc, sqDst);
+                mvs[moves] = move(sqSrc, sqDst);
                 moves++;
               }
             } else if ((pcDst & pcOppSide) != 0) {
-              mvs[moves] = MOVE(sqSrc, sqDst);
-              vls[moves] = MVV_LVA(pcDst, 5);
+              mvs[moves] = move(sqSrc, sqDst);
+              vls[moves] = mvvLva(pcDst, 5);
               moves++;
             }
           }
           break;
-        case PIECE_ADVISOR:
+        case pieceAdvisor:
           for (int i = 0; i < 4; i++) {
-            int sqDst = sqSrc + ADVISOR_DELTA[i];
-            if (!isIN_FORT(sqDst)) {
+            int sqDst = sqSrc + advisorDelta[i];
+            if (!isInFort(sqDst)) {
               continue;
             }
             int pcDst = squares[sqDst];
             if (vls == null) {
               if ((pcDst & pcSelfSide) == 0) {
-                mvs[moves] = MOVE(sqSrc, sqDst);
+                mvs[moves] = move(sqSrc, sqDst);
                 moves++;
               }
             } else if ((pcDst & pcOppSide) != 0) {
-              mvs[moves] = MOVE(sqSrc, sqDst);
-              vls[moves] = MVV_LVA(pcDst, 1);
+              mvs[moves] = move(sqSrc, sqDst);
+              vls[moves] = mvvLva(pcDst, 1);
               moves++;
             }
           }
           break;
-        case PIECE_BISHOP:
+        case pieceBishop:
           for (int i = 0; i < 4; i++) {
-            int sqDst = sqSrc + ADVISOR_DELTA[i];
-            if (!(isIN_BOARD(sqDst) &&
-                HOME_HALF(sqDst, sdPlayer) &&
+            int sqDst = sqSrc + advisorDelta[i];
+            if (!(isInBoard(sqDst) &&
+                homeHalf(sqDst, sdPlayer) &&
                 squares[sqDst] == 0)) {
               continue;
             }
-            sqDst += ADVISOR_DELTA[i];
+            sqDst += advisorDelta[i];
             int pcDst = squares[sqDst];
             if (vls == null) {
               if ((pcDst & pcSelfSide) == 0) {
-                mvs[moves] = MOVE(sqSrc, sqDst);
+                mvs[moves] = move(sqSrc, sqDst);
                 moves++;
               }
             } else if ((pcDst & pcOppSide) != 0) {
-              mvs[moves] = MOVE(sqSrc, sqDst);
-              vls[moves] = MVV_LVA(pcDst, 1);
+              mvs[moves] = move(sqSrc, sqDst);
+              vls[moves] = mvvLva(pcDst, 1);
               moves++;
             }
           }
           break;
-        case PIECE_KNIGHT:
+        case pieceKnight:
           for (int i = 0; i < 4; i++) {
-            int sqDst = sqSrc + KING_DELTA[i];
+            int sqDst = sqSrc + kingDelta[i];
             if (squares[sqDst] > 0) {
               continue;
             }
             for (int j = 0; j < 2; j++) {
-              sqDst = sqSrc + KNIGHT_DELTA[i][j];
-              if (!isIN_BOARD(sqDst)) {
+              sqDst = sqSrc + knightDelta[i][j];
+              if (!isInBoard(sqDst)) {
                 continue;
               }
               int pcDst = squares[sqDst];
               if (vls == null) {
                 if ((pcDst & pcSelfSide) == 0) {
-                  mvs[moves] = MOVE(sqSrc, sqDst);
+                  mvs[moves] = move(sqSrc, sqDst);
                   moves++;
                 }
               } else if ((pcDst & pcOppSide) != 0) {
-                mvs[moves] = MOVE(sqSrc, sqDst);
-                vls[moves] = MVV_LVA(pcDst, 1);
+                mvs[moves] = move(sqSrc, sqDst);
+                vls[moves] = mvvLva(pcDst, 1);
                 moves++;
               }
             }
           }
           break;
-        case PIECE_ROOK:
+        case pieceRook:
           for (int i = 0; i < 4; i++) {
-            int delta = KING_DELTA[i];
+            int delta = kingDelta[i];
             int sqDst = sqSrc + delta;
-            while (isIN_BOARD(sqDst)) {
+            while (isInBoard(sqDst)) {
               int pcDst = squares[sqDst];
               if (pcDst == 0) {
                 if (vls == null) {
-                  mvs[moves] = MOVE(sqSrc, sqDst);
+                  mvs[moves] = move(sqSrc, sqDst);
                   moves++;
                 }
               } else {
                 if ((pcDst & pcOppSide) != 0) {
-                  mvs[moves] = MOVE(sqSrc, sqDst);
+                  mvs[moves] = move(sqSrc, sqDst);
                   if (vls != null) {
-                    vls[moves] = MVV_LVA(pcDst, 4);
+                    vls[moves] = mvvLva(pcDst, 4);
                   }
                   moves++;
                 }
@@ -827,15 +773,15 @@ class Position {
             }
           }
           break;
-        case PIECE_CANNON:
+        case pieceCannon:
           for (int i = 0; i < 4; i++) {
-            int delta = KING_DELTA[i];
+            int delta = kingDelta[i];
             int sqDst = sqSrc + delta;
-            while (isIN_BOARD(sqDst)) {
+            while (isInBoard(sqDst)) {
               int pcDst = squares[sqDst];
               if (pcDst == 0) {
                 if (vls == null) {
-                  mvs[moves] = MOVE(sqSrc, sqDst);
+                  mvs[moves] = move(sqSrc, sqDst);
                   moves++;
                 }
               } else {
@@ -844,13 +790,13 @@ class Position {
               sqDst += delta;
             }
             sqDst += delta;
-            while (isIN_BOARD(sqDst)) {
+            while (isInBoard(sqDst)) {
               int pcDst = squares[sqDst];
               if (pcDst > 0) {
                 if ((pcDst & pcOppSide) != 0) {
-                  mvs[moves] = MOVE(sqSrc, sqDst);
+                  mvs[moves] = move(sqSrc, sqDst);
                   if (vls != null) {
-                    vls[moves] = MVV_LVA(pcDst, 4);
+                    vls[moves] = mvvLva(pcDst, 4);
                   }
                   moves++;
                 }
@@ -860,34 +806,34 @@ class Position {
             }
           }
           break;
-        case PIECE_PAWN:
-          int sqDst = SQUARE_FORWARD(sqSrc, sdPlayer);
-          if (isIN_BOARD(sqDst)) {
+        case piecePawn:
+          int sqDst = squareForward(sqSrc, sdPlayer);
+          if (isInBoard(sqDst)) {
             int pcDst = squares[sqDst];
             if (vls == null) {
               if ((pcDst & pcSelfSide) == 0) {
-                mvs[moves] = MOVE(sqSrc, sqDst);
+                mvs[moves] = move(sqSrc, sqDst);
                 moves++;
               }
             } else if ((pcDst & pcOppSide) != 0) {
-              mvs[moves] = MOVE(sqSrc, sqDst);
-              vls[moves] = MVV_LVA(pcDst, 2);
+              mvs[moves] = move(sqSrc, sqDst);
+              vls[moves] = mvvLva(pcDst, 2);
               moves++;
             }
           }
-          if (AWAY_HALF(sqSrc, sdPlayer)) {
+          if (awayHalf(sqSrc, sdPlayer)) {
             for (int delta = -1; delta <= 1; delta += 2) {
               sqDst = sqSrc + delta;
-              if (isIN_BOARD(sqDst)) {
+              if (isInBoard(sqDst)) {
                 int pcDst = squares[sqDst];
                 if (vls == null) {
                   if ((pcDst & pcSelfSide) == 0) {
-                    mvs[moves] = MOVE(sqSrc, sqDst);
+                    mvs[moves] = move(sqSrc, sqDst);
                     moves++;
                   }
                 } else if ((pcDst & pcOppSide) != 0) {
-                  mvs[moves] = MOVE(sqSrc, sqDst);
-                  vls[moves] = MVV_LVA(pcDst, 2);
+                  mvs[moves] = move(sqSrc, sqDst);
+                  vls[moves] = mvvLva(pcDst, 2);
                   moves++;
                 }
               }
@@ -900,37 +846,37 @@ class Position {
   }
 
   bool legalMove(int mv) {
-    int sqSrc = SRC(mv);
+    int sqSrc = src(mv);
     int pcSrc = squares[sqSrc];
-    int pcSelfSide = SIDE_TAG(sdPlayer);
+    int pcSelfSide = sideTag(sdPlayer);
     if ((pcSrc & pcSelfSide) == 0) {
       return false;
     }
 
-    int sqDst = DST(mv);
+    int sqDst = dst(mv);
     int pcDst = squares[sqDst];
     if ((pcDst & pcSelfSide) != 0) {
       return false;
     }
     int sqPin;
     switch (pcSrc - pcSelfSide) {
-      case PIECE_KING:
-        return isIN_FORT(sqDst) && KING_SPAN(sqSrc, sqDst);
-      case PIECE_ADVISOR:
-        return isIN_FORT(sqDst) && ADVISOR_SPAN(sqSrc, sqDst);
-      case PIECE_BISHOP:
-        return SAME_HALF(sqSrc, sqDst) &&
-            BISHOP_SPAN(sqSrc, sqDst) &&
-            squares[BISHOP_PIN(sqSrc, sqDst)] == 0;
-      case PIECE_KNIGHT:
-        sqPin = getKNIGHT_PIN(sqSrc, sqDst);
+      case pieceKing:
+        return isInFort(sqDst) && kingSpan(sqSrc, sqDst);
+      case pieceAdvisor:
+        return isInFort(sqDst) && advisorSpan(sqSrc, sqDst);
+      case pieceBishop:
+        return sameHalf(sqSrc, sqDst) &&
+            bishopSpan(sqSrc, sqDst) &&
+            squares[bishopPin(sqSrc, sqDst)] == 0;
+      case pieceKnight:
+        sqPin = getKnightPin(sqSrc, sqDst);
         return sqPin != sqSrc && squares[sqPin] == 0;
-      case PIECE_ROOK:
-      case PIECE_CANNON:
+      case pieceRook:
+      case pieceCannon:
         int delta;
-        if (SAME_RANK(sqSrc, sqDst)) {
+        if (sameRank(sqSrc, sqDst)) {
           delta = (sqDst < sqSrc ? -1 : 1);
-        } else if (SAME_FILE(sqSrc, sqDst)) {
+        } else if (sameFile(sqSrc, sqDst)) {
           delta = (sqDst < sqSrc ? -16 : 16);
         } else {
           return false;
@@ -940,9 +886,9 @@ class Position {
           sqPin += delta;
         }
         if (sqPin == sqDst) {
-          return pcDst == 0 || pcSrc - pcSelfSide == PIECE_ROOK;
+          return pcDst == 0 || pcSrc - pcSelfSide == pieceRook;
         }
-        if (pcDst == 0 || pcSrc - pcSelfSide == PIECE_ROOK) {
+        if (pcDst == 0 || pcSrc - pcSelfSide == pieceRook) {
           return false;
         }
         sqPin += delta;
@@ -950,51 +896,51 @@ class Position {
           sqPin += delta;
         }
         return sqPin == sqDst;
-      case PIECE_PAWN:
-        if (AWAY_HALF(sqDst, sdPlayer) &&
+      case piecePawn:
+        if (awayHalf(sqDst, sdPlayer) &&
             (sqDst == sqSrc - 1 || sqDst == sqSrc + 1)) {
           return true;
         }
-        return sqDst == SQUARE_FORWARD(sqSrc, sdPlayer);
+        return sqDst == squareForward(sqSrc, sdPlayer);
       default:
         return false;
     }
   }
 
   bool checked() {
-    int pcSelfSide = SIDE_TAG(sdPlayer);
-    int pcOppSide = OPP_SIDE_TAG(sdPlayer);
+    int pcSelfSide = sideTag(sdPlayer);
+    int pcOppSide = oppSideTag(sdPlayer);
     for (int sqSrc = 0; sqSrc < 256; sqSrc++) {
-      if (squares[sqSrc] != pcSelfSide + PIECE_KING) {
+      if (squares[sqSrc] != pcSelfSide + pieceKing) {
         continue;
       }
-      if (squares[SQUARE_FORWARD(sqSrc, sdPlayer)] == pcOppSide + PIECE_PAWN) {
+      if (squares[squareForward(sqSrc, sdPlayer)] == pcOppSide + piecePawn) {
         return true;
       }
       for (int delta = -1; delta <= 1; delta += 2) {
-        if (squares[sqSrc + delta] == pcOppSide + PIECE_PAWN) {
+        if (squares[sqSrc + delta] == pcOppSide + piecePawn) {
           return true;
         }
       }
       for (int i = 0; i < 4; i++) {
-        if (squares[sqSrc + ADVISOR_DELTA[i]] != 0) {
+        if (squares[sqSrc + advisorDelta[i]] != 0) {
           continue;
         }
         for (int j = 0; j < 2; j++) {
-          int pcDst = squares[sqSrc + KNIGHT_CHECK_DELTA[i][j]];
-          if (pcDst == pcOppSide + PIECE_KNIGHT) {
+          int pcDst = squares[sqSrc + knightCheckDelta[i][j]];
+          if (pcDst == pcOppSide + pieceKnight) {
             return true;
           }
         }
       }
       for (int i = 0; i < 4; i++) {
-        int delta = KING_DELTA[i];
+        int delta = kingDelta[i];
         int sqDst = sqSrc + delta;
-        while (isIN_BOARD(sqDst)) {
+        while (isInBoard(sqDst)) {
           int pcDst = squares[sqDst];
           if (pcDst > 0) {
-            if (pcDst == pcOppSide + PIECE_ROOK ||
-                pcDst == pcOppSide + PIECE_KING) {
+            if (pcDst == pcOppSide + pieceRook ||
+                pcDst == pcOppSide + pieceKing) {
               return true;
             }
             break;
@@ -1002,10 +948,10 @@ class Position {
           sqDst += delta;
         }
         sqDst += delta;
-        while (isIN_BOARD(sqDst)) {
+        while (isInBoard(sqDst)) {
           int pcDst = squares[sqDst];
           if (pcDst > 0) {
-            if (pcDst == pcOppSide + PIECE_CANNON) {
+            if (pcDst == pcOppSide + pieceCannon) {
               return true;
             }
             break;
@@ -1019,7 +965,7 @@ class Position {
   }
 
   bool isMate() {
-    List<int> mvs = List.filled(MAX_GEN_MOVES, 0);
+    List<int> mvs = List.filled(maxGenMoves, 0);
     int moves = generateAllMoves(mvs);
     for (int i = 0; i < moves; i++) {
       if (makeMove(mvs[i])) {
@@ -1031,29 +977,29 @@ class Position {
   }
 
   int mateValue() {
-    return distance - MATE_VALUE;
+    return distance - gMateValue;
   }
 
   int banValue() {
-    return distance - BAN_VALUE;
+    return distance - gBanValue;
   }
 
   int drawValue() {
-    return (distance & 1) == 0 ? -DRAW_VALUE : DRAW_VALUE;
+    return (distance & 1) == 0 ? -gDrawValue : gDrawValue;
   }
 
   int evaluate() {
     int vl = (sdPlayer == 0 ? vlWhite - vlBlack : vlBlack - vlWhite) +
-        ADVANCED_VALUE;
+        gAdvancedValue;
     return vl == drawValue() ? vl - 1 : vl;
   }
 
   bool nullOkay() {
-    return (sdPlayer == 0 ? vlWhite : vlBlack) > NULL_OKAY_MARGIN;
+    return (sdPlayer == 0 ? vlWhite : vlBlack) > nullOkayMargin;
   }
 
   bool nullSafe() {
-    return (sdPlayer == 0 ? vlWhite : vlBlack) > NULL_SAFE_MARGIN;
+    return (sdPlayer == 0 ? vlWhite : vlBlack) > nullSafeMargin;
   }
 
   bool inCheck() {
@@ -1095,12 +1041,12 @@ class Position {
   }
 
   Position mirror() {
-    Position pos = new Position();
+    Position pos = Position();
     pos.clearBoard();
     for (int sq = 0; sq < 256; sq++) {
       int pc = squares[sq];
       if (pc > 0) {
-        pos.addPiece(MIRROR_SQUARE(sq), pc);
+        pos.addPiece(mirrotSquare(sq), pc);
       }
     }
     if (sdPlayer == 1) {
@@ -1128,20 +1074,20 @@ class Position {
     while (index >= 0 && bookLock[index] == lock) {
       index--;
     }
-    List<int> mvs = List.filled(MAX_GEN_MOVES, 0);
-    List<int> vls = List.filled(MAX_GEN_MOVES, 0);
+    List<int> mvs = List.filled(maxGenMoves, 0);
+    List<int> vls = List.filled(maxGenMoves, 0);
     int value = 0;
     int moves = 0;
     index++;
     while (index < bookSize && bookLock[index] == lock) {
       int mv = 0xffff & bookMoveList[index];
-      mv = (isMirror ? MIRROR_MOVE(mv) : mv);
+      mv = (isMirror ? mirrorMove(mv) : mv);
       if (legalMove(mv)) {
         mvs[moves] = mv;
         vls[moves] = bookValue[index];
         value += vls[moves];
         moves++;
-        if (moves == MAX_GEN_MOVES) {
+        if (moves == maxGenMoves) {
           break;
         }
       }
@@ -1161,6 +1107,6 @@ class Position {
   }
 
   int historyIndex(int mv) {
-    return ((squares[SRC(mv)] - 8) << 8) + DST(mv);
+    return ((squares[src(mv)] - 8) << 8) + dst(mv);
   }
 }

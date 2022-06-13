@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'models/play_mode.dart';
+import '../models/play_mode.dart';
 
 class GameBottomBar extends StatefulWidget {
   final PlayMode mode;

@@ -82,9 +82,7 @@ class ChessSkin {
     readyNotifier.value = true;
   }
 
-  String get boardImage {
-    return "assets/skins/$folder/$board";
-  }
+  String get boardImage => "assets/skins/$folder/$board";
 
   String getRedChess(String code) {
     if (!redMap.containsKey(code.toUpperCase())) {

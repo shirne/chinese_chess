@@ -13,14 +13,15 @@ import 'package:flutter/services.dart';
 import 'package:universal_html/html.dart' as html;
 
 import 'setting.dart';
-import 'game_bottom_bar.dart';
+import 'components/game_bottom_bar.dart';
 import 'generated/l10n.dart';
 import 'models/play_mode.dart';
 import 'widgets/game_wrapper.dart';
 import 'models/game_manager.dart';
-import 'play.dart';
-import 'edit_fen.dart';
+import 'components/play.dart';
+import 'components/edit_fen.dart';
 
+/// 游戏页面
 class GameBoard extends StatefulWidget {
   const GameBoard({Key? key}) : super(key: key);
 
@@ -97,11 +98,11 @@ class _GameBoardState extends State<GameBoard> {
           }
           link.click();
         },
-        child: Text('Download APK'),
+        child: const Text('Download APK'),
       ));
     }
     return Center(
-      child: Container(
+      child: SizedBox(
         height: maxHeight * 0.6,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -321,7 +322,7 @@ class _GameBoardState extends State<GameBoard> {
     link.setAttribute('href', Uri.dataFromBytes(fData).toString());
     html.window.document.getElementsByTagName('body')[0].append(link);
     link.click();
-    Future<void>.delayed(Duration(seconds: 10)).then((v) {
+    Future<void>.delayed(const Duration(seconds: 10)).then((v) {
       link.remove();
     });
   }

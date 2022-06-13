@@ -33,12 +33,12 @@ class GameWrapperState extends State<GameWrapper> {
 
   void onInit() async {
     if (widget.isMain) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
     }
     gamer = GameManager();
     await gamer.init();
     if (widget.isMain) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
     }
     setState(() {
       inited = true;
@@ -55,7 +55,7 @@ class GameWrapperState extends State<GameWrapper> {
       print('gamer destroy');
       gamer.dispose();
       //gamer = null;
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
       return true;
     }
     return false;

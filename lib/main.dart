@@ -45,8 +45,8 @@ class MainApp extends StatelessWidget {
         Locale('en', ''),
         Locale('zh', 'CN'),
       ],
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       home: const GameWrapper(
         isMain: true,

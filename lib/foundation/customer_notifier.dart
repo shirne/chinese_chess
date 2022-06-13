@@ -4,7 +4,7 @@ class CustomNotifier<T> {
 
   void addListener(void Function(T _value) func) {
     if (_lockList) {
-      Future.delayed(Duration(milliseconds: 1)).then((v) {
+      Future.delayed(const Duration(milliseconds: 1)).then((v) {
         addListener(func);
       });
       return;
@@ -30,7 +30,7 @@ class CustomNotifier<T> {
 
   void notifyListeners(T _value) {
     if (_lockList) {
-      Future.delayed(Duration(milliseconds: 1)).then((v) {
+      Future.delayed(const Duration(milliseconds: 1)).then((v) {
         notifyListeners(_value);
       });
       return;
@@ -44,7 +44,7 @@ class CustomNotifier<T> {
 
   dispose() {
     if (_lockList) {
-      Future.delayed(Duration(milliseconds: 1)).then((v) {
+      Future.delayed(const Duration(milliseconds: 1)).then((v) {
         dispose();
       });
       return;

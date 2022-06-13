@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'driver/player_driver.dart';
-import 'generated/l10n.dart';
-import 'widgets/game_wrapper.dart';
-import 'models/game_manager.dart';
-import 'widgets/list_item.dart';
+import '../driver/player_driver.dart';
+import '../generated/l10n.dart';
+import '../widgets/game_wrapper.dart';
+import '../models/game_manager.dart';
+import '../widgets/list_item.dart';
 
+/// 单个玩家框
 class PlaySinglePlayer extends StatefulWidget {
   final int team;
   final Alignment placeAt;
@@ -128,9 +129,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
               : CrossAxisAlignment.end,
         ),
       ),
-      SizedBox(
-        width: 10,
-      ),
+      SizedBox(width: 10),
     ];
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10),

@@ -20,14 +20,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-import 'dart:math' as Math;
+import 'dart:math' as math;
 
 import 'position.dart';
 import 'util.dart';
 
 class Integer {
-  static const MAX_VALUE = 2147483647;
-  static const MIN_VALUE = -2147483648;
+  static const maxValue = 2147483647;
+  static const minValue = -2147483648;
 }
 
 class HashItem {
@@ -45,11 +45,11 @@ class HashItem {
 }
 
 class SortItem {
-  static const int PHASE_HASH = 0;
-  static const int PHASE_KILLER_1 = 1;
-  static const int PHASE_KILLER_2 = 2;
-  static const int PHASE_GEN_MOVES = 3;
-  static const int PHASE_REST = 4;
+  static const int phaseHash = 0;
+  static const int phaseKiller1 = 1;
+  static const int phaseKiller2 = 2;
+  static const int phaseGenMoves = 3;
+  static const int phaseRest = 4;
 
   late int index, moves, phase;
   late int mvHash, mvKiller1, mvKiller2;
@@ -61,18 +61,18 @@ class SortItem {
 
   SortItem(int mvHash, this.search) {
     if (!search.pos.inCheck()) {
-      phase = PHASE_HASH;
+      phase = phaseHash;
       this.mvHash = mvHash;
       mvKiller1 = search.mvKiller[search.pos.distance][0];
       mvKiller2 = search.mvKiller[search.pos.distance][1];
       return;
     }
-    phase = PHASE_REST;
+    phase = phaseRest;
     this.mvHash = mvKiller1 = mvKiller2 = 0;
-    mvs = List.filled(Search.MAX_GEN_MOVES, 0);
-    vls = List.filled(Search.MAX_GEN_MOVES, 0);
+    mvs = List.filled(Search.maxGenMoves, 0);
+    vls = List.filled(Search.maxGenMoves, 0);
     moves = 0;
-    List<int> mvsAll = List.filled(Search.MAX_GEN_MOVES, 0);
+    List<int> mvsAll = List.filled(Search.maxGenMoves, 0);
     int numAll = search.pos.generateAllMoves(mvsAll);
     for (int i = 0; i < numAll; i++) {
       int mv = mvsAll[i];
@@ -82,7 +82,7 @@ class SortItem {
       search.pos.undoMakeMove();
       mvs[moves] = mv;
       vls[moves] = mv == mvHash
-          ? Integer.MAX_VALUE
+          ? Integer.maxValue
           : search.historyTable[search.pos.historyIndex(mv)];
       moves++;
     }
@@ -92,32 +92,32 @@ class SortItem {
   }
 
   int next() {
-    if (phase == PHASE_HASH) {
-      phase = PHASE_KILLER_1;
+    if (phase == phaseHash) {
+      phase = phaseKiller1;
       if (mvHash > 0) {
         return mvHash;
       }
     }
-    if (phase == PHASE_KILLER_1) {
-      phase = PHASE_KILLER_2;
+    if (phase == phaseKiller1) {
+      phase = phaseKiller2;
       if (mvKiller1 != mvHash &&
           mvKiller1 > 0 &&
           search.pos.legalMove(mvKiller1)) {
         return mvKiller1;
       }
     }
-    if (phase == PHASE_KILLER_2) {
-      phase = PHASE_GEN_MOVES;
+    if (phase == phaseKiller2) {
+      phase = phaseGenMoves;
       if (mvKiller2 != mvHash &&
           mvKiller2 > 0 &&
           search.pos.legalMove(mvKiller2)) {
         return mvKiller2;
       }
     }
-    if (phase == PHASE_GEN_MOVES) {
-      phase = PHASE_REST;
-      mvs = List.filled(Search.MAX_GEN_MOVES, 0);
-      vls = List.filled(Search.MAX_GEN_MOVES, 0);
+    if (phase == phaseGenMoves) {
+      phase = phaseRest;
+      mvs = List.filled(Search.maxGenMoves, 0);
+      vls = List.filled(Search.maxGenMoves, 0);
       moves = search.pos.generateAllMoves(mvs);
       for (int i = 0; i < moves; i++) {
         vls[i] = search.historyTable[search.pos.historyIndex(mvs[i])];
@@ -138,16 +138,16 @@ class SortItem {
 
 class Search {
   // private
-  static const int HASH_ALPHA = 1;
-  static const int HASH_BETA = 2;
-  static const int HASH_PV = 3;
-  static const int LIMIT_DEPTH = 64;
-  static const int NULL_DEPTH = 2;
-  static const int RANDOM_MASK = 7;
-  static final int MAX_GEN_MOVES = Position.MAX_GEN_MOVES;
-  static final int MATE_VALUE = Position.MATE_VALUE;
-  static final int BAN_VALUE = Position.BAN_VALUE;
-  static final int WIN_VALUE = Position.WIN_VALUE;
+  static const hashAlpha = 1;
+  static const hashBeta = 2;
+  static const hashPV = 3;
+  static const limitDepth = 64;
+  static const nullDepth = 2;
+  static const randomMask = 7;
+  static const maxGenMoves = Position.maxGenMoves;
+  static const metaValue = Position.gMateValue;
+  static const banValue = Position.gBanValue;
+  static const winValue = Position.gWinValue;
 
   int hashMask, mvResult = 0, allNodes = 0, allMillis = 0;
   List<HashItem> hashTable;
@@ -155,7 +155,7 @@ class Search {
   // public
   Position pos;
   List<int> historyTable = List.filled(4096, 0);
-  List<List<int>> mvKiller = List.filled(LIMIT_DEPTH, List.filled(2, 0));
+  List<List<int>> mvKiller = List.filled(limitDepth, List.filled(2, 0));
 
   Search(this.pos, int hashLevel)
       : hashMask = (1 << hashLevel) - 1,
@@ -169,34 +169,34 @@ class Search {
     HashItem hash = getHashItem();
     if (hash.zobristLock != pos.zobristLock) {
       mv[0] = 0;
-      return -MATE_VALUE;
+      return -metaValue;
     }
     mv[0] = hash.mv;
     bool mate = false;
-    if (hash.vl > WIN_VALUE) {
-      if (hash.vl <= BAN_VALUE) {
-        return -MATE_VALUE;
+    if (hash.vl > winValue) {
+      if (hash.vl <= banValue) {
+        return -metaValue;
       }
       hash.vl -= pos.distance;
       mate = true;
-    } else if (hash.vl < -WIN_VALUE) {
-      if (hash.vl >= -BAN_VALUE) {
-        return -MATE_VALUE;
+    } else if (hash.vl < -winValue) {
+      if (hash.vl >= -banValue) {
+        return -metaValue;
       }
       hash.vl += pos.distance;
       mate = true;
     } else if (hash.vl == pos.drawValue()) {
-      return -MATE_VALUE;
+      return -metaValue;
     }
     if (hash.depth >= depth || mate) {
-      if (hash.flag == HASH_BETA) {
-        return (hash.vl >= vlBeta ? hash.vl : -MATE_VALUE);
-      } else if (hash.flag == HASH_ALPHA) {
-        return (hash.vl <= vlAlpha ? hash.vl : -MATE_VALUE);
+      if (hash.flag == hashBeta) {
+        return (hash.vl >= vlBeta ? hash.vl : -metaValue);
+      } else if (hash.flag == hashAlpha) {
+        return (hash.vl <= vlAlpha ? hash.vl : -metaValue);
       }
       return hash.vl;
     }
-    return -MATE_VALUE;
+    return -metaValue;
   }
 
   void recordHash(int flag, int vl, int depth, int mv) {
@@ -206,13 +206,13 @@ class Search {
     }
     hash.flag = flag;
     hash.depth = depth;
-    if (vl > WIN_VALUE) {
-      if (mv == 0 && vl <= BAN_VALUE) {
+    if (vl > winValue) {
+      if (mv == 0 && vl <= banValue) {
         return;
       }
       hash.vl = (vl + pos.distance);
-    } else if (vl < -WIN_VALUE) {
-      if (mv == 0 && vl >= -BAN_VALUE) {
+    } else if (vl < -winValue) {
+      if (mv == 0 && vl >= -banValue) {
         return;
       }
       hash.vl = (vl - pos.distance);
@@ -245,15 +245,15 @@ class Search {
     if (vlRep > 0) {
       return pos.repValue(vlRep);
     }
-    if (pos.distance == LIMIT_DEPTH) {
+    if (pos.distance == limitDepth) {
       return pos.evaluate();
     }
-    int vlBest = -MATE_VALUE;
+    int vlBest = -metaValue;
     int genMoves;
-    List<int> mvs = List.filled(MAX_GEN_MOVES, 0);
+    List<int> mvs = List.filled(maxGenMoves, 0);
     if (pos.inCheck()) {
       genMoves = pos.generateAllMoves(mvs);
-      List<int> vls = List.filled(MAX_GEN_MOVES, 0);
+      List<int> vls = List.filled(maxGenMoves, 0);
       for (int i = 0; i < genMoves; i++) {
         vls[i] = historyTable[pos.historyIndex(mvs[i])];
       }
@@ -265,15 +265,15 @@ class Search {
           return vl;
         }
         vlBest = vl;
-        vlAlpha = Math.max(vl, vlAlpha);
+        vlAlpha = math.max(vl, vlAlpha);
       }
-      List<int> vls = List.filled(MAX_GEN_MOVES, 0);
+      List<int> vls = List.filled(maxGenMoves, 0);
       genMoves = pos.generateMoves(mvs, vls);
       Util.shellSort(mvs, vls, 0, genMoves);
       for (int i = 0; i < genMoves; i++) {
         if (vls[i] < 10 ||
             (vls[i] < 20 &&
-                Position.HOME_HALF(Position.DST(mvs[i]), pos.sdPlayer))) {
+                Position.homeHalf(Position.dst(mvs[i]), pos.sdPlayer))) {
           genMoves = i;
           break;
         }
@@ -290,10 +290,10 @@ class Search {
           return vl;
         }
         vlBest = vl;
-        vlAlpha = Math.max(vl, vlAlpha);
+        vlAlpha = math.max(vl, vlAlpha);
       }
     }
-    return vlBest == -MATE_VALUE ? pos.mateValue() : vlBest;
+    return vlBest == -metaValue ? pos.mateValue() : vlBest;
   }
 
   int searchNoNull(int vlAlpha, int vlBeta, int depth) {
@@ -317,33 +317,33 @@ class Search {
     }
     List<int> mvHash = [0];
     vl = probeHash(vlAlpha, vlBeta, depth, mvHash);
-    if (vl > -MATE_VALUE) {
+    if (vl > -metaValue) {
       return vl;
     }
-    if (pos.distance == LIMIT_DEPTH) {
+    if (pos.distance == limitDepth) {
       return pos.evaluate();
     }
     if (!noNull && !pos.inCheck() && pos.nullOkay()) {
       pos.nullMove();
-      vl = -searchNoNull(-vlBeta, 1 - vlBeta, depth - NULL_DEPTH - 1);
+      vl = -searchNoNull(-vlBeta, 1 - vlBeta, depth - nullDepth - 1);
       pos.undoNullMove();
       if (vl >= vlBeta &&
           (pos.nullSafe() ||
-              searchNoNull(vlAlpha, vlBeta, depth - NULL_DEPTH) >= vlBeta)) {
+              searchNoNull(vlAlpha, vlBeta, depth - nullDepth) >= vlBeta)) {
         return vl;
       }
     }
-    int hashFlag = HASH_ALPHA;
-    int vlBest = -MATE_VALUE;
+    int hashFlag = hashAlpha;
+    int vlBest = -metaValue;
     int mvBest = 0;
-    SortItem sort = new SortItem(mvHash[0], this);
+    SortItem sort = SortItem(mvHash[0], this);
     int mv;
     while ((mv = sort.next()) > 0) {
       if (!pos.makeMove(mv)) {
         continue;
       }
       int newDepth = pos.inCheck() || sort.singleReply ? depth : depth - 1;
-      if (vlBest == -MATE_VALUE) {
+      if (vlBest == -metaValue) {
         vl = -searchFull(-vlBeta, -vlAlpha, newDepth);
       } else {
         vl = -searchFull(-vlAlpha - 1, -vlAlpha, newDepth);
@@ -355,18 +355,18 @@ class Search {
       if (vl > vlBest) {
         vlBest = vl;
         if (vl >= vlBeta) {
-          hashFlag = HASH_BETA;
+          hashFlag = hashBeta;
           mvBest = mv;
           break;
         }
         if (vl > vlAlpha) {
           vlAlpha = vl;
-          hashFlag = HASH_PV;
+          hashFlag = hashPV;
           mvBest = mv;
         }
       }
     }
-    if (vlBest == -MATE_VALUE) {
+    if (vlBest == -metaValue) {
       return pos.mateValue();
     }
     recordHash(hashFlag, vlBest, depth, mvBest);
@@ -377,8 +377,8 @@ class Search {
   }
 
   int searchRoot(int depth) {
-    int vlBest = -MATE_VALUE;
-    SortItem sort = new SortItem(mvResult, this);
+    int vlBest = -metaValue;
+    SortItem sort = SortItem(mvResult, this);
     int mv;
     while ((mv = sort.next()) > 0) {
       if (!pos.makeMove(mv)) {
@@ -386,21 +386,21 @@ class Search {
       }
       int newDepth = pos.inCheck() ? depth : depth - 1;
       int vl;
-      if (vlBest == -MATE_VALUE) {
-        vl = -searchNoNull(-MATE_VALUE, MATE_VALUE, newDepth);
+      if (vlBest == -metaValue) {
+        vl = -searchNoNull(-metaValue, metaValue, newDepth);
       } else {
         vl = -searchFull(-vlBest - 1, -vlBest, newDepth);
         if (vl > vlBest) {
-          vl = -searchNoNull(-MATE_VALUE, -vlBest, newDepth);
+          vl = -searchNoNull(-metaValue, -vlBest, newDepth);
         }
       }
       pos.undoMakeMove();
       if (vl > vlBest) {
         vlBest = vl;
         mvResult = mv;
-        if (vlBest > -WIN_VALUE && vlBest < WIN_VALUE) {
-          vlBest += (Position.random.nextInt(1024) & RANDOM_MASK) -
-              (Position.random.nextInt(1024) & RANDOM_MASK);
+        if (vlBest > -winValue && vlBest < winValue) {
+          vlBest += (Position.random.nextInt(1024) & randomMask) -
+              (Position.random.nextInt(1024) & randomMask);
           vlBest = (vlBest == pos.drawValue() ? vlBest - 1 : vlBest);
         }
       }
@@ -410,7 +410,7 @@ class Search {
   }
 
   bool searchUnique(int vlBeta, int depth) {
-    SortItem sort = new SortItem(mvResult, this);
+    SortItem sort = SortItem(mvResult, this);
     sort.next();
     int mv;
     while ((mv = sort.next()) > 0) {
@@ -427,7 +427,7 @@ class Search {
     return true;
   }
 
-  int searchMain(int millis, [int depth = LIMIT_DEPTH]) {
+  int searchMain(int millis, [int depth = limitDepth]) {
     mvResult = pos.bookMove();
     if (mvResult > 0) {
       pos.makeMove(mvResult);
@@ -443,7 +443,7 @@ class Search {
       hash.vl = 0;
       hash.mv = hash.zobristLock = 0;
     }
-    for (int i = 0; i < LIMIT_DEPTH; i++) {
+    for (int i = 0; i < limitDepth; i++) {
       mvKiller[i][0] = mvKiller[i][1] = 0;
     }
     for (int i = 0; i < 4096; i++) {
@@ -459,10 +459,10 @@ class Search {
       if (allMillis > millis) {
         break;
       }
-      if (vl > WIN_VALUE || vl < -WIN_VALUE) {
+      if (vl > winValue || vl < -winValue) {
         break;
       }
-      if (searchUnique(1 - WIN_VALUE, i)) {
+      if (searchUnique(1 - winValue, i)) {
         break;
       }
     }

@@ -127,7 +127,7 @@ class TabCardTitleItemState extends State<TabCardTitleItem> {
           tabCard?.updateIndex(widget.myIndex);
         },
         child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeOutQuint,
             padding: tabCard!.widget.titlePadding,
             decoration: isActive
