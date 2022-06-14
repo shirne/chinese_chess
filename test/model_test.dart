@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
@@ -19,11 +20,17 @@ import 'package:chinese_chess/models/chess_fen.dart';
 import 'package:chinese_chess/models/chess_item.dart';
 import 'package:chinese_chess/models/chess_pos.dart';
 import 'package:chinese_chess/models/chess_rule.dart';
+import 'package:logging/logging.dart';
 
 void main() {
+  final logger = Logger.root;
+  logger.onRecord.listen((record) {
+    stdout.writeln('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  /// xqlite 招法转换测试
   test('test IccsMove', () {
     TestWidgetsFlutterBinding.ensureInitialized();
-    print(rootBundle.toString());
 
     List<String> iccs = [
       'b0c2',
@@ -56,16 +63,17 @@ void main() {
     }
   });
 
+  /// 招法搜索测试
   test('test bookSearch', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
 
     int startMillionSec = DateTime.now().millisecondsSinceEpoch;
-    print(startMillionSec);
+    logger.info(startMillionSec);
 
     Position position = Position();
     Search search = Search(position, 12);
     Position.init().then((bool v) {
-      print(
+      logger.info(
           '初始化耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
       startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
@@ -75,30 +83,47 @@ void main() {
         position.fromFen('${fen.fen} ${step % 2 == 0 ? 'w' : 'b'} - - 0 $step');
         int mvLast = search.searchMain(1000 << (1 << 1));
         String move = Util.move2Iccs(mvLast);
-        print('$mvLast => $move => ${fen.toChineseString(move)}');
+        logger.info('$mvLast => $move => ${fen.toChineseString(move)}');
         fen.move(move);
 
-        print(
+        logger.info(
             '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
         startMillionSec = DateTime.now().millisecondsSinceEpoch;
         step++;
       }
     });
   });
+
+  /// 读取二进制测试
   test('test ReadBook', () async {
     TestWidgetsFlutterBinding.ensureInitialized();
 
     ByteData data = await rootBundle.load('assets/engines/BOOK.DAT');
-    print(data.lengthInBytes);
+    logger.info(data.lengthInBytes);
 
     int shortMAX = math.pow(2, 16).toInt() - 1;
     int row = data.getUint64(0, Endian.little);
 
-    print([row >> 33, data.getUint32(0, Endian.little) >> 1]);
-    print([row >> 16 & shortMAX, data.getUint16(4, Endian.little)]);
-    print([row & shortMAX, data.getUint16(6, Endian.little)]);
+    logger.info(row.toRadixString(2).padLeft(64, '0'));
+    logger.info(
+        data.getUint32(0, Endian.little).toRadixString(2).padLeft(32, '0'));
+    logger.info(
+        data.getUint32(4, Endian.little).toRadixString(2).padLeft(32, '0'));
+    logger.info(
+        data.getUint16(0, Endian.little).toRadixString(2).padLeft(16, '0'));
+    logger.info(
+        data.getUint16(2, Endian.little).toRadixString(2).padLeft(16, '0'));
+    logger.info(
+        data.getUint16(4, Endian.little).toRadixString(2).padLeft(16, '0'));
+    logger.info(
+        data.getUint16(6, Endian.little).toRadixString(2).padLeft(16, '0'));
+
+    expect(row >> 33, data.getUint32(4, Endian.little) >> 1);
+    expect(row >> 16 & shortMAX, data.getUint16(6, Endian.little));
+    expect(row & shortMAX, data.getUint16(0, Endian.little));
   });
 
+  /// 测试有没有将军的招法
   test('test checkMove', () {
     ChessRule rule = ChessRule.fromFen(
         'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
@@ -111,27 +136,29 @@ void main() {
     rule.fen.fen =
         '4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1';
     expect(rule.teamCanCheck(0), true);
-    print(rule.getCheckMoves(0));
+    expect(rule.getCheckMoves(0), ['b6d7', 'b6c8', 'h6f7', 'g8e8']);
 
     rule.fen.fen =
         'C1bak4/7R1/2n1b4/1N4p1p/2pn1r3/P2R2P2/2P1cr2P/2C1B4/4A4/2BAK4 w - - 0 1';
     expect(rule.teamCanCheck(0), true);
-    print(rule.getCheckMoves(0));
+    expect(rule.getCheckMoves(0), ['b6d7', 'b6c8', 'h8e8', 'h8h9']);
   });
 
+  /// 测试吃子
   test('test Eat', () {
     int startMillionSec = DateTime.now().millisecondsSinceEpoch;
-    print(startMillionSec);
+    logger.info(startMillionSec);
     ChessRule rule = ChessRule.fromFen(
         'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1');
 
     List<ChessItem> beEatens = rule.getBeEatenList(0);
     for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
-      print(
+      logger.info(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
     }
-    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    logger.info(
+        '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     rule.fen.fen =
@@ -139,10 +166,11 @@ void main() {
     beEatens = rule.getBeEatenList(0);
     for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
-      print(
+      logger.info(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
     }
-    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    logger.info(
+        '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     rule.fen.fen =
@@ -150,10 +178,11 @@ void main() {
     beEatens = rule.getBeEatenList(0);
     for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
-      print(
+      logger.info(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
     }
-    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    logger.info(
+        '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     rule.fen.fen =
@@ -161,13 +190,15 @@ void main() {
     beEatens = rule.getBeEatenList(0);
     for (var item in beEatens) {
       List<ChessItem> beEats = rule.getBeEatList(item.position);
-      print(
+      logger.info(
           '${item.code} <= ${beEats.map<String>((item) => item.code).join(',')}');
     }
-    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    logger.info(
+        '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
   });
 
+  /// 测试根数检查
   test('test rootCount', () async {
     ChessRule rule = ChessRule.fromFen(
         '4ka1r1/4a1R2/4b4/pN5Np/2pC5/6P2/P3P2rP/4B4/2ncA4/2BA1K3 w - - 0 1');
@@ -184,15 +215,16 @@ void main() {
   });
 
   test('test Future', () async {
-    print(DateTime.now().millisecondsSinceEpoch);
+    logger.info(DateTime.now().millisecondsSinceEpoch);
     await Future.delayed(const Duration(seconds: 5));
-    print(DateTime.now().millisecondsSinceEpoch);
+    logger.info(DateTime.now().millisecondsSinceEpoch);
 
     Future.delayed(const Duration(seconds: 5)).then((value) {
-      print(DateTime.now().millisecondsSinceEpoch);
+      logger.info(DateTime.now().millisecondsSinceEpoch);
     });
   });
 
+  /// 测试绝杀局面
   test('test Manual', () {
     ChessManual manual;
     ChessRule rule;
@@ -208,30 +240,32 @@ void main() {
 
     manual.loadHistory(0);
     expect(manual.currentFen.fen, manual.fen);
-    print('初始局面：${manual.currentFen.fen}');
+    logger.info('初始局面：${manual.currentFen.fen}');
     int startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     while (manual.hasNext) {
-      print(manual.next());
-      print('当前局面：${manual.currentFen.fen}');
+      logger.info(manual.next());
+      logger.info('当前局面：${manual.currentFen.fen}');
 
       // 局面判断
       rule = ChessRule(manual.currentFen);
       int eTeam = manual.getMove()!.hand == 0 ? 1 : 0;
       if (rule.isCheck(eTeam)) {
         if (rule.canParryKill(eTeam)) {
-          print('将军!');
+          logger.info('将军!');
         } else {
-          print('绝杀!');
+          logger.info('绝杀!');
         }
       }
-      print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+      logger.info(
+          '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
       startMillionSec = DateTime.now().millisecondsSinceEpoch;
     }
     // 步数走完后可返回结果
-    print(manual.next());
+    logger.info(manual.next());
   });
 
+  /// 测试困毙局面
   test('test isTrapped', () {
     ChessRule rule = ChessRule.fromFen('3k5/4P4/9/9/9/9/9/9/9/4K4');
 
@@ -246,6 +280,7 @@ void main() {
     expect(rule.isTrapped(0), false);
   });
 
+  /// 是否将军
   test('test isCheck', () {
     ChessRule rule = ChessRule.fromFen(
         'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR');
@@ -255,28 +290,29 @@ void main() {
 
     rule.fen.fen =
         'R2akCb2/9/2N3n2/8p/4p4/6p2/P3c3P/4C1r2/4A4/1cBrK1BR1 w - - 0 1';
-    print(rule.isCheck(0));
-    print(rule.canParryKill(0));
+    assert(rule.isCheck(0));
+    assert(!rule.canParryKill(0));
 
     rule.fen.fen = '2b2k3/9/2N1b4/4CR3/p1p6/4N3p/P1P5P/1C7/9/R1BAKAB2';
-    print(rule.isCheck(1));
-    print(rule.canParryKill(1));
+    assert(rule.isCheck(1));
+    assert(!rule.canParryKill(1));
 
     rule.fen.fen =
         '1nRa1k2r/4P4/5R2n/p5p2/2p5p/9/P1P3P1P/N1C1C1N2/9/2BAKAB2 b - - 0 1';
-    print(rule.isCheck(1));
-    print(rule.canParryKill(1));
+    assert(rule.isCheck(1));
+    assert(!rule.canParryKill(1));
 
     var now = DateTime.now();
-    print(now.toLocal());
+    logger.info(now.toLocal());
     int startMillionSec = now.millisecondsSinceEpoch;
 
     rule.fen.fen = '4k4/4a4/2P5n/5N3/9/5R3/9/9/2p2p2r/C3K4';
-    print('初始局面：${rule.fen}');
+    logger.info('初始局面：${rule.fen}');
     isCheck = rule.isCheck(1);
     expect(isCheck, false);
-    print('判断当前局面未将军');
-    print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+    logger.info('判断当前局面未将军');
+    logger.info(
+        '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
     startMillionSec = DateTime.now().millisecondsSinceEpoch;
 
     for (var step in [
@@ -285,52 +321,42 @@ void main() {
       ['f4f9', 'e8e9'],
       ['d7f8', '1-0']
     ]) {
-      print(rule.fen.toChineseString(step[0]));
+      logger.info(rule.fen.toChineseString(step[0]));
       rule.fen.move(step[0]);
       isCheck = rule.isCheck(1);
       expect(isCheck, true);
       canParryKill = rule.canParryKill(1);
       if (step[1] == '1-0') {
         expect(canParryKill, false);
-        print('判断当前局面已绝杀');
+        logger.info('判断当前局面已绝杀');
       } else {
         expect(canParryKill, true);
-        print('判断当前局面有将军且可解杀');
-        print(rule.fen.toChineseString(step[1]));
+        logger.info('判断当前局面有将军且可解杀');
+        logger.info(rule.fen.toChineseString(step[1]));
         rule.fen.move(step[1]);
       }
-      print('耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
+      logger.info(
+          '耗时：${DateTime.now().millisecondsSinceEpoch - startMillionSec}毫秒');
       startMillionSec = DateTime.now().millisecondsSinceEpoch;
     }
   });
 
   test('test Pos', () {
-    print(1 ~/ 2);
-    print(1 ~/ 3);
-    print(1 ~/ 4);
-    print(1 ~/ 5);
-
-    print(2 ~/ 1);
-    print(2 ~/ 2);
-    print(2 ~/ 3);
-    print(2 ~/ 4);
-    print(2 ~/ 5);
-
     ChessPos from = ChessPos.fromCode('a0');
 
-    print(from);
+    logger.info(from);
     ChessPos to = from;
-    print(to);
+    logger.info(to);
     from.x = 2;
-    print([from, to]);
+    logger.info([from, to]);
     from = ChessPos.fromCode('h9');
-    print([from, to]);
+    logger.info([from, to]);
   });
 
   test('test Fen', () {
     ChessFen fen = ChessFen();
 
-    print(fen.fen);
+    logger.info(fen.fen);
 
     List<String> steps = [
       'f6d7',
@@ -342,78 +368,79 @@ void main() {
       'd7f8',
       '1-0'
     ];
-    print(steps.take(1));
+    logger.info(steps.take(1));
     steps.removeRange(1, steps.length);
-    print(steps);
+    logger.info(steps);
   });
 
+  /// 招法名转换
   test('test ChessManual', () {
     ChessFen fen = ChessFen();
     String move = 'h0g2';
     String chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '马二进三');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
 
     fen.move(move);
-    print(fen);
+    logger.info(fen);
 
     move = 'h7e7';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '炮8平5');
-    print(fen.toPositionString(1, chineseMove));
+    logger.info(fen.toPositionString(1, chineseMove));
 
     fen.move(move);
-    print(fen);
+    logger.info(fen);
 
     move = 'b2e2';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '砲八平五');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
 
     fen.move(move);
-    print(fen);
+    logger.info(fen);
 
     move = 'h9g7';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '马8进7');
-    print(fen.toPositionString(1, chineseMove));
+    logger.info(fen.toPositionString(1, chineseMove));
 
     fen.move(move);
-    print(fen);
+    logger.info(fen);
 
     fen.fen = '4k4/3P1P3/4P4/3P1P3/9/9/9/9/9/4K4 w - - 0 1';
     move = 'f8e8';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '一兵平五');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
 
     move = 'f6e6';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '二兵平五');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
 
     move = 'e7e8';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '兵五进一');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
 
     move = 'd8e8';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '三兵平五');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
 
     move = 'd6e6';
     chineseMove = fen.toChineseString(move);
-    print(chineseMove);
+    logger.info(chineseMove);
     expect(chineseMove, '四兵平五');
-    print(fen.toPositionString(0, chineseMove));
+    logger.info(fen.toPositionString(0, chineseMove));
   });
 }
