@@ -283,7 +283,7 @@ class ChessFen {
     List<ChessPos> items = findAll(matchCode);
 
     ChessPos curItem;
-    // 这种情况只能是小兵
+    // 这种情况只能是小兵 TODO fix 4k4/9/3aP4/9/9/9/3p1p3/4R4/3p1p3/4K4 w - - 0 1 三卒平5
     if (nameIndex.contains(move[0])) {
       // 筛选出有同列的兵
       List<ChessPos> nItems = items

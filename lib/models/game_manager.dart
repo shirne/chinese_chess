@@ -216,13 +216,12 @@ class GameManager {
   loadPGN(String pgn) {
     stop();
 
-    _loadPGN(pgn).then((result) {
-      gameNotifier.value = 0;
-      next();
-    });
+    _loadPGN(pgn);
+    gameNotifier.value = 0;
+    next();
   }
 
-  _loadPGN(String pgn) async {
+  _loadPGN(String pgn) {
     isStop = true;
     engine?.stop();
 

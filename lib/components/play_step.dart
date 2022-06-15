@@ -42,6 +42,7 @@ class PlayStepState extends State<PlayStep> {
 
   updateStep() {
     String message = gamer.stepNotifier.value;
+    if (message.isEmpty) return;
     if (message == 'clear') {
       setState(() {
         currentStep = gamer.currentStep;

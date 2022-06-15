@@ -42,9 +42,7 @@ class ChessManual {
   // RedTitle、RedElo、RedType
 
   // 别名
-  String get redNA {
-    return redTeam;
-  }
+  String get redNA => redTeam;
 
   set redNA(String value) {
     redTeam = value;
@@ -56,9 +54,7 @@ class ChessManual {
 
   // 比赛结果 1-0 0-1 1/2-1/2 *
   String result = '*';
-  String get chineseResult {
-    return ChessFen.getChineseResult(result);
-  }
+  String get chineseResult => ChessFen.getChineseResult(result);
 
   // 开局
   String opening = '';
@@ -132,7 +128,7 @@ class ChessManual {
   initFen(String fenStr) {
     List<String> fenParts = fenStr.split(' ');
     currentFen = ChessFen(fenParts[0]);
-    this.fenPosition = this.currentFen.position();
+    fenPosition = currentFen.position();
     if (fenParts.length > 1) {
       if (fenParts[1] == 'b' || fenParts[1] == 'B') {
         startHand = 1;
@@ -151,6 +147,8 @@ class ChessManual {
     content = content.replaceAllMapped(
         RegExp('[${ChessFen.replaceNumber.join('')}]'),
         (match) => ChessFen.replaceNumber.indexOf(match[0]!).toString());
+    bool isInit = false;
+    logger.info(content);
     while (true) {
       String chr = content[idx];
       switch (chr) {
@@ -206,6 +204,7 @@ class ChessManual {
                 break;
               case 'fen':
                 this.fen = value;
+                isInit = true;
                 initFen(this.fen);
                 break;
               case 'format':
@@ -250,8 +249,9 @@ class ChessManual {
           return;
         default:
           line += chr;
-          if (this.currentFen == null) {
-            if (fen == null || fen.isEmpty) {
+          if (!isInit) {
+            isInit = true;
+            if (fen.isEmpty) {
               fen = startFen;
             }
             initFen(fen);
@@ -266,6 +266,7 @@ class ChessManual {
         break;
       }
     }
+    logger.info(moves);
   }
 
   String export() {

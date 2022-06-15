@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fast_gbk/fast_gbk.dart';
-import 'package:file_picker/file_picker.dart';
+
 import 'package:file_selector/file_selector.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
-import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -65,11 +64,7 @@ class _GameBoardState extends State<GameBoard> {
       ElevatedButton.icon(
         onPressed: () {
           MyDialog.of(context).toast(S.of(context).feature_not_available,
-              icon: MyDialog.iconError);
-          return;
-          setState(() {
-            mode = PlayMode.modeOnline;
-          });
+              iconType: IconType.error);
         },
         icon: const Icon(Icons.wifi),
         label: Text(S.of(context).mode_online),
@@ -127,26 +122,28 @@ class _GameBoardState extends State<GameBoard> {
                 });
           },
         ),
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.copy),
-              tooltip: S.of(context).copy_code,
-              onPressed: () {
-                copyFen();
-              }),
-          IconButton(
-              icon: const Icon(Icons.airplay),
-              tooltip: S.of(context).parse_code,
-              onPressed: () {
-                applyFen();
-              }),
-          IconButton(
-              icon: const Icon(Icons.airplay),
-              tooltip: S.of(context).edit_code,
-              onPressed: () {
-                editFen();
-              }),
-          /*IconButton(icon: Icon(Icons.minimize), onPressed: (){
+        actions: mode == null
+            ? null
+            : [
+                IconButton(
+                    icon: const Icon(Icons.copy),
+                    tooltip: S.of(context).copy_code,
+                    onPressed: () {
+                      copyFen();
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.airplay),
+                    tooltip: S.of(context).parse_code,
+                    onPressed: () {
+                      applyFen();
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.airplay),
+                    tooltip: S.of(context).edit_code,
+                    onPressed: () {
+                      editFen();
+                    }),
+                /*IconButton(icon: Icon(Icons.minimize), onPressed: (){
 
           }),
           IconButton(icon: Icon(Icons.zoom_out_map), onPressed: (){
@@ -173,7 +170,7 @@ class _GameBoardState extends State<GameBoard> {
                 ]
             );
           })*/
-        ],
+              ],
       ),
       drawer: Drawer(
         semanticLabel: S.of(context).menu,
@@ -203,7 +200,12 @@ class _GameBoardState extends State<GameBoard> {
               onTap: () {
                 Navigator.pop(context);
                 setState(() {
-                  gamer.stop();
+                  if (mode == null) {
+                    setState(() {
+                      mode = PlayMode.modeFree;
+                    });
+                  }
+                  gamer.newGame();
                   //mode = null;
                 });
               },
@@ -213,6 +215,11 @@ class _GameBoardState extends State<GameBoard> {
               title: Text(S.of(context).load_manual),
               onTap: () {
                 Navigator.pop(context);
+                if (mode == null) {
+                  setState(() {
+                    mode = PlayMode.modeFree;
+                  });
+                }
                 loadFile();
               },
             ),
@@ -361,7 +368,7 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   _saveManualWindow(String content, String filename) async {
-    final path = await FileSelectorPlatform.instance.getSavePath(
+    final path = await getSavePath(
       suggestedName: filename,
     );
     if (path == null) {
@@ -375,23 +382,11 @@ class _GameBoardState extends State<GameBoard> {
 
   loadFile() {
     if (kIsWeb) {
-      _loadFileWeb();
+      _loadFileWindow();
     } else if (Platform.isAndroid || Platform.isIOS) {
       _loadFileMobile();
     } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       _loadFileWindow();
-    }
-  }
-
-  void _loadFileWeb() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(allowedExtensions: ['.pgn', '.PGN'], withData: true);
-
-    if (result != null && result.files.isNotEmpty) {
-      String content = gbk.decode(result.files.single.bytes!);
-      gamer.loadPGN(content);
-    } else {
-      // User canceled the picker
     }
   }
 
@@ -400,10 +395,13 @@ class _GameBoardState extends State<GameBoard> {
       label: '棋谱文件',
       extensions: ['pgn'],
     );
-    final files = await FileSelectorPlatform.instance
-        .openFiles(acceptedTypeGroups: [typeGroup]);
-    if (files.isNotEmpty) {
-      gamer.loadPGN(files[0].path);
+    final file = await openFile(acceptedTypeGroups: [typeGroup]);
+    if (file != null) {
+      String content = gbk.decode(await file.readAsBytes());
+      if (gamer.isStop) {
+        gamer.newGame();
+      }
+      gamer.loadPGN(content);
     }
   }
 
@@ -419,6 +417,9 @@ class _GameBoardState extends State<GameBoard> {
     );
 
     if (path != null && path.isNotEmpty) {
+      if (gamer.isStop) {
+        gamer.newGame();
+      }
       gamer.loadPGN(path);
     } else {
       // cancel
