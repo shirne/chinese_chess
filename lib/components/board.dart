@@ -1,12 +1,10 @@
-
-
 import 'package:flutter/material.dart';
 
 import '../models/game_manager.dart';
 import '../widgets/game_wrapper.dart';
 
-class Board extends StatefulWidget{
-
+/// 棋盘
+class Board extends StatefulWidget {
   const Board({Key? key}) : super(key: key);
 
   @override
@@ -16,13 +14,12 @@ class Board extends StatefulWidget{
 class BoardState extends State<Board> {
   @override
   Widget build(BuildContext context) {
-    GameManager gamer = context.findAncestorStateOfType<GameWrapperState>()!.gamer;
+    GameManager gamer =
+        context.findAncestorStateOfType<GameWrapperState>()!.gamer;
     return SizedBox(
       width: gamer.skin.width,
       height: gamer.skin.height,
-      child: Image.asset(
-          gamer.skin.boardImage
-      ),
+      child: Image.asset(gamer.skin.boardImage),
     );
   }
 }

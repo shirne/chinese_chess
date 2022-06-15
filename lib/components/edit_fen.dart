@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'chess_box.dart';
 import 'chess_pieces.dart';
 import 'chess_single_box.dart';
-import '../elements/board.dart';
+import 'board.dart';
 import '../generated/l10n.dart';
 import '../models/chess_item.dart';
 import '../models/chess_manual.dart';

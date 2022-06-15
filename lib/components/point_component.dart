@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// 标记点
 class PointComponent extends StatelessWidget {
   final double size;
 

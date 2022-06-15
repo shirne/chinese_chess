@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/// 标记点
 class MarkComponent extends StatelessWidget {
   final double size;
 

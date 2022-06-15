@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'edit_fen.dart';
 import '../generated/l10n.dart';
 import '../models/chess_item.dart';
-import '../elements/piece.dart';
+import 'piece.dart';
 import '../models/game_manager.dart';
 import '../widgets/game_wrapper.dart';
 

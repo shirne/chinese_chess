@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import '../generated/l10n.dart';
 import '../models/sound.dart';
 import '../models/chess_manual.dart';
-import '../elements/board.dart';
+import 'board.dart';
 import '../models/chess_item.dart';
-import '../elements/piece.dart';
+import 'piece.dart';
 import '../models/chess_pos.dart';
 import '../models/chess_rule.dart';
 import '../models/game_manager.dart';
 import 'chess_pieces.dart';
 import '../driver/player_driver.dart';
-import '../elements/mark_component.dart';
-import '../elements/point_component.dart';
+import 'mark_component.dart';
+import 'point_component.dart';
 import '../widgets/game_wrapper.dart';
 
 class Chess extends StatefulWidget {

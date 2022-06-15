@@ -4,6 +4,7 @@ import '../models/chess_item.dart';
 import '../models/game_manager.dart';
 import '../widgets/game_wrapper.dart';
 
+/// 棋子
 class Piece extends StatelessWidget {
   final ChessItem item;
   final bool isActive;
