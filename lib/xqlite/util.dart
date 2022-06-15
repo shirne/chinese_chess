@@ -1,6 +1,7 @@
 import 'dart:isolate';
 import 'dart:typed_data';
 
+import '../global.dart';
 import 'position.dart';
 import 'search.dart';
 
@@ -32,7 +33,7 @@ class XQIsoSearch {
     await init();
     position.fromFen(message.fen);
     int mvLast = search!.searchMain(1000 << (0 << 1));
-    print('$mvLast => ${Util.move2Iccs(mvLast)}');
+    logger.info('$mvLast => ${Util.move2Iccs(mvLast)}');
     String move = Util.move2Iccs(mvLast);
     message.sendPort?.send(move);
     return move;

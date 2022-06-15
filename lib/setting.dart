@@ -45,7 +45,7 @@ class _SettingPageState extends State<SettingPage> {
                       .toast('保存成功', icon: MyDialog.iconSuccess);
                 });
               },
-              child: Text(
+              child: const Text(
                 '保存',
                 style: TextStyle(color: Colors.white),
               )),
@@ -53,15 +53,15 @@ class _SettingPageState extends State<SettingPage> {
       ),
       body: Center(
         child: setting == null
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : Container(
                 width: width,
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: SingleChildScrollView(
                   child: ListBody(
                     children: [
                       ListTile(
-                          title: Text('AI类型'),
+                          title: const Text('AI类型'),
                           trailing: CupertinoSegmentedControl(
                             onValueChanged: (value) {
                               if (value == null) return;
@@ -85,7 +85,7 @@ class _SettingPageState extends State<SettingPage> {
                             },
                           )),
                       ListTile(
-                          title: Text('AI级别'),
+                          title: const Text('AI级别'),
                           trailing: CupertinoSegmentedControl(
                             onValueChanged: (value) {
                               if (value == null) return;
@@ -114,7 +114,7 @@ class _SettingPageState extends State<SettingPage> {
                             },
                           )),
                       ListTile(
-                        title: Text('游戏声音'),
+                        title: const Text('游戏声音'),
                         trailing: CupertinoSwitch(
                           value: setting!.sound,
                           onChanged: (v) {
@@ -125,7 +125,7 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       ListTile(
-                        title: Text('游戏音量'),
+                        title: const Text('游戏音量'),
                         trailing: CupertinoSlider(
                           value: setting!.soundVolume,
                           min: 0,

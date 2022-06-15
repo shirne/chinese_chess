@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_this
 
+import '../global.dart';
 import 'chess_fen.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
@@ -139,7 +140,7 @@ class ChessManual {
         startHand = 0;
       }
     }
-    print('clear items');
+    logger.info('clear items');
     _items = [];
   }
 
@@ -218,7 +219,7 @@ class ChessManual {
                 break;
             }
           } else {
-            print('Analysis pgn failed at $idx');
+            logger.info('Analysis pgn failed at $idx');
             break;
           }
           line = '';
@@ -287,10 +288,8 @@ class ChessManual {
     }
 
     for (int myStep = 0; myStep < moves.length; myStep += 2) {
-      lines.add('${(myStep ~/ 2) + 1}. ${moves[myStep].toChineseString()} ' +
-          (myStep < moves.length - 1
-              ? moves[myStep + 1].toChineseString()
-              : result));
+      lines.add('${(myStep ~/ 2) + 1}. ${moves[myStep].toChineseString()} '
+          '${myStep < moves.length - 1 ? moves[myStep + 1].toChineseString() : result}');
     }
     if (moves.length % 2 == 0) {
       lines.add(result);
@@ -431,7 +430,7 @@ class ChessManual {
     } else {
       moves.removeRange(fromStep, moves.length);
     }
-    print('Clear moves $fromStep $moves');
+    logger.info('Clear moves $fromStep $moves');
   }
 
   addMoves(List<String> moves) {

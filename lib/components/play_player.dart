@@ -74,7 +74,7 @@ class PlayPlayerState extends State<PlayPlayer> {
       );
     }
 
-    return SizedBox();
+    return const SizedBox();
   }
 
   void changePlayDriver(int team, DriverType driverType) {
@@ -114,7 +114,7 @@ class PlayPlayerState extends State<PlayPlayer> {
             child: Container(
               decoration: decoration,
               child: TabCard(
-                  titlePadding: EdgeInsets.only(top: 10, bottom: 10),
+                  titlePadding: const EdgeInsets.only(top: 10, bottom: 10),
                   titles: [
                     Text(S.of(context).current_info),
                     Text(S.of(context).manual)
@@ -135,7 +135,7 @@ class PlayPlayerState extends State<PlayPlayer> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Table(
                         border: null,
                         columnWidths: const {

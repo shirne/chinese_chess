@@ -59,7 +59,7 @@ class _GameBoardState extends State<GameBoard> {
             mode = PlayMode.modeRobot;
           });
         },
-        icon: Icon(Icons.android),
+        icon: const Icon(Icons.android),
         label: Text(S.of(context).mode_robot),
       ),
       ElevatedButton.icon(
@@ -71,7 +71,7 @@ class _GameBoardState extends State<GameBoard> {
             mode = PlayMode.modeOnline;
           });
         },
-        icon: Icon(Icons.wifi),
+        icon: const Icon(Icons.wifi),
         label: Text(S.of(context).mode_online),
       ),
       ElevatedButton.icon(
@@ -80,7 +80,7 @@ class _GameBoardState extends State<GameBoard> {
             mode = PlayMode.modeFree;
           });
         },
-        icon: Icon(Icons.map),
+        icon: const Icon(Icons.map),
         label: Text(S.of(context).mode_free),
       ),
     ];
@@ -120,7 +120,7 @@ class _GameBoardState extends State<GameBoard> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-                icon: Icon(Icons.menu),
+                icon: const Icon(Icons.menu),
                 tooltip: S.of(context).open_menu,
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
@@ -129,19 +129,19 @@ class _GameBoardState extends State<GameBoard> {
         ),
         actions: [
           IconButton(
-              icon: Icon(Icons.copy),
+              icon: const Icon(Icons.copy),
               tooltip: S.of(context).copy_code,
               onPressed: () {
                 copyFen();
               }),
           IconButton(
-              icon: Icon(Icons.airplay),
+              icon: const Icon(Icons.airplay),
               tooltip: S.of(context).parse_code,
               onPressed: () {
                 applyFen();
               }),
           IconButton(
-              icon: Icon(Icons.airplay),
+              icon: const Icon(Icons.airplay),
               tooltip: S.of(context).edit_code,
               onPressed: () {
                 editFen();
@@ -181,7 +181,7 @@ class _GameBoardState extends State<GameBoard> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.blue,
                 ),
                 child: Center(
@@ -190,7 +190,7 @@ class _GameBoardState extends State<GameBoard> {
                     Image.asset('assets/images/logo.png'),
                     Text(
                       S.of(context).app_title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                       ),
@@ -198,7 +198,7 @@ class _GameBoardState extends State<GameBoard> {
                   ],
                 ))),
             ListTile(
-              leading: Icon(Icons.add),
+              leading: const Icon(Icons.add),
               title: Text(S.of(context).new_game),
               onTap: () {
                 Navigator.pop(context);
@@ -209,7 +209,7 @@ class _GameBoardState extends State<GameBoard> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.description),
+              leading: const Icon(Icons.description),
               title: Text(S.of(context).load_manual),
               onTap: () {
                 Navigator.pop(context);
@@ -217,7 +217,7 @@ class _GameBoardState extends State<GameBoard> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.save),
+              leading: const Icon(Icons.save),
               title: Text(S.of(context).save_manual),
               onTap: () {
                 Navigator.pop(context);
@@ -225,7 +225,7 @@ class _GameBoardState extends State<GameBoard> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.copy),
+              leading: const Icon(Icons.copy),
               title: Text(S.of(context).copy_code),
               onTap: () {
                 Navigator.pop(context);
@@ -233,14 +233,15 @@ class _GameBoardState extends State<GameBoard> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
+              leading: const Icon(Icons.settings),
               title: Text(S.of(context).setting),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => SettingPage()));
+                        builder: (BuildContext context) =>
+                            const SettingPage()));
               },
             ),
           ],
@@ -384,18 +385,11 @@ class _GameBoardState extends State<GameBoard> {
 
   void _loadFileWeb() async {
     FilePickerResult? result = await FilePicker.platform
-        .pickFiles(allowedExtensions: ['.pgn', '.PGN']);
+        .pickFiles(allowedExtensions: ['.pgn', '.PGN'], withData: true);
 
-    if (result != null) {
-      print(result.files.single);
-      if (result.files.single.path != null) {
-        File file = File(result.files.single.path!);
-        print(file);
-      } else {
-        String content = gbk.decode(result.files.single.bytes!);
-        print(content);
-        gamer.loadPGN(content);
-      }
+    if (result != null && result.files.isNotEmpty) {
+      String content = gbk.decode(result.files.single.bytes!);
+      gamer.loadPGN(content);
     } else {
       // User canceled the picker
     }
@@ -424,8 +418,7 @@ class _GameBoardState extends State<GameBoard> {
       fileTileSelectMode: FileTileSelectMode.wholeTile,
     );
 
-    if (path != null) {
-      print(path);
+    if (path != null && path.isNotEmpty) {
       gamer.loadPGN(path);
     } else {
       // cancel

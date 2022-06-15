@@ -5,6 +5,7 @@ import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/material.dart';
 
 import '../driver/player_driver.dart';
+import '../global.dart';
 import 'chess_skin.dart';
 import 'game_setting.dart';
 import 'sound.dart';
@@ -134,11 +135,11 @@ class GameManager {
         }
         break;
       case 'bestmove':
-        print(message);
+        logger.info(message);
         message = parseBaseMove(parts);
         break;
       case 'info':
-        print(message);
+        logger.info(message);
         message = parseInfo(parts);
         break;
       case 'id':
@@ -259,11 +260,11 @@ class GameManager {
   // 重载历史局面
   loadHistory(int index) {
     if (index > manual.moves.length) {
-      print('History error');
+      logger.info('History error');
       return;
     }
     if (index == currentStep) {
-      print('History no change');
+      logger.info('History no change');
       return;
     }
     currentStep = index;
@@ -273,7 +274,7 @@ class GameManager {
     playerNotifier.value = curHand;
 
     gameNotifier.value = currentStep;
-    print('history $currentStep');
+    logger.info('history $currentStep');
   }
 
   /// 切换驱动
@@ -292,7 +293,7 @@ class GameManager {
     player.move().then((String move) {
       addMove(move);
       checkResult(curHand == 0 ? 1 : 0, currentStep - 1).then((canNext) {
-        print(canNext);
+        logger.info(canNext);
         if (canNext) {
           switchPlayer();
         }
@@ -306,7 +307,7 @@ class GameManager {
   }
 
   addMove(String move) {
-    print('addmove $move');
+    logger.info('addmove $move');
     if (PlayerDriver.isAction(move)) {
       if (move == PlayerDriver.rstGiveUp) {
         setResult(
@@ -332,7 +333,7 @@ class GameManager {
     }
 
     if (!ChessManual.isPosMove(move)) {
-      print('着法错误 $move');
+      logger.info('着法错误 $move');
       return;
     }
 
@@ -361,10 +362,10 @@ class GameManager {
 
   setResult(String result, [String description = '']) {
     if (!ChessManual.results.contains(result)) {
-      print('结果不合法 $result');
+      logger.info('结果不合法 $result');
       return;
     }
-    print('本局结果：$result');
+    logger.info('本局结果：$result');
     resultNotifier.value = '$result $description';
     if (result == ChessManual.resultFstDraw) {
       Sound.play(Sound.draw);
@@ -378,7 +379,7 @@ class GameManager {
 
   /// 棋局结果判断
   Future<bool> checkResult(int hand, int curMove) async {
-    print('checkResult');
+    logger.info('checkResult');
 
     int repeatRound = manual.repeatRound();
     if (repeatRound > 2) {
@@ -392,7 +393,7 @@ class GameManager {
     }
 
     isCheckMate = rule.isCheck(hand);
-    print('是否将军 $isCheckMate');
+    logger.info('是否将军 $isCheckMate');
 
     // 判断输赢，包括能否应将，长将
     if (isCheckMate) {
@@ -454,10 +455,10 @@ class GameManager {
     }
 
     playerNotifier.value = curHand;
-    print('切换选手:${player.title} ${player.team} ${player.driver}');
+    logger.info('切换选手:${player.title} ${player.team} ${player.driver}');
 
     resultNotifier.value = '';
-    print(player.title);
+    logger.info(player.title);
     next();
 
     messageNotifier.value = 'clear';
@@ -484,7 +485,7 @@ class GameManager {
         if (v) {
           requestHelp();
         } else {
-          print('engine is not support');
+          logger.info('engine is not support');
         }
       });
     } else {
@@ -494,7 +495,7 @@ class GameManager {
         engine?.position(fenStr);
         engine?.go(depth: 10);
       } else {
-        print('engine is not ok');
+        logger.info('engine is not ok');
       }
     }
   }

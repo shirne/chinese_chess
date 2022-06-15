@@ -94,7 +94,7 @@ class PlayPageState extends State<PlayPage> {
           ),
           Container(
             width: 439,
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(2)),
@@ -127,14 +127,14 @@ class PlayPageState extends State<PlayPage> {
                   decoration: decoration,
                   child: TabCard(
                     titleFit: FlexFit.tight,
-                    titlePadding:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                    titlePadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 30),
                     titles: [
                       Text(S.of(context).recommend_move),
                       Text(S.of(context).remark)
                     ],
                     bodies: [
-                      PlayBot(),
+                      const PlayBot(),
                       Center(
                         child: Text(S.of(context).no_remark),
                       )

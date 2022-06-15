@@ -29,10 +29,10 @@ class GameBottomBarState extends State<GameBottomBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(icon: Icon(Icons.list), onPressed: () {}),
-          IconButton(icon: Icon(Icons.code), onPressed: () {}),
-          IconButton(icon: Icon(Icons.navigate_before), onPressed: () {}),
-          IconButton(icon: Icon(Icons.navigate_next), onPressed: () {})
+          IconButton(icon: const Icon(Icons.list), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.code), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: () {})
         ],
       ),
     );
@@ -43,10 +43,10 @@ class GameBottomBarState extends State<GameBottomBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(icon: Icon(Icons.list), onPressed: () {}),
-          IconButton(icon: Icon(Icons.replay), onPressed: () {}),
-          IconButton(icon: Icon(Icons.navigate_before), onPressed: () {}),
-          IconButton(icon: Icon(Icons.navigate_next), onPressed: () {})
+          IconButton(icon: const Icon(Icons.list), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.replay), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: () {})
         ],
       ),
     );
@@ -57,10 +57,10 @@ class GameBottomBarState extends State<GameBottomBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(icon: Icon(Icons.list), onPressed: () {}),
-          IconButton(icon: Icon(Icons.replay), onPressed: () {}),
-          IconButton(icon: Icon(Icons.navigate_before), onPressed: () {}),
-          IconButton(icon: Icon(Icons.navigate_next), onPressed: () {})
+          IconButton(icon: const Icon(Icons.list), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.replay), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: () {})
         ],
       ),
     );

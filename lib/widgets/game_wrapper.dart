@@ -3,6 +3,7 @@ import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
+import '../global.dart';
 import '../models/game_manager.dart';
 
 class GameWrapper extends StatefulWidget {
@@ -46,13 +47,13 @@ class GameWrapperState extends State<GameWrapper> {
   }
 
   Future<bool> _willPop() async {
-    print('onwillpop');
+    logger.info('onwillpop');
     final sure = await MyDialog.of(context).confirm(S.of(context).exit_now,
         buttonText: S.of(context).yes_exit,
         cancelText: S.of(context).dont_exit);
 
     if (sure ?? false) {
-      print('gamer destroy');
+      logger.info('gamer destroy');
       gamer.dispose();
       //gamer = null;
       await Future.delayed(const Duration(milliseconds: 200));
@@ -83,7 +84,7 @@ class GameWrapperState extends State<GameWrapper> {
 
   @override
   void dispose() {
-    print('gamer destroy');
+    logger.info('gamer destroy');
     gamer.dispose();
     //gamer = null;
     super.dispose();

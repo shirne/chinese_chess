@@ -63,11 +63,11 @@ class PlayStepState extends State<PlayStep> {
         currentStep = steps.length - 1;
       });
     }
-    Future.delayed(Duration(milliseconds: 16)).then((value) {
+    Future.delayed(const Duration(milliseconds: 16)).then((value) {
       ScrollPositionWithSingleContext position =
           _controller.position as ScrollPositionWithSingleContext;
       _controller.animateTo(position.maxScrollExtent,
-          duration: Duration(milliseconds: 100), curve: Curves.easeOut);
+          duration: const Duration(milliseconds: 100), curve: Curves.easeOut);
     });
   }
 
@@ -79,7 +79,7 @@ class PlayStepState extends State<PlayStep> {
     int step = 0;
     return Container(
       width: widget.width,
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: widget.decoration,
       child: ListView(
         controller: _controller,
@@ -95,7 +95,7 @@ class PlayStepState extends State<PlayStep> {
             },
             child: Container(
               height: 23,
-              padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
               decoration: BoxDecoration(
                 color: currentStep == myIndex
                     ? Colors.black26
@@ -105,7 +105,7 @@ class PlayStepState extends State<PlayStep> {
                 children: [
                   (step++ > 0 && step % 2 == 0)
                       ? Text('${step ~/ 2}.')
-                      : Text('   '),
+                      : const Text('   '),
                   Text(e)
                 ],
               ),

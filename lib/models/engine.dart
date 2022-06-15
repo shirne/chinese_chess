@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../foundation/customer_notifier.dart';
+import '../global.dart';
 
 class Engine extends CustomNotifier<String> {
   String engine = 'eleeye.exe';
@@ -51,6 +52,7 @@ class Engine extends CustomNotifier<String> {
       if (line == 'bye') {
         ready = false;
         process = null;
+        stopCompleter?.complete(true);
       } else if (line.isNotEmpty && hasListeners) {
         if (line.startsWith('nobestmove') || line.startsWith('bestmove ')) {
           if (stopCompleter != null && !stopCompleter!.isCompleted) {
@@ -90,10 +92,10 @@ class Engine extends CustomNotifier<String> {
 
   void sendCommand(String command) {
     if (!ready) {
-      print('Engine is not ready');
+      logger.info('Engine is not ready');
       return;
     }
-    print('command: $command');
+    logger.info('command: $command');
     process?.stdin.writeln(command);
   }
 

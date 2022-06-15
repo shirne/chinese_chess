@@ -1,4 +1,5 @@
 import '../driver/player_driver.dart';
+import '../global.dart';
 import 'game_manager.dart';
 
 class Player {
@@ -42,7 +43,7 @@ class Player {
 
   // 通知界面，从界面上过来的着法不需要调用
   Future<String> onMove(String move) {
-    print('onmove');
+    logger.info('onmove');
     manager.moveNotifier.value = move;
 
     if (move.isNotEmpty) {

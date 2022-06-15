@@ -1,3 +1,4 @@
+import '../global.dart';
 import 'chess_manual.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
@@ -124,19 +125,19 @@ class ChessFen {
     int toX = move.codeUnitAt(2) - colIndexBase;
     int toY = int.parse(move[3]);
     if (fromY > 9 || fromX > 8) {
-      print(['From pos error:', move]);
+      logger.info('From pos error:$move');
       return false;
     }
     if (toY > 9 || toX > 8) {
-      print(['To pos error:', move]);
+      logger.info('To pos error:$move');
       return false;
     }
     if (fromY == toY && fromX == toX) {
-      print(['No movement:', move]);
+      logger.info('No movement:$move');
       return false;
     }
     if (_rows[fromY][fromX] == '0') {
-      print(['From pos is empty:', move]);
+      logger.info('From pos is empty:$move');
       return false;
     }
     _rows[toY][toX] = _rows[fromY][fromX];
@@ -329,7 +330,7 @@ class ChessFen {
       } else if (nItems.isNotEmpty) {
         curItem = nItems[0];
       } else {
-        print('招法加载错误 $team $move');
+        logger.info('招法加载错误 $team $move');
         return '';
       }
     }
@@ -406,7 +407,7 @@ class ChessFen {
       return getChineseResult(move);
     }
 
-    String _chineseString;
+    String chineseString;
 
     ChessPos posFrom = ChessPos.fromCode(move.substring(0, 2));
     ChessPos posTo = ChessPos.fromCode(move.substring(2, 4));
@@ -414,7 +415,7 @@ class ChessFen {
     // 找出子
     String matchCode = _rows[posFrom.y][posFrom.x];
     if (matchCode == '0') {
-      print('着法错误 $fen $move');
+      logger.info('着法错误 $fen $move');
       return '';
     }
     int team = matchCode.codeUnitAt(0) < 'a'.codeUnitAt(0) ? 0 : 1;
@@ -424,7 +425,7 @@ class ChessFen {
     String name = team == 0 ? nameRedMap[code]! : nameBlackMap[code]!;
 
     if (code == 'k' || code == 'a' || code == 'b') {
-      _chineseString =
+      chineseString =
           name + (team == 0 ? colRed[posFrom.x] : colBlack[posFrom.x]);
     } else {
       int colCount = 0;
@@ -444,9 +445,9 @@ class ChessFen {
         int idx = rowIndexs.indexOf(posFrom.y);
         // print([colCount, idx]);
         if (team == 0) {
-          _chineseString = nameIndex[idx] + name;
+          chineseString = nameIndex[idx] + name;
         } else {
-          _chineseString = nameIndex[rowIndexs.length - idx - 1] + name;
+          chineseString = nameIndex[rowIndexs.length - idx - 1] + name;
         }
       } else if (colCount > 2 || (colCount > 1 && code == 'p')) {
         // 找出所有的兵
@@ -462,56 +463,56 @@ class ChessFen {
         int idx = nPawns.indexOf(posFrom);
         if (nPawns.length == 2) {
           if (team == 0) {
-            _chineseString = (idx == 0 ? '前' : '后') + name;
+            chineseString = (idx == 0 ? '前' : '后') + name;
           } else {
-            _chineseString = (idx == 1 ? '前' : '后') + name;
+            chineseString = (idx == 1 ? '前' : '后') + name;
           }
         } else if (nPawns.length == 3) {
           if (idx == 1) {
-            _chineseString = '中$name';
+            chineseString = '中$name';
           } else {
             if (team == 0) {
-              _chineseString = (idx == 0 ? '前' : '后') + name;
+              chineseString = (idx == 0 ? '前' : '后') + name;
             } else {
-              _chineseString = (idx == 2 ? '前' : '后') + name;
+              chineseString = (idx == 2 ? '前' : '后') + name;
             }
           }
         } else {
           if (team == 0) {
-            _chineseString = nameIndex[idx] + name;
+            chineseString = nameIndex[idx] + name;
           } else {
-            _chineseString = nameIndex[nPawns.length - idx - 1] + name;
+            chineseString = nameIndex[nPawns.length - idx - 1] + name;
           }
         }
       } else if (colCount > 1) {
         if (team == 0) {
-          _chineseString = (posFrom.y > rowIndexs[0] ? '前' : '后') + name;
+          chineseString = (posFrom.y > rowIndexs[0] ? '前' : '后') + name;
         } else {
-          _chineseString = (posFrom.y < rowIndexs[1] ? '前' : '后') + name;
+          chineseString = (posFrom.y < rowIndexs[1] ? '前' : '后') + name;
         }
       } else {
-        _chineseString =
+        chineseString =
             name + (team == 0 ? colRed[posFrom.x] : colBlack[posFrom.x]);
       }
     }
     if (posFrom.y == posTo.y) {
-      _chineseString += '平${team == 0 ? colRed[posTo.x] : colBlack[posTo.x]}';
+      chineseString += '平${team == 0 ? colRed[posTo.x] : colBlack[posTo.x]}';
     } else {
       if ((team == 0 && posFrom.y < posTo.y) ||
           (team == 1 && posFrom.y > posTo.y)) {
-        _chineseString += '进';
+        chineseString += '进';
       } else {
-        _chineseString += '退';
+        chineseString += '退';
       }
       if (['p', 'k', 'c', 'r'].contains(code)) {
         int step = (posFrom.y - posTo.y).abs();
-        _chineseString += team == 0 ? stepIndex[step] : step.toString();
+        chineseString += team == 0 ? stepIndex[step] : step.toString();
       } else {
-        _chineseString += team == 0 ? colRed[posTo.x] : colBlack[posTo.x];
+        chineseString += team == 0 ? colRed[posTo.x] : colBlack[posTo.x];
       }
     }
 
-    return _chineseString;
+    return chineseString;
   }
 }
 

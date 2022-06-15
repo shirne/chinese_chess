@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 
+import '../global.dart';
 import 'chess_pos.dart';
 import 'game_manager.dart';
 
@@ -44,7 +45,7 @@ class ChessSkin {
     rootBundle.loadString(jsonfile).then((String fileContents) {
       loadJson(fileContents);
     }).catchError((error) {
-      print(error.toString());
+      logger.warning('Skin file $jsonfile error', error);
       readyNotifier.value = true;
     });
   }
@@ -86,7 +87,7 @@ class ChessSkin {
 
   String getRedChess(String code) {
     if (!redMap.containsKey(code.toUpperCase())) {
-      print('Code error: $code');
+      logger.info('Code error: $code');
       return "assets/skins/$folder/$blank";
     }
     return "assets/skins/$folder/${redMap[code.toUpperCase()]}";
@@ -94,7 +95,7 @@ class ChessSkin {
 
   String getBlackChess(String code) {
     if (!blackMap.containsKey(code.toLowerCase())) {
-      print('Code error: $code');
+      logger.info('Code error: $code');
       return "assets/skins/$folder/$blank";
     }
     return "assets/skins/$folder/${blackMap[code.toLowerCase()]}";

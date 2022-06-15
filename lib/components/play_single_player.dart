@@ -60,7 +60,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
   Widget switchRobot(int team) {
     if (gamer.hands[team].isUser) {
       return IconButton(
-        icon: Icon(Icons.android),
+        icon: const Icon(Icons.android),
         tooltip: S.of(context).trusteeship_to_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
@@ -68,7 +68,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
       );
     } else if (gamer.hands[team].isRobot) {
       return IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.android,
           color: Colors.blueAccent,
         ),
@@ -78,7 +78,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
         },
       );
     }
-    return SizedBox();
+    return const SizedBox();
   }
 
   void changePlayDriver(int team, DriverType driverType) {
@@ -116,12 +116,15 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
           leading: leading,
           title: Text(
             gamer.getPlayer(widget.team).title,
-            style: TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14),
             textDirection: tDirect,
           ),
           subtitle: currentTeam == widget.team
-              ? Text(S.of(context).thinking,
-                  style: TextStyle(fontSize: 10), textDirection: tDirect)
+              ? Text(
+                  S.of(context).thinking,
+                  style: const TextStyle(fontSize: 10),
+                  textDirection: tDirect,
+                )
               : null,
           trailing: trailing,
           titleAlign: widget.placeAt == Alignment.topCenter
@@ -129,10 +132,10 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
               : CrossAxisAlignment.end,
         ),
       ),
-      SizedBox(width: 10),
+      const SizedBox(width: 10),
     ];
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: widget.placeAt == Alignment.topCenter

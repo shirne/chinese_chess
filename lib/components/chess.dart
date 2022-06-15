@@ -4,6 +4,7 @@ import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
+import '../global.dart';
 import '../models/sound.dart';
 import '../models/chess_manual.dart';
 import 'board.dart';
@@ -120,7 +121,7 @@ class ChessState extends State<Chess> {
     });
     String position = gamer.lastMove;
     if (position.isNotEmpty) {
-      print('last move $position');
+      logger.info('last move $position');
       Future.delayed(const Duration(milliseconds: 32)).then((value) {
         setState(() {
           lastPosition = position.substring(0, 2);
@@ -150,7 +151,7 @@ class ChessState extends State<Chess> {
   /// 从外部过来的指令
   onMove() {
     String move = gamer.moveNotifier.value;
-    print('onmove $move');
+    logger.info('onmove $move');
     if (move.isEmpty) return;
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
@@ -188,13 +189,13 @@ class ChessState extends State<Chess> {
         orElse: () => ChessItem('0'));
     setState(() {
       if (activeItem != null && !activeItem!.isBlank) {
-        print('$activeItem => $move');
+        logger.info('$activeItem => $move');
 
         activeItem!.position = ChessPos.fromCode(move.substring(2, 4));
         lastPosition = fromPos.toCode();
 
         if (!newActive.isBlank) {
-          print('eat $newActive');
+          logger.info('eat $newActive');
           // 被吃的子的快照
           dieFlash = ChessItem(newActive.code, position: toPosition);
           newActive.isDie = true;
@@ -205,13 +206,13 @@ class ChessState extends State<Chess> {
           });
         }
       } else {
-        print('Remote move error $move');
+        logger.info('Remote move error $move');
       }
     });
   }
 
   animateMove(ChessPos nextPosition) {
-    print('$activeItem => $nextPosition');
+    logger.info('$activeItem => $nextPosition');
     setState(() {
       activeItem!.position = nextPosition.copy();
     });

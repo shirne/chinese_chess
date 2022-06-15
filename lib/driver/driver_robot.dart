@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../global.dart';
 import '../models/engine_type.dart';
 import '../models/game_setting.dart';
 import '../xqlite/util.dart';
@@ -112,7 +113,7 @@ class DriverRobot extends PlayerDriver {
   }
 
   getMove() async {
-    print('thinking');
+    logger.info('thinking');
     int team = player.team == 'r' ? 0 : 1;
     List<String> moves = await getAbleMoves(player.manager.fen, team);
     if (moves.isEmpty) {
@@ -315,7 +316,7 @@ class DriverRobot extends PlayerDriver {
               //print('$move 要被将军');
               moveWeight[move] = moveWeight[move]! - weights[0];
             } else {
-              print('$move 有杀招');
+              logger.info('$move 有杀招');
               moveWeight[move] = moveWeight[move]! - weights[1];
             }
           }
@@ -383,7 +384,7 @@ class DriverRobot extends PlayerDriver {
       moveWeight.updateAll((key, value) => value - minWeight);
     }
 
-    print(moveWeight);
+    logger.info(moveWeight);
 
     return moveWeight;
   }

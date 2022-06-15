@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../global.dart';
 import 'chess_box.dart';
 import 'chess_pieces.dart';
 import 'chess_single_box.dart';
@@ -206,7 +207,7 @@ class EditFenState extends State<EditFen> {
               onPointer(pointTrans(detail.localPosition));
             },
             onLongPressEnd: (detail) {
-              print('longPressEnd $detail');
+              logger.info('longPressEnd $detail');
             },
             onPanEnd: (detail) {},
             child: SizedBox(
@@ -245,7 +246,7 @@ class EditFenState extends State<EditFen> {
               onPointer(pointTrans(detail.localPosition));
             },
             onLongPressEnd: (detail) {
-              print('longPressEnd $detail');
+              logger.info('longPressEnd $detail');
             },
             onPanEnd: (detail) {},
             child: SizedBox(
