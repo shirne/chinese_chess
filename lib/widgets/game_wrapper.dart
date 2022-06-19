@@ -22,28 +22,11 @@ class GameWrapper extends StatefulWidget {
 }
 
 class GameWrapperState extends State<GameWrapper> {
-  late GameManager gamer;
-  bool inited = false;
+  final GameManager gamer = GameManager();
 
   @override
   void initState() {
     super.initState();
-
-    onInit();
-  }
-
-  void onInit() async {
-    if (widget.isMain) {
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
-    gamer = GameManager();
-    await gamer.init();
-    if (widget.isMain) {
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
-    setState(() {
-      inited = true;
-    });
   }
 
   Future<bool> _willPop() async {
@@ -64,21 +47,15 @@ class GameWrapperState extends State<GameWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    if (inited) {
-      Size size = MediaQuery.of(context).size;
-      if (size.width < 541) {
-        gamer.scale = (size.width - 20) / 521;
-      } else {
-        gamer.scale = 1;
-      }
+    Size size = MediaQuery.of(context).size;
+    if (size.width < 541) {
+      gamer.scale = (size.width - 20) / 521;
+    } else {
+      gamer.scale = 1;
     }
     return WillPopScope(
       onWillPop: widget.isMain ? _willPop : null,
-      child: inited
-          ? widget.child
-          : const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            ),
+      child: widget.child,
     );
   }
 

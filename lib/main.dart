@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:chinese_chess/models/game_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,16 +10,21 @@ import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
 import 'game_board.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final gamer = GameManager();
+  await gamer.init();
   runApp(const MainApp());
-  doWhenWindowReady(() {
-    final win = appWindow;
-    const initialSize = Size(1024, 720);
-    win.minSize = initialSize;
-    win.size = initialSize;
-    win.alignment = Alignment.center;
-    win.show();
-  });
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    doWhenWindowReady(() {
+      final win = appWindow;
+      const initialSize = Size(1024, 720);
+      win.minSize = initialSize;
+      win.size = initialSize;
+      win.alignment = Alignment.center;
+      win.show();
+    });
+  }
 }
 
 class MainApp extends StatelessWidget {

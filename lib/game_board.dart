@@ -190,7 +190,11 @@ class _GameBoardState extends State<GameBoard> {
                 child: Center(
                     child: Column(
                   children: [
-                    Image.asset('assets/images/logo.png'),
+                    Image.asset(
+                      'assets/images/logo.png',
+                      width: 100,
+                      height: 100,
+                    ),
                     Text(
                       S.of(context).app_title,
                       style: const TextStyle(

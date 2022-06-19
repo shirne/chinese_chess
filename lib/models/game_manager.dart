@@ -324,12 +324,11 @@ class GameManager {
   next() {
     player.move().then((String move) {
       addMove(move);
-      checkResult(curHand == 0 ? 1 : 0, currentStep - 1).then((canNext) {
-        logger.info(canNext);
-        if (canNext) {
-          switchPlayer();
-        }
-      });
+      final canNext = checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
+      logger.info('canNext $canNext');
+      if (canNext) {
+        switchPlayer();
+      }
     });
   }
 
@@ -369,14 +368,6 @@ class GameManager {
       return;
     }
 
-    if (fen.hasItemAt(ChessPos.fromCode(move.substring(2, 4)))) {
-      unEatCount = 0;
-      Sound.play(Sound.capture);
-    } else {
-      unEatCount++;
-      Sound.play(Sound.move);
-    }
-
     // 如果当前不是最后一步，移除后面着法
     if (currentStep < manual.moves.length) {
       add(GameLoadEvent(-2));
@@ -388,6 +379,17 @@ class GameManager {
     }
 
     currentStep = manual.moves.length;
+
+    if (manual.moves[currentStep - 1].isCheckMate) {
+      unEatCount++;
+      Sound.play(Sound.move);
+    } else if (manual.moves[currentStep - 1].isEat) {
+      unEatCount = 0;
+      Sound.play(Sound.capture);
+    } else {
+      unEatCount++;
+      Sound.play(Sound.move);
+    }
 
     add(GameStepEvent(manual.moves.last.toChineseString()));
   }
@@ -410,12 +412,12 @@ class GameManager {
   }
 
   /// 棋局结果判断
-  Future<bool> checkResult(int hand, int curMove) async {
+  bool checkResult(int hand, int curMove) {
     logger.info('checkResult');
 
     int repeatRound = manual.repeatRound();
     if (repeatRound > 2) {
-      // 提醒
+      // TODO 提醒
     }
 
     // 判断和棋
@@ -424,12 +426,13 @@ class GameManager {
       return false;
     }
 
-    isCheckMate = rule.isCheck(hand);
-    logger.info('是否将军 $isCheckMate');
+    //isCheckMate = rule.isCheck(hand);
+    final moveStep = manual.moves[curMove];
+    logger.info('是否将军 ${moveStep.isCheckMate}');
 
     // 判断输赢，包括能否应将，长将
-    if (isCheckMate) {
-      manual.moves[curMove].isCheckMate = isCheckMate;
+    if (moveStep.isCheckMate) {
+      //manual.moves[curMove].isCheckMate = isCheckMate;
 
       if (rule.canParryKill(hand)) {
         // 长将
@@ -453,10 +456,12 @@ class GameManager {
             hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
             '困毙');
         return false;
+      } else if (moveStep.isEat) {
+        add(GameResultEvent('eat'));
       }
     }
 
-    // todo 判断长捉，一捉一将，一将一杀
+    // TODO 判断长捉，一捉一将，一将一杀
     if (repeatRound > 3) {
       setResult(ChessManual.resultFstDraw, '不变招判和');
       return false;

@@ -14,6 +14,9 @@ abstract class GameEvent<T> {
   T? data;
   GameEvent(this.type, [this.data]);
 
+  @override
+  String toString() => '$type $data';
+
   static GameEventType? eventType(Type t) {
     switch (t) {
       case GameMoveEvent:

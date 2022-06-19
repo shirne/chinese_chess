@@ -8,6 +8,7 @@ import '../global.dart';
 import '../models/game_event.dart';
 import '../models/sound.dart';
 import '../models/chess_manual.dart';
+import 'action_dialog.dart';
 import 'board.dart';
 import '../models/chess_item.dart';
 import 'piece.dart';
@@ -92,7 +93,11 @@ class ChessState extends State<Chess> {
         (parts.length > 1 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
       case 'checkMate':
-        toast(S.of(context).check);
+        //toast(S.of(context).check);
+        showAction(ActionType.checkMate);
+        break;
+      case 'eat':
+        showAction(ActionType.eat);
         break;
       case ChessManual.resultFstLoose:
         alertResult(resultText ?? S.of(context).red_loose);
@@ -203,6 +208,8 @@ class ChessState extends State<Chess> {
 
         if (!newActive.isBlank) {
           logger.info('eat $newActive');
+
+          //showAction(ActionType.eat);
           // 被吃的子的快照
           dieFlash = ChessItem(newActive.code, position: toPosition);
           newActive.isDie = true;
@@ -332,6 +339,7 @@ class ChessState extends State<Chess> {
           }
           if (canMove) {
             addStep(ChessPos.fromCode(activePos), toPosition);
+            //showAction(ActionType.eat);
             setState(() {
               // 清掉落子点
               movePoints = [];
@@ -389,6 +397,18 @@ class ChessState extends State<Chess> {
 
   Future<bool?> alert(String message) async {
     return MyDialog.of(context).alert(message);
+  }
+
+  showAction(ActionType type) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(child: ActionDialog(type));
+      },
+      barrierColor: Colors.transparent,
+    );
+    Future.delayed(const Duration(seconds: 1))
+        .then((value) => Navigator.of(context).pop());
   }
 
   @override

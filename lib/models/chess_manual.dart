@@ -4,6 +4,7 @@ import '../global.dart';
 import 'chess_fen.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
+import 'chess_rule.dart';
 import 'chess_step.dart';
 
 class ChessManual {
@@ -358,7 +359,7 @@ class ChessManual {
     return true;
   }
 
-  doMove(String move) {
+  void doMove(String move) {
     currentFen.move(move);
     fenPosition.move(move);
   }
@@ -425,7 +426,7 @@ class ChessManual {
     return moves[step - 1];
   }
 
-  clearMove([int fromStep = 0]) {
+  void clearMove([int fromStep = 0]) {
     if (fromStep < 1) {
       moves.clear();
     } else {
@@ -434,13 +435,13 @@ class ChessManual {
     logger.info('Clear moves $fromStep $moves');
   }
 
-  addMoves(List<String> moves) {
+  void addMoves(List<String> moves) {
     for (var move in moves) {
       addMove(move);
     }
   }
 
-  addMove(String move, {String description = '', int addStep = -1}) {
+  void addMove(String move, {String description = '', int addStep = -1}) {
     if (results.contains(move)) {
       result = move;
     } else {
@@ -453,15 +454,20 @@ class ChessManual {
       if (isChineseMove(move)) {
         move = currentFen.toPositionString(team, move);
       }
-
-      moves.add(ChessStep(team, move,
-          code: currentFen.itemAt(move),
-          description: description,
-          round: (moves.length ~/ 2) + 1,
-          fen: currentFen.fen,
-          fenPosition: fenPosition.fen));
+      final origFen = currentFen.copy();
 
       doMove(move);
+      moves.add(ChessStep(
+        team,
+        move,
+        code: origFen.itemAt(move),
+        description: description,
+        round: (moves.length ~/ 2) + 1,
+        fen: origFen.fen,
+        fenPosition: fenPosition.fen,
+        isEat: origFen.hasItemAt(ChessPos.fromCode(move.substring(2, 4))),
+        isCheckMate: ChessRule(currentFen).isCheck(team == 1 ? 0 : 1),
+      ));
 
       step = moves.length;
     }
