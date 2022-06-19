@@ -59,6 +59,9 @@ abstract class PlayerDriver {
 
   /// 完成走招
   completeMove(String move);
+
+  @override
+  String toString() => "${this.runtimeType} ${player.team}";
 }
 
 class DriverType {

@@ -80,6 +80,16 @@ class S {
     );
   }
 
+  /// `Flip Board`
+  String get flip_board {
+    return Intl.message(
+      'Flip Board',
+      name: 'flip_board',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Copy Chess Code`
   String get copy_code {
     return Intl.message(

@@ -3,6 +3,7 @@
 
   "menu": "Menu",
   "open_menu": "Open Menu",
+  "flip_board": "Flip Board",
   "copy_code": "Copy Chess Code",
   "parse_code": "Parse Chess Code",
   "edit_code": "Edit Chess",

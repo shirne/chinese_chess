@@ -3,6 +3,7 @@
 
   "menu": "菜单",
   "open_menu": "打开菜单",
+  "flip_board": "翻转棋盘",
   "copy_code": "复制局面代码",
   "parse_code": "粘贴局面代码",
   "edit_code": "编辑局面",

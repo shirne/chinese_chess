@@ -40,6 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "edit_code": MessageLookupByLibrary.simpleMessage("编辑局面"),
         "exit_now": MessageLookupByLibrary.simpleMessage("确定退出？"),
         "feature_not_available": MessageLookupByLibrary.simpleMessage("功能暂未实现"),
+        "flip_board": MessageLookupByLibrary.simpleMessage("翻转棋盘"),
         "invalid_code": MessageLookupByLibrary.simpleMessage("无效代码"),
         "let_me_see": MessageLookupByLibrary.simpleMessage("再看看"),
         "load_manual": MessageLookupByLibrary.simpleMessage("加载棋谱"),

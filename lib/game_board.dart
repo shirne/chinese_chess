@@ -126,6 +126,12 @@ class _GameBoardState extends State<GameBoard> {
             ? null
             : [
                 IconButton(
+                    icon: const Icon(Icons.swap_vert),
+                    tooltip: S.of(context).flip_board,
+                    onPressed: () {
+                      gamer.flip();
+                    }),
+                IconButton(
                     icon: const Icon(Icons.copy),
                     tooltip: S.of(context).copy_code,
                     onPressed: () {

@@ -66,6 +66,7 @@ class ChessState extends State<Chess> {
     gamer.on<GameLoadEvent>(reloadGame);
     gamer.on<GameResultEvent>(onResult);
     gamer.on<GameMoveEvent>(onMove);
+    gamer.on<GameFlipEvent>(onFlip);
 
     reloadGame(GameLoadEvent(0));
   }
@@ -76,6 +77,10 @@ class ChessState extends State<Chess> {
     gamer.off<GameResultEvent>(onResult);
     gamer.off<GameMoveEvent>(onMove);
     super.dispose();
+  }
+
+  onFlip(GameEvent event) {
+    setState(() {});
   }
 
   onResult(GameEvent event) {
@@ -361,7 +366,7 @@ class ChessState extends State<Chess> {
     int y = 9 -
         (tapPoint.dy - gamer.skin.offset.dy * gamer.scale) ~/
             (gamer.skin.size * gamer.scale);
-    return ChessPos(x, y);
+    return ChessPos(gamer.isFlip ? 8 - x : x, gamer.isFlip ? 9 - y : y);
   }
 
   void toast(String message, [SnackBarAction? action, int duration = 3]) {

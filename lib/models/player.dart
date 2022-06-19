@@ -17,9 +17,13 @@ class Player {
   late DriverType _driverType;
   late PlayerDriver driver;
 
-  Player(this.team, this.manager,
-      {this.title = '', DriverType type = DriverType.user}) {
-    driverType = type;
+  Player(
+    this.team,
+    this.manager, {
+    this.title = '',
+    DriverType type = DriverType.user,
+  }) {
+    _driverType = type;
   }
 
   set driverType(DriverType type) {
@@ -27,21 +31,13 @@ class Player {
     driver = PlayerDriver.createDriver(this, _driverType);
   }
 
-  DriverType get driverType {
-    return _driverType;
-  }
+  DriverType get driverType => _driverType;
 
-  bool get isUser {
-    return _driverType == DriverType.user;
-  }
+  bool get isUser => _driverType == DriverType.user;
 
-  bool get isRobot {
-    return _driverType == DriverType.robot;
-  }
+  bool get isRobot => _driverType == DriverType.robot;
 
-  bool get canBacktrace {
-    return driver.canBacktrace;
-  }
+  bool get canBacktrace => driver.canBacktrace;
 
   // 通知界面，从界面上过来的着法不需要调用
   Future<String> onMove(String move) {
@@ -51,13 +47,9 @@ class Player {
     return Future.value(move);
   }
 
-  Future<bool> onDraw() {
-    return driver.tryDraw();
-  }
+  Future<bool> onDraw() => driver.tryDraw();
 
-  Future<String> move() {
-    return driver.move();
-  }
+  Future<String> move() => driver.move();
 
   completeMove(String move) {
     driver.completeMove(move);

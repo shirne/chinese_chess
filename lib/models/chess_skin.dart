@@ -105,9 +105,11 @@ class ChessSkin {
     if (pos == null) {
       return const Alignment(1.2, 0);
     }
+    final x = ((pos.x * size + offset.dx) * 2) / (width - size) - 1;
+    final y = ((((9 - pos.y) * size + offset.dy) * 2) / (height - size) - 1);
     return Alignment(
-      ((pos.x * size + offset.dx) * 2) / (width - size) - 1,
-      (((9 - pos.y) * size + offset.dy) * 2) / (height - size) - 1,
+      manager.isFlip ? -x : x,
+      manager.isFlip ? -y : y,
     );
   }
 }

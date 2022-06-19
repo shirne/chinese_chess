@@ -46,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "exit_now": MessageLookupByLibrary.simpleMessage("Exit Now ?"),
         "feature_not_available":
             MessageLookupByLibrary.simpleMessage("Feature is not available"),
+        "flip_board": MessageLookupByLibrary.simpleMessage("Flip Board"),
         "invalid_code":
             MessageLookupByLibrary.simpleMessage("Invalid Chess Code"),
         "let_me_see": MessageLookupByLibrary.simpleMessage("Let me see"),

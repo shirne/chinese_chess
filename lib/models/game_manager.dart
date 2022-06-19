@@ -35,6 +35,10 @@ class GameManager {
   bool _isFlip = false;
   bool get isFlip => _isFlip;
 
+  void flip() {
+    add(GameFlipEvent(!isFlip));
+  }
+
   // 是否锁定(非玩家操作的时候锁定界面)
   bool _isLock = false;
   bool get isLock => _isLock;
