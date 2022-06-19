@@ -52,6 +52,7 @@ dependencies:
   fast_gbk: ^1.0.0-rc
   universal_html: ^2.0.8
   shared_preferences: ^2.0.13
+  flutter_native_splash: ^2.2.3+1
   
   assets_audio_player: ^3.0.4+3
   ffi: 1.2.1
@@ -66,7 +67,7 @@ dev_dependencies:
 # flutter pub run icons_launcher:create
 flutter_icons:
   image_path: "assets/icon/icon.png"
-  adaptive_icon_foreground: "assets/icon/icon.png"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
   adaptive_icon_background: "#ffffff"
   android: true
   ios: true
