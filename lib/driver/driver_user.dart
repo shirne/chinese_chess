@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import '../models/game_event.dart';
 import '../models/player.dart';
 
 import 'player_driver.dart';
@@ -17,7 +18,7 @@ class DriverUser extends PlayerDriver {
   @override
   Future<String> move() {
     requestMove = Completer<String>();
-    player.manager.lockNotifier.value = false;
+    player.manager.add(GameLockEvent(false));
 
     // 招法提示
     player.manager.requestHelp();
@@ -33,7 +34,7 @@ class DriverUser extends PlayerDriver {
 
   @override
   completeMove(String move) {
-    player.manager.lockNotifier.value = true;
+    player.manager.add(GameLockEvent(true));
     requestMove.complete(move);
   }
 

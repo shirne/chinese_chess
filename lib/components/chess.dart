@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
 import '../global.dart';
+import '../models/game_event.dart';
 import '../models/sound.dart';
 import '../models/chess_manual.dart';
 import 'board.dart';
@@ -61,26 +62,27 @@ class ChessState extends State<Chess> {
         context.findAncestorStateOfType<GameWrapperState>();
     if (gameWrapper == null) return;
     gamer = gameWrapper.gamer;
-    gamer.gameNotifier.addListener(reloadGame);
-    gamer.resultNotifier.addListener(onResult);
-    gamer.moveNotifier.addListener(onMove);
 
-    reloadGame();
+    gamer.on<GameLoadEvent>(reloadGame);
+    gamer.on<GameResultEvent>(onResult);
+    gamer.on<GameMoveEvent>(onMove);
+
+    reloadGame(GameLoadEvent(0));
   }
 
   @override
   void dispose() {
-    gamer.gameNotifier.removeListener(reloadGame);
-    gamer.resultNotifier.removeListener(onResult);
-    gamer.moveNotifier.removeListener(onMove);
+    gamer.off<GameLoadEvent>(reloadGame);
+    gamer.off<GameResultEvent>(onResult);
+    gamer.off<GameMoveEvent>(onMove);
     super.dispose();
   }
 
-  onResult() {
-    if (gamer.resultNotifier.value.isEmpty) {
+  onResult(GameEvent event) {
+    if (event.data == null || event.data!.isEmpty) {
       return;
     }
-    List<String> parts = gamer.resultNotifier.value.split(' ');
+    List<String> parts = event.data.split(' ');
     String? resultText =
         (parts.length > 1 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
@@ -101,11 +103,11 @@ class ChessState extends State<Chess> {
     }
   }
 
-  reloadGame() {
-    if (gamer.gameNotifier.value < -1) {
+  reloadGame(GameEvent event) {
+    if (event.data < -1) {
       return;
     }
-    if (gamer.gameNotifier.value < 0) {
+    if (event.data < 0) {
       if (!isLoading) {
         setState(() {
           isLoading = true;
@@ -149,8 +151,8 @@ class ChessState extends State<Chess> {
   }
 
   /// 从外部过来的指令
-  onMove() {
-    String move = gamer.moveNotifier.value;
+  void onMove(GameEvent event) {
+    String move = event.data!;
     logger.info('onmove $move');
     if (move.isEmpty) return;
     if (move == PlayerDriver.rstGiveUp) return;

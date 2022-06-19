@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../driver/player_driver.dart';
 import '../global.dart';
 import 'chess_skin.dart';
+import 'game_event.dart';
 import 'game_setting.dart';
 import 'sound.dart';
 import 'chess_fen.dart';
@@ -30,6 +31,14 @@ class GameManager {
   // 是否重新请求招法时的强制stop
   bool isStop = false;
 
+  // 是否翻转棋盘
+  bool _isFlip = false;
+  bool get isFlip => _isFlip;
+
+  // 是否锁定(非玩家操作的时候锁定界面)
+  bool _isLock = false;
+  bool get isLock => _isLock;
+
   // 选手
   List<Player> hands = [];
   int curHand = 0;
@@ -46,33 +55,26 @@ class GameManager {
   // 回合数
   int round = 0;
 
-  // 走子事件
-  late ValueNotifier<String> stepNotifier;
-
-  // 引擎消息事件
-  late ValueNotifier<String> messageNotifier;
-
-  // 玩家事件
-  late ValueNotifier<int> playerNotifier;
-
-  // 游戏加载事件
-  late ValueNotifier<int> gameNotifier;
-
-  // 结果事件 包含将军
-  late ValueNotifier<String> resultNotifier;
-
-  // 界面锁定通知
-  late ValueNotifier<bool> lockNotifier;
-
-  // 走棋通知
-  late ValueNotifier<String> moveNotifier;
+  final gameEvent = StreamController<GameEvent>();
+  final Map<GameEventType, List<void Function(GameEvent)>> listeners = {};
 
   // 走子规则
   late ChessRule rule;
 
   late GameSetting setting;
 
-  GameManager();
+  static GameManager? _instance;
+
+  static GameManager get instance => _instance ??= GameManager();
+
+  GameManager._() {
+    gameEvent.stream.listen(_onGameEvent);
+  }
+
+  factory GameManager() {
+    _instance ??= GameManager._();
+    return _instance!;
+  }
 
   Future<bool> init() async {
     setting = await GameSetting.getInstance();
@@ -84,33 +86,60 @@ class GameManager {
     curHand = 0;
     // map = ChessMap.fromFen(ChessManual.startFen);
 
-    stepNotifier = ValueNotifier<String>('');
-    messageNotifier = ValueNotifier<String>('');
-    playerNotifier = ValueNotifier(curHand);
-    gameNotifier = ValueNotifier(-1);
-    resultNotifier = ValueNotifier('');
-    lockNotifier = ValueNotifier(true);
-    moveNotifier = ValueNotifier('');
-
     skin = ChessSkin("woods", this);
     skin.readyNotifier.addListener(() {
-      gameNotifier.value = 0;
+      add(GameLoadEvent(0));
     });
 
     return true;
   }
 
-  bool get isLock {
-    return lockNotifier.value;
+  on<T extends GameEvent>(void Function(GameEvent) listener) {
+    final type = GameEvent.eventType(T);
+    if (type == null) {
+      print('type not match ${T.runtimeType}');
+      return;
+    }
+    if (!listeners.containsKey(type)) {
+      listeners[type] = [];
+    }
+    listeners[type]!.add(listener);
   }
 
-  bool get canBacktrace {
-    return player.canBacktrace;
+  off<T extends GameEvent>(void Function(GameEvent) listener) {
+    final type = GameEvent.eventType(T);
+    if (type == null) {
+      print('type not match ${T.runtimeType}');
+      return;
+    }
+    listeners[type]?.remove(listener);
   }
 
-  ChessFen get fen {
-    return manual.currentFen;
+  add<T extends GameEvent>(T event) {
+    gameEvent.add(event);
   }
+
+  clear() {
+    listeners.clear();
+  }
+
+  _onGameEvent(GameEvent e) {
+    if (e.type == GameEventType.lock) {
+      _isLock = e.data;
+    }
+    if (e.type == GameEventType.flip) {
+      _isFlip = e.data;
+    }
+    if (listeners.containsKey(e.type)) {
+      for (var func in listeners[e.type]!) {
+        func.call(e);
+      }
+    }
+  }
+
+  bool get canBacktrace => player.canBacktrace;
+
+  ChessFen get fen => manual.currentFen;
 
   String get lastMove {
     if (manual.moves.isEmpty || currentStep == 0) {
@@ -125,7 +154,7 @@ class GameManager {
     switch (instruct) {
       case 'ucciok':
         engineOK = true;
-        messageNotifier.value = 'Engine is OK!';
+        add(GameEngineEvent('Engine is OK!'));
         break;
       case 'nobestmove':
         // 强行stop后的nobestmove忽略
@@ -147,7 +176,7 @@ class GameManager {
       default:
         return;
     }
-    messageNotifier.value = message;
+    add(GameEngineEvent(message));
   }
 
   String parseBaseMove(List<String> infos) {
@@ -186,21 +215,21 @@ class GameManager {
   }
 
   stop() {
-    gameNotifier.value = -1;
+    add(GameLoadEvent(-1));
     isStop = true;
     engine?.stop();
     currentStep = 0;
-    stepNotifier.value = '';
-    messageNotifier.value = '';
-    resultNotifier.value = '';
-    lockNotifier.value = true;
+    //stepNotifier.value = '';
+    //messageNotifier.value = '';
+    //resultNotifier.value = '';
+    add(GameLockEvent(true));
   }
 
   newGame([String fen = ChessManual.startFen]) {
     stop();
 
-    stepNotifier.value = 'clear';
-    messageNotifier.value = 'clear';
+    add(GameStepEvent('clear'));
+    add(GameEngineEvent('clear'));
     manual = ChessManual(fen: fen);
     rule = ChessRule(manual.currentFen);
     hands[0].title = manual.red;
@@ -209,7 +238,7 @@ class GameManager {
     hands[1].driverType = DriverType.user;
     curHand = manual.startHand;
 
-    gameNotifier.value = 0;
+    add(GameLoadEvent(0));
     next();
   }
 
@@ -217,7 +246,7 @@ class GameManager {
     stop();
 
     _loadPGN(pgn);
-    gameNotifier.value = 0;
+    add(GameLoadEvent(0));
     next();
   }
 
@@ -241,12 +270,12 @@ class GameManager {
     // 加载步数
     if (manual.moves.isNotEmpty) {
       // print(manual.moves);
-      stepNotifier.value =
-          manual.moves.map<String>((e) => e.toChineseString()).join('\n');
+      add(GameStepEvent(
+          manual.moves.map<String>((e) => e.toChineseString()).join('\n')));
     }
     manual.loadHistory(0);
     rule.fen = manual.currentFen;
-    stepNotifier.value = 'step';
+    add(GameStepEvent('step'));
 
     curHand = manual.startHand;
     return true;
@@ -270,9 +299,9 @@ class GameManager {
     manual.loadHistory(index);
     rule.fen = manual.currentFen;
     curHand = currentStep % 2;
-    playerNotifier.value = curHand;
+    add(GamePlayerEvent(curHand));
+    add(GameLoadEvent(currentStep));
 
-    gameNotifier.value = currentStep;
     logger.info('history $currentStep');
   }
 
@@ -280,10 +309,10 @@ class GameManager {
   switchDriver(int team, DriverType driverType) {
     hands[team].driverType = driverType;
     if (team == curHand && driverType == DriverType.robot) {
-      lockNotifier.value = true;
+      //add(GameLockEvent(true));
       next();
     } else if (driverType == DriverType.user) {
-      lockNotifier.value = false;
+      //add(GameLockEvent(false));
     }
   }
 
@@ -346,17 +375,17 @@ class GameManager {
 
     // 如果当前不是最后一步，移除后面着法
     if (currentStep < manual.moves.length) {
-      gameNotifier.value = -2;
-      stepNotifier.value = 'clear';
+      add(GameLoadEvent(-2));
+      add(GameStepEvent('clear'));
       manual.addMove(move, addStep: currentStep);
     } else {
-      gameNotifier.value = -2;
+      add(GameLoadEvent(-2));
       manual.addMove(move);
     }
 
     currentStep = manual.moves.length;
 
-    stepNotifier.value = manual.moves.last.toChineseString();
+    add(GameStepEvent(manual.moves.last.toChineseString()));
   }
 
   setResult(String result, [String description = '']) {
@@ -365,7 +394,7 @@ class GameManager {
       return;
     }
     logger.info('本局结果：$result');
-    resultNotifier.value = '$result $description';
+    add(GameResultEvent('$result $description'));
     if (result == ChessManual.resultFstDraw) {
       Sound.play(Sound.draw);
     } else if (result == ChessManual.resultFstWin) {
@@ -407,9 +436,7 @@ class GameManager {
           return false;
         }
         Sound.play(Sound.check);
-        resultNotifier.value = 'checkMate';
-        Future.delayed(const Duration(milliseconds: 30))
-            .then((value) => resultNotifier.value = '');
+        add(GameResultEvent('checkMate'));
       } else {
         setResult(
             hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
@@ -452,15 +479,13 @@ class GameManager {
     if (curHand >= hands.length) {
       curHand = 0;
     }
+    add(GamePlayerEvent(curHand));
 
-    playerNotifier.value = curHand;
     logger.info('切换选手:${player.title} ${player.team} ${player.driver}');
 
-    resultNotifier.value = '';
     logger.info(player.title);
     next();
-
-    messageNotifier.value = 'clear';
+    add(GameEngineEvent('clear'));
   }
 
   Future<bool> startEngine() {

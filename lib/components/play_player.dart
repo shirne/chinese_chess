@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../driver/player_driver.dart';
 import '../generated/l10n.dart';
+import '../models/game_event.dart';
 import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 import '../widgets/tab_card.dart';
@@ -15,7 +16,7 @@ class PlayPlayer extends StatefulWidget {
 }
 
 class PlayPlayerState extends State<PlayPlayer> {
-  late GameManager gamer;
+  late GameManager gamer = GameManager.instance;
   int currentTeam = 0;
 
   @override
@@ -24,31 +25,31 @@ class PlayPlayerState extends State<PlayPlayer> {
     GameWrapperState gameWrapper =
         context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
-    gamer.playerNotifier.addListener(onChangePlayer);
-    gamer.gameNotifier.addListener(onReloadGame);
-    gamer.resultNotifier.addListener(onResult);
+    gamer.on<GamePlayerEvent>(onChangePlayer);
+    gamer.on<GameLoadEvent>(onReloadGame);
+    gamer.on<GameResultEvent>(onResult);
   }
 
   @override
   dispose() {
-    gamer.playerNotifier.removeListener(onChangePlayer);
-    gamer.gameNotifier.removeListener(onReloadGame);
-    gamer.resultNotifier.removeListener(onResult);
+    gamer.off<GamePlayerEvent>(onChangePlayer);
+    gamer.off<GameLoadEvent>(onReloadGame);
+    gamer.off<GameResultEvent>(onResult);
     super.dispose();
   }
 
-  onResult() {
+  onResult(GameEvent event) {
     setState(() {});
   }
 
-  onReloadGame() {
-    if (gamer.gameNotifier.value != 0) return;
+  onReloadGame(GameEvent event) {
+    if (event.data != 0) return;
     setState(() {});
   }
 
-  onChangePlayer() {
+  onChangePlayer(GameEvent event) {
     setState(() {
-      currentTeam = gamer.playerNotifier.value;
+      currentTeam = event.data;
     });
   }
 

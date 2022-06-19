@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/game_event.dart';
 import '../models/game_manager.dart';
 import 'piece.dart';
 import '../widgets/game_wrapper.dart';
@@ -20,7 +21,7 @@ class ChessPieces extends StatefulWidget {
 }
 
 class _ChessPiecesState extends State<ChessPieces> {
-  GameManager? gamer;
+  late GameManager gamer = GameManager.instance;
   int curTeam = -1;
 
   @override
@@ -30,24 +31,19 @@ class _ChessPiecesState extends State<ChessPieces> {
   }
 
   initGamer() {
-    if (gamer != null) return;
-    GameWrapperState? gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>();
-    if (gameWrapper == null) return;
-    gamer = gameWrapper.gamer;
-    gamer!.playerNotifier.addListener(onChangePlayer);
-    curTeam = gamer!.curHand;
+    gamer.on<GamePlayerEvent>(onChangePlayer);
+    curTeam = gamer.curHand;
   }
 
   @override
   void dispose() {
-    gamer!.playerNotifier.removeListener(onChangePlayer);
+    gamer.off<GamePlayerEvent>(onChangePlayer);
     super.dispose();
   }
 
-  void onChangePlayer() {
+  void onChangePlayer(GameEvent event) {
     setState(() {
-      curTeam = gamer!.playerNotifier.value;
+      curTeam = event.data;
     });
   }
 
@@ -74,10 +70,10 @@ class _ChessPiecesState extends State<ChessPieces> {
         return AnimatedAlign(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutQuint,
-          alignment: gamer!.skin.getAlign(item.position),
+          alignment: gamer.skin.getAlign(item.position),
           child: SizedBox(
-            width: gamer!.skin.size * gamer!.scale,
-            height: gamer!.skin.size * gamer!.scale,
+            width: gamer.skin.size * gamer.scale,
+            height: gamer.skin.size * gamer.scale,
             //transform: isActive && lastPosition.isEmpty ? Matrix4(1, 0, 0, 0.0, -0.105 * skewStepper, 1 - skewStepper*0.1, 0, -0.004 * skewStepper, 0, 0, 1, 0, 0, 0, 0, 1) : Matrix4.identity(),
             child: Piece(
               item: item,

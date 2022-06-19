@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/game_event.dart';
 import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 
@@ -14,33 +15,31 @@ class PlayBot extends StatefulWidget {
 class PlayStepState extends State<PlayBot> {
   List<String> botMessages = [];
   late ScrollController _controller;
-  late GameManager gamer;
+  late GameManager gamer = GameManager.instance;
 
   @override
   void initState() {
     super.initState();
     _controller = ScrollController(keepScrollOffset: true);
-    GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>()!;
-    gamer = gameWrapper.gamer;
-    gamer.messageNotifier.addListener(updateMessage);
+
+    gamer.on<GameEngineEvent>(updateMessage);
   }
 
   @override
   dispose() {
-    gamer.messageNotifier.removeListener(updateMessage);
+    gamer.off<GameEngineEvent>(updateMessage);
     super.dispose();
   }
 
-  updateMessage() {
-    if (gamer.messageNotifier.value.isEmpty) return;
-    if (gamer.messageNotifier.value == 'clear') {
+  void updateMessage(GameEvent event) {
+    if (event.data == null || event.data.isEmpty) return;
+    if (event.data == 'clear') {
       setState(() {
         botMessages = [];
       });
     } else {
       setState(() {
-        botMessages.add(gamer.messageNotifier.value);
+        botMessages.add(event.data);
       });
     }
     Future.delayed(const Duration(milliseconds: 16)).then((value) {

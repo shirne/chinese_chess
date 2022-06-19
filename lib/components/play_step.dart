@@ -1,3 +1,4 @@
+import 'package:chinese_chess/models/game_event.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
@@ -30,18 +31,18 @@ class PlayStepState extends State<PlayStep> {
     GameWrapperState gameWrapper =
         context.findAncestorStateOfType<GameWrapperState>()!;
     gamer = gameWrapper.gamer;
-    gamer.stepNotifier.addListener(updateStep);
+    gamer.on<GameStepEvent>(updateStep);
     steps = gamer.getSteps();
   }
 
   @override
   dispose() {
-    gamer.stepNotifier.removeListener(updateStep);
+    gamer.off<GameStepEvent>(updateStep);
     super.dispose();
   }
 
-  updateStep() {
-    String message = gamer.stepNotifier.value;
+  void updateStep(GameEvent event) {
+    String message = event.data!;
     if (message.isEmpty) return;
     if (message == 'clear') {
       setState(() {
