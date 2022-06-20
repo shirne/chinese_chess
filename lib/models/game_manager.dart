@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fast_gbk/fast_gbk.dart';
-import 'package:flutter/material.dart';
 
 import '../driver/player_driver.dart';
 import '../global.dart';
@@ -101,7 +100,7 @@ class GameManager {
   on<T extends GameEvent>(void Function(GameEvent) listener) {
     final type = GameEvent.eventType(T);
     if (type == null) {
-      print('type not match ${T.runtimeType}');
+      logger.warning('type not match ${T.runtimeType}');
       return;
     }
     if (!listeners.containsKey(type)) {
@@ -113,7 +112,7 @@ class GameManager {
   off<T extends GameEvent>(void Function(GameEvent) listener) {
     final type = GameEvent.eventType(T);
     if (type == null) {
-      print('type not match ${T.runtimeType}');
+      logger.warning('type not match ${T.runtimeType}');
       return;
     }
     listeners[type]?.remove(listener);

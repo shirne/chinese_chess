@@ -61,7 +61,7 @@ abstract class PlayerDriver {
   completeMove(String move);
 
   @override
-  String toString() => "${this.runtimeType} ${player.team}";
+  String toString() => "$runtimeType ${player.team}";
 }
 
 class DriverType {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../driver/player_driver.dart';
 import '../generated/l10n.dart';
 import '../models/game_event.dart';
-import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 import '../widgets/list_item.dart';
 

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/game_event.dart';
 import '../models/game_manager.dart';
-import 'piece.dart';
-import '../widgets/game_wrapper.dart';
 import '../models/chess_item.dart';
+import 'piece.dart';
 
 class ChessPieces extends StatefulWidget {
   final List<ChessItem> items;
