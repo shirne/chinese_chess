@@ -10,7 +10,10 @@ enum ActionType {
 
 class ActionDialog extends StatefulWidget {
   final ActionType type;
-  const ActionDialog(this.type, {Key? key}) : super(key: key);
+  final double? delay;
+  final void Function()? onHide;
+  const ActionDialog(this.type, {Key? key, this.delay, this.onHide})
+      : super(key: key);
 
   @override
   State<ActionDialog> createState() => _ActionDialogState();
@@ -37,14 +40,18 @@ class _ActionDialogState extends State<ActionDialog>
   void initState() {
     super.initState();
     showAction = Completer();
-    imageAnimation.addListener(_onEnd);
+    imageAnimation.addListener(_onAnimate);
     imageAnimation.animateTo(1);
+    if (widget.delay != null) {
+      Future.delayed(Duration(milliseconds: (widget.delay! * 1000).toInt()))
+          .then((value) => imageAnimation.animateTo(0));
+    }
   }
 
   @override
   void dispose() {
     imageAnimation.stop(canceled: true);
-    imageAnimation.removeListener(_onEnd);
+    imageAnimation.removeListener(_onAnimate);
     imageAnimation.value = 0;
     if (!showAction.isCompleted) {
       showAction.complete(false);
@@ -52,9 +59,19 @@ class _ActionDialogState extends State<ActionDialog>
     super.dispose();
   }
 
-  _onEnd() {
-    if (imageAnimation.value == 1 && !showAction.isCompleted) {
-      showAction.complete(true);
+  _onAnimate() {
+    if (showAction.isCompleted) {
+      if (imageAnimation.value < 1) {
+        if (imageAnimation.value == 0) {
+          widget.onHide?.call();
+        }
+        setState(() {});
+      }
+    } else {
+      if (imageAnimation.value == 1) {
+        showAction.complete(true);
+      }
+      setState(() {});
     }
   }
 
@@ -63,27 +80,30 @@ class _ActionDialogState extends State<ActionDialog>
     return SizedBox(
       width: 220,
       height: 220,
-      child: Stack(
-        children: [
-          Center(
-            child: FutureBuilder<bool>(
-              future: showAction.future,
-              initialData: false,
-              builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                if (snapshot.hasData && snapshot.data!) {
-                  return Image.asset(assets(widget.type));
-                }
-                return const SizedBox();
-              },
+      child: Opacity(
+        opacity: showAction.isCompleted ? imageAnimation.value : 1,
+        child: Stack(
+          children: [
+            Center(
+              child: FutureBuilder<bool>(
+                future: showAction.future,
+                initialData: false,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (snapshot.hasData && snapshot.data!) {
+                    return Image.asset(assets(widget.type));
+                  }
+                  return const SizedBox();
+                },
+              ),
             ),
-          ),
-          Center(
-            child: FadeTransition(
-              opacity: imageAnimation,
-              child: Image.asset('assets/images/action_background.png'),
+            Center(
+              child: Opacity(
+                opacity: showAction.isCompleted ? 1 : imageAnimation.value,
+                child: Image.asset('assets/images/action_background.png'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

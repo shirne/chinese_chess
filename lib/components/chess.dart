@@ -258,7 +258,7 @@ class ChessState extends State<Chess> {
       return false;
     }
 
-    /// todo 这里送将和应将判断不准确
+    // 区分应将和送将
     if (rule.isCheck(gamer.curHand)) {
       if (gamer.isCheckMate) {
         toast(S.of(context).pls_parry_check);
@@ -399,21 +399,24 @@ class ChessState extends State<Chess> {
     return MyDialog.of(context).alert(message);
   }
 
-  // TODO 暂时用dialog 后面考虑修改为overlay
+  // 显示吃/将效果
   showAction(ActionType type) {
-    final nState = Navigator.of(context);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(child: ActionDialog(type));
-      },
-      barrierColor: Colors.transparent,
-    );
-    Future.delayed(const Duration(seconds: 1)).then((value) {
-      if (nState.canPop()) {
-        nState.pop();
-      }
-    });
+    final overlay = Overlay.of(context);
+    if (overlay != null) {
+      late OverlayEntry entry;
+      entry = OverlayEntry(
+        builder: (context) => Center(
+          child: ActionDialog(
+            type,
+            delay: 2,
+            onHide: () {
+              entry.remove();
+            },
+          ),
+        ),
+      );
+      overlay.insert(entry);
+    }
   }
 
   @override

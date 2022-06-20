@@ -50,7 +50,7 @@ class GameManager {
   int currentStep = 0;
 
   // 是否将军
-  bool isCheckMate = false;
+  bool get isCheckMate => manual.moves[currentStep - 1].isCheckMate;
 
   // 未吃子着数(半回合数)
   int unEatCount = 0;

@@ -13,7 +13,8 @@ class Sound {
   static const draw = 'draw.wav';
   static const illegal = 'illegal.wav';
 
-  static AudioPlayer audioPlayer = AudioPlayer();
+  static AudioPlayer audioPlayer = AudioPlayer()
+    ..audioCache = AudioCache(prefix: 'assets/sounds/');
 
   static GameSetting? setting;
 
@@ -21,10 +22,8 @@ class Sound {
     setting ??= await GameSetting.getInstance();
     if (!setting!.sound) return false;
 
-    String asset = "sounds/$id";
-
-    audioPlayer.setVolume(setting!.soundVolume);
-    audioPlayer.play(AssetSource(asset));
+    await audioPlayer.setVolume(setting!.soundVolume);
+    await audioPlayer.play(AssetSource(id));
     return true;
   }
 }
