@@ -399,7 +399,9 @@ class ChessState extends State<Chess> {
     return MyDialog.of(context).alert(message);
   }
 
+  // TODO 暂时用dialog 后面考虑修改为overlay
   showAction(ActionType type) {
+    final nState = Navigator.of(context);
     showDialog(
       context: context,
       builder: (context) {
@@ -407,8 +409,11 @@ class ChessState extends State<Chess> {
       },
       barrierColor: Colors.transparent,
     );
-    Future.delayed(const Duration(seconds: 1))
-        .then((value) => Navigator.of(context).pop());
+    Future.delayed(const Duration(seconds: 1)).then((value) {
+      if (nState.canPop()) {
+        nState.pop();
+      }
+    });
   }
 
   @override

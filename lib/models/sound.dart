@@ -1,11 +1,4 @@
-import 'dart:io';
-import 'dart:typed_data';
-
-import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:ffi/ffi.dart' if (dart.library.html) '../html/ffi.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:win32/win32.dart' if (dart.library.html) '../html/win32.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'game_setting.dart';
 
@@ -20,7 +13,7 @@ class Sound {
   static const draw = 'draw.wav';
   static const illegal = 'illegal.wav';
 
-  static AssetsAudioPlayer audioPlayer = AssetsAudioPlayer();
+  static AudioPlayer audioPlayer = AudioPlayer();
 
   static GameSetting? setting;
 
@@ -28,28 +21,10 @@ class Sound {
     setting ??= await GameSetting.getInstance();
     if (!setting!.sound) return false;
 
-    String asset = "assets/sounds/$id";
+    String asset = "sounds/$id";
 
-    // Platform.isLinux not support yet
-    if (kIsWeb) {
-      audioPlayer.setVolume(setting!.soundVolume);
-      audioPlayer.open(Audio(asset));
-    } else if (Platform.isWindows) {
-      File direct = File("${Directory.systemTemp.absolute.path}/$asset");
-      if (!direct.existsSync()) {
-        if (!direct.parent.existsSync()) {
-          direct.parent.createSync(recursive: true);
-        }
-        TypedData data = await rootBundle.load(asset);
-        await direct.writeAsBytes(data.buffer.asUint8List());
-      }
-      PlaySound(direct.path.toNativeUtf16(), NULL, SND_ASYNC | SND_FILENAME);
-    } else if (Platform.isLinux) {
-      return true;
-    } else {
-      audioPlayer.setVolume(setting!.soundVolume);
-      audioPlayer.open(Audio(asset));
-    }
+    audioPlayer.setVolume(setting!.soundVolume);
+    audioPlayer.play(AssetSource(asset));
     return true;
   }
 }

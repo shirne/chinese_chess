@@ -52,7 +52,9 @@ class Engine extends CustomNotifier<String> {
       if (line == 'bye') {
         ready = false;
         process = null;
-        stopCompleter?.complete(true);
+        if (stopCompleter != null && !stopCompleter!.isCompleted) {
+          stopCompleter?.complete(true);
+        }
       } else if (line.isNotEmpty && hasListeners) {
         if (line.startsWith('nobestmove') || line.startsWith('bestmove ')) {
           if (stopCompleter != null && !stopCompleter!.isCompleted) {
