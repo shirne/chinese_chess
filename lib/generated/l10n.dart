@@ -650,10 +650,10 @@ class S {
     );
   }
 
-  /// `Let me see`
+  /// `Not now`
   String get let_me_see {
     return Intl.message(
-      'Let me see',
+      'Not now',
       name: 'let_me_see',
       desc: '',
       args: [],

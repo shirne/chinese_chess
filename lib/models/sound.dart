@@ -22,8 +22,7 @@ class Sound {
     setting ??= await GameSetting.getInstance();
     if (!setting!.sound) return false;
 
-    await audioPlayer.setVolume(setting!.soundVolume);
-    await audioPlayer.play(AssetSource(id));
+    await audioPlayer.play(AssetSource(id), volume: setting!.soundVolume);
     return true;
   }
 }

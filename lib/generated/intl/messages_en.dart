@@ -49,7 +49,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "flip_board": MessageLookupByLibrary.simpleMessage("Flip Board"),
         "invalid_code":
             MessageLookupByLibrary.simpleMessage("Invalid Chess Code"),
-        "let_me_see": MessageLookupByLibrary.simpleMessage("Let me see"),
+        "let_me_see": MessageLookupByLibrary.simpleMessage("Not now"),
         "load_manual":
             MessageLookupByLibrary.simpleMessage("Load Chess Manual"),
         "long_recheck_loose": MessageLookupByLibrary.simpleMessage(
