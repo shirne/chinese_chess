@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../generated/l10n.dart';
 import '../global.dart';
@@ -21,12 +22,30 @@ class GameWrapper extends StatefulWidget {
   State<GameWrapper> createState() => GameWrapperState();
 }
 
-class GameWrapperState extends State<GameWrapper> {
+class GameWrapperState extends State<GameWrapper> with WindowListener {
   final GameManager gamer = GameManager();
 
   @override
   void initState() {
     super.initState();
+    if (widget.isMain) {
+      windowManager.addListener(this);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.isMain) {
+      windowManager.removeListener(this);
+    }
+    super.dispose();
+  }
+
+  @override
+  void onWindowClose() {
+    logger.info('gamer destroy');
+    gamer.dispose();
+    GameManager.instance.engine?.dispose();
   }
 
   Future<bool> _willPop() async {
@@ -57,13 +76,5 @@ class GameWrapperState extends State<GameWrapper> {
       onWillPop: widget.isMain ? _willPop : null,
       child: widget.child,
     );
-  }
-
-  @override
-  void dispose() {
-    logger.info('gamer destroy');
-    gamer.dispose();
-    //gamer = null;
-    super.dispose();
   }
 }

@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:chinese_chess/models/game_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n.dart';
 import 'widgets/game_wrapper.dart';
@@ -12,18 +12,29 @@ import 'game_board.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
   final gamer = GameManager();
   await gamer.init();
+  const windowOptions = WindowOptions(
+    size: Size(1024, 720),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.normal,
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+  windowManager.addListener(MainWindowListener());
+
   runApp(const MainApp());
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    doWhenWindowReady(() {
-      final win = appWindow;
-      const initialSize = Size(1024, 720);
-      win.minSize = initialSize;
-      win.size = initialSize;
-      win.alignment = Alignment.center;
-      win.show();
-    });
+}
+
+class MainWindowListener extends WindowListener {
+  @override
+  void onWindowClose() {
+    GameManager.instance.engine?.dispose();
   }
 }
 
@@ -37,7 +48,7 @@ class MainApp extends StatelessWidget {
       onGenerateTitle: (BuildContext context) {
         if (!kIsWeb &&
             (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-          appWindow.title = S.of(context).app_title;
+          windowManager.setTitle(S.of(context).app_title);
         }
         return S.of(context).app_title;
       },

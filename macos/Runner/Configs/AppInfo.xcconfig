@@ -8,7 +8,7 @@
 PRODUCT_NAME = chinese_chess
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.chineseChess
+PRODUCT_BUNDLE_IDENTIFIER = com.shirne.chineseChess
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 com.example. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2022 com.shirne. All rights reserved.
