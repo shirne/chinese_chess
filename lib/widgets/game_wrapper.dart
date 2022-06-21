@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -29,14 +31,17 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
   void initState() {
     super.initState();
     if (widget.isMain) {
-      windowManager.addListener(this);
+      if (!kIsWeb &&
+          (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+        windowManager.addListener(this);
+      }
     }
   }
 
   @override
   void dispose() {
     if (widget.isMain) {
-      windowManager.removeListener(this);
+      gamer.dispose();
     }
     super.dispose();
   }
@@ -44,6 +49,7 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
   @override
   void onWindowClose() {
     logger.info('gamer destroy');
+    windowManager.removeListener(this);
     gamer.dispose();
     GameManager.instance.engine?.dispose();
   }
