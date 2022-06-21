@@ -52,13 +52,13 @@ abstract class PlayerDriver {
   Future<bool> tryRetract();
 
   /// 获取走招
-  Future<String> move();
+  Future<String?> move();
 
   /// 思考
   Future<String> ponder();
 
   /// 完成走招
-  completeMove(String move);
+  void completeMove(String move);
 
   @override
   String toString() => "$runtimeType ${player.team}";

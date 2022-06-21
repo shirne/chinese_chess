@@ -1,3 +1,4 @@
+import '../models/game_event.dart';
 import '../models/player.dart';
 import 'player_driver.dart';
 
@@ -12,7 +13,8 @@ class DriverOnline extends PlayerDriver {
   }
 
   @override
-  Future<String> move() {
+  Future<String?> move() {
+    player.manager.add(GameLockEvent(true));
     throw UnimplementedError();
   }
 
@@ -22,7 +24,7 @@ class DriverOnline extends PlayerDriver {
   }
 
   @override
-  completeMove(String move) {
+  void completeMove(String move) {
     throw UnimplementedError();
   }
 

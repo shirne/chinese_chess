@@ -41,6 +41,7 @@ class _ChessPiecesState extends State<ChessPieces> {
   }
 
   void onChangePlayer(GameEvent event) {
+    if (!mounted) return;
     setState(() {
       curTeam = event.data;
     });

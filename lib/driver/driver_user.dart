@@ -16,7 +16,7 @@ class DriverUser extends PlayerDriver {
   }
 
   @override
-  Future<String> move() {
+  Future<String?> move() {
     requestMove = Completer<String>();
     player.manager.add(GameLockEvent(false));
 
@@ -34,8 +34,9 @@ class DriverUser extends PlayerDriver {
 
   @override
   completeMove(String move) {
-    player.manager.add(GameLockEvent(true));
-    requestMove.complete(move);
+    if (!requestMove.isCompleted) {
+      requestMove.complete(move);
+    }
   }
 
   @override

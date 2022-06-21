@@ -49,9 +49,9 @@ class Player {
 
   Future<bool> onDraw() => driver.tryDraw();
 
-  Future<String> move() => driver.move();
+  Future<String?> move() => driver.move();
 
-  completeMove(String move) {
+  void completeMove(String move) {
     driver.completeMove(move);
   }
 }

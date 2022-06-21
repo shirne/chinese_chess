@@ -224,9 +224,7 @@ class GameManager {
     isStop = true;
     engine?.stop();
     currentStep = 0;
-    //stepNotifier.value = '';
-    //messageNotifier.value = '';
-    //resultNotifier.value = '';
+
     add(GameLockEvent(true));
   }
 
@@ -322,15 +320,16 @@ class GameManager {
   }
 
   /// 调用对应的玩家开始下一步
-  void next() {
-    player.move().then((String move) {
-      addMove(move);
-      final canNext = checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
-      logger.info('canNext $canNext');
-      if (canNext) {
-        switchPlayer();
-      }
-    });
+  Future<void> next() async {
+    final move = await player.move();
+    if (move == null) return;
+
+    addMove(move);
+    final canNext = checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
+    logger.info('canNext $canNext');
+    if (canNext) {
+      switchPlayer();
+    }
   }
 
   /// 从用户落着 todo 检查出发点是否有子，检查落点是否对方子

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../global.dart';
 import '../models/engine_type.dart';
+import '../models/game_event.dart';
 import '../models/game_setting.dart';
 import '../xqlite/util.dart';
 import '../models/chess_rule.dart';
@@ -29,8 +30,9 @@ class DriverRobot extends PlayerDriver {
   }
 
   @override
-  Future<String> move() {
+  Future<String?> move() {
     requestMove = Completer<String>();
+    player.manager.add(GameLockEvent(true));
 
     // 网页版用不了引擎
     Future.delayed(const Duration(seconds: 1)).then((value) {
@@ -46,7 +48,7 @@ class DriverRobot extends PlayerDriver {
     return requestMove.future;
   }
 
-  getMoveFromEngine() async {
+  Future<void> getMoveFromEngine() async {
     player.manager.startEngine().then((v) {
       if (v) {
         player.manager.engine!
@@ -58,7 +60,7 @@ class DriverRobot extends PlayerDriver {
     });
   }
 
-  onEngineMessage(String message) {
+  void onEngineMessage(String message) {
     List<String> parts = message.split(' ');
     switch (parts[0]) {
       case 'ucciok':
@@ -91,7 +93,7 @@ class DriverRobot extends PlayerDriver {
     }
   }
 
-  getBuiltInMove() async {
+  Future<void> getBuiltInMove() async {
     GameSetting setting = await GameSetting.getInstance();
     XQIsoSearch.level = setting.robotLevel;
     await XQIsoSearch.init();
@@ -112,7 +114,7 @@ class DriverRobot extends PlayerDriver {
     }
   }
 
-  getMove() async {
+  Future<void> getMove() async {
     logger.info('thinking');
     int team = player.team == 'r' ? 0 : 1;
     List<String> moves = await getAbleMoves(player.manager.fen, team);

@@ -40,10 +40,10 @@ class PlayStepState extends State<PlayStep> {
 
   void updateStep(GameEvent event) {
     String message = event.data!;
-    if (message.isEmpty) return;
+    if (message.isEmpty || !mounted) return;
     if (message == 'clear') {
       setState(() {
-        currentStep = gamer.currentStep;
+        currentStep = gamer.currentStep - 1;
         steps.removeRange(currentStep + 1, steps.length);
       });
     } else if (message == 'step') {
