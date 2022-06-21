@@ -6,7 +6,6 @@ import 'play_single_player.dart';
 import 'play_bot.dart';
 import 'play_player.dart';
 import '../widgets/tab_card.dart';
-import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 import '../models/play_mode.dart';
 import '../generated/l10n.dart';
@@ -22,15 +21,12 @@ class PlayPage extends StatefulWidget {
 }
 
 class PlayPageState extends State<PlayPage> {
-  late GameManager gamer;
+  final GameManager gamer = GameManager.instance;
   bool inited = false;
 
   @override
   void initState() {
     super.initState();
-    GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>()!;
-    gamer = gameWrapper.gamer;
   }
 
   initGame() async {

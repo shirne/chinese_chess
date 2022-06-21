@@ -29,79 +29,69 @@ class GameBoard extends StatefulWidget {
 }
 
 class _GameBoardState extends State<GameBoard> {
-  late GameManager gamer;
+  GameManager gamer = GameManager.instance;
   PlayMode? mode;
 
   @override
   void initState() {
     super.initState();
-    gamer = context.findAncestorStateOfType<GameWrapperState>()!.gamer;
-  }
-
-  Future<bool?> confirm(message,
-      {String buttonText = 'OK',
-      String title = 'Alert',
-      String cancelText = 'Cancel'}) {
-    return MyDialog.of(context).confirm(message);
-  }
-
-  alert(message) {
-    MyDialog.of(context).alert(message);
   }
 
   Widget selectMode() {
-    double maxHeight = MediaQuery.of(context).size.height;
-    List<Widget> widgets = [
-      ElevatedButton.icon(
-        onPressed: () {
-          setState(() {
-            mode = PlayMode.modeRobot;
-          });
-        },
-        icon: const Icon(Icons.android),
-        label: Text(S.of(context).mode_robot),
-      ),
-      ElevatedButton.icon(
-        onPressed: () {
-          MyDialog.of(context).toast(S.of(context).feature_not_available,
-              iconType: IconType.error);
-        },
-        icon: const Icon(Icons.wifi),
-        label: Text(S.of(context).mode_online),
-      ),
-      ElevatedButton.icon(
-        onPressed: () {
-          setState(() {
-            mode = PlayMode.modeFree;
-          });
-        },
-        icon: const Icon(Icons.map),
-        label: Text(S.of(context).mode_free),
-      ),
-    ];
-    if (kIsWeb) {
-      widgets.add(TextButton(
-        onPressed: () {
-          var link = html.window.document.getElementById('download-apk');
-          if (link == null) {
-            link = html.window.document.createElement('a');
-            link.style.display = 'none';
-            link.setAttribute('id', 'download-apk');
-            link.setAttribute('target', '_blank');
-            link.setAttribute('href', 'chinese-chess.apk');
-            html.window.document.getElementsByTagName('body')[0].append(link);
-          }
-          link.click();
-        },
-        child: const Text('Download APK'),
-      ));
-    }
+    final maxHeight = MediaQuery.of(context).size.height;
+
     return Center(
       child: SizedBox(
         height: maxHeight * 0.6,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: widgets,
+          children: [
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  mode = PlayMode.modeRobot;
+                });
+              },
+              icon: const Icon(Icons.android),
+              label: Text(S.of(context).mode_robot),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                MyDialog.of(context).toast(S.of(context).feature_not_available,
+                    iconType: IconType.error);
+              },
+              icon: const Icon(Icons.wifi),
+              label: Text(S.of(context).mode_online),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  mode = PlayMode.modeFree;
+                });
+              },
+              icon: const Icon(Icons.map),
+              label: Text(S.of(context).mode_free),
+            ),
+            if (kIsWeb)
+              TextButton(
+                onPressed: () {
+                  var link =
+                      html.window.document.getElementById('download-apk');
+                  if (link == null) {
+                    link = html.window.document.createElement('a');
+                    link.style.display = 'none';
+                    link.setAttribute('id', 'download-apk');
+                    link.setAttribute('target', '_blank');
+                    link.setAttribute('href', 'chinese-chess.apk');
+                    html.window.document
+                        .getElementsByTagName('body')[0]
+                        .append(link);
+                  }
+                  link.click();
+                },
+                child: const Text('Download APK'),
+              ),
+          ],
         ),
       ),
     );
@@ -296,12 +286,14 @@ class _GameBoardState extends State<GameBoard> {
     filenameController.addListener(() {
       fenStr = filenameController.text;
     });
-    confirm(
-            TextField(
-              controller: filenameController,
-            ),
-            buttonText: S.of(context).apply,
-            title: S.of(context).situation_code)
+    MyDialog.of(context)
+        .confirm(
+      TextField(
+        controller: filenameController,
+      ),
+      buttonText: S.of(context).apply,
+      title: S.of(context).situation_code,
+    )
         .then((v) {
       if (v ?? false) {
         if (RegExp(
@@ -309,7 +301,7 @@ class _GameBoardState extends State<GameBoard> {
             .hasMatch(fenStr)) {
           gamer.newGame(fenStr);
         } else {
-          alert(S.of(context).invalid_code);
+          MyDialog.of(context).alert(S.of(context).invalid_code);
         }
       }
     });
@@ -317,7 +309,7 @@ class _GameBoardState extends State<GameBoard> {
 
   copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
-    alert(S.of(context).copy_success);
+    MyDialog.of(context).alert(S.of(context).copy_success);
   }
 
   saveManual() async {
@@ -360,17 +352,19 @@ class _GameBoardState extends State<GameBoard> {
       filenameController.addListener(() {
         filename = filenameController.text;
       });
-      confirm(
-              TextField(
-                controller: filenameController,
-              ),
-              buttonText: 'Save',
-              title: S.of(context).save_filename)
+      MyDialog.of(context)
+          .confirm(
+        TextField(
+          controller: filenameController,
+        ),
+        buttonText: 'Save',
+        title: S.of(context).save_filename,
+      )
           .then((v) {
         if (v ?? false) {
           List<int> fData = gbk.encode(content);
           File('$result/$filename').writeAsBytes(fData).then((File file) {
-            alert(S.of(context).save_success);
+            MyDialog.of(context).alert(S.of(context).save_success);
           });
         }
       });
@@ -386,7 +380,7 @@ class _GameBoardState extends State<GameBoard> {
     }
     final fileData = gbk.encode(content);
     File(path).writeAsBytes(fileData).then((File file) {
-      alert(S.of(context).save_success);
+      MyDialog.of(context).alert(S.of(context).save_success);
     });
   }
 

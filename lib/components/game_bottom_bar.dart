@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shirne_dialog/shirne_dialog.dart';
 
+import '../models/game_manager.dart';
 import '../models/play_mode.dart';
+import 'play_step.dart';
 
 class GameBottomBar extends StatefulWidget {
   final PlayMode mode;
@@ -12,6 +15,8 @@ class GameBottomBar extends StatefulWidget {
 }
 
 class GameBottomBarState extends State<GameBottomBar> {
+  final GameManager gamer = GameManager.instance;
+
   @override
   Widget build(BuildContext context) {
     if (widget.mode == PlayMode.modeRobot) {
@@ -24,15 +29,47 @@ class GameBottomBarState extends State<GameBottomBar> {
     return freeBottomBar();
   }
 
+  _showStepList() {
+    final size = MediaQuery.of(context).size;
+    MyDialog.of(context).popup(
+      SizedBox(
+        height: size.height * 0.75,
+        child: Center(
+          child: PlayStep(
+            width: size.width * 0.8,
+          ),
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  _showCode() {}
+
+  _doReply() {}
+
+  _goPrev() {
+    if (gamer.currentStep < 1) return;
+    gamer.loadHistory(gamer.currentStep - 1);
+    setState(() {});
+  }
+
+  _goNext() {
+    if (gamer.currentStep >= gamer.stepCount) return;
+    gamer.loadHistory(gamer.currentStep + 1);
+    setState(() {});
+  }
+
   Widget freeBottomBar() {
     return BottomAppBar(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(icon: const Icon(Icons.list), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.code), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.navigate_next), onPressed: () {})
+          IconButton(icon: const Icon(Icons.list), onPressed: _showStepList),
+          IconButton(icon: const Icon(Icons.code), onPressed: _showCode),
+          IconButton(
+              icon: const Icon(Icons.navigate_before), onPressed: _goPrev),
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
         ],
       ),
     );
@@ -43,10 +80,11 @@ class GameBottomBarState extends State<GameBottomBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(icon: const Icon(Icons.list), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.replay), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.navigate_next), onPressed: () {})
+          IconButton(icon: const Icon(Icons.list), onPressed: _showStepList),
+          IconButton(icon: const Icon(Icons.replay), onPressed: _doReply),
+          IconButton(
+              icon: const Icon(Icons.navigate_before), onPressed: _goPrev),
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
         ],
       ),
     );
@@ -57,10 +95,11 @@ class GameBottomBarState extends State<GameBottomBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(icon: const Icon(Icons.list), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.replay), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.navigate_before), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.navigate_next), onPressed: () {})
+          IconButton(icon: const Icon(Icons.list), onPressed: _showStepList),
+          IconButton(icon: const Icon(Icons.replay), onPressed: _doReply),
+          IconButton(
+              icon: const Icon(Icons.navigate_before), onPressed: _goPrev),
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
         ],
       ),
     );

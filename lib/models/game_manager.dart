@@ -49,6 +49,8 @@ class GameManager {
   // 当前着法序号
   int currentStep = 0;
 
+  int get stepCount => manual.moves.length;
+
   // 是否将军
   bool get isCheckMate => manual.moves[currentStep - 1].isCheckMate;
 
@@ -97,7 +99,7 @@ class GameManager {
     return true;
   }
 
-  on<T extends GameEvent>(void Function(GameEvent) listener) {
+  void on<T extends GameEvent>(void Function(GameEvent) listener) {
     final type = GameEvent.eventType(T);
     if (type == null) {
       logger.warning('type not match ${T.runtimeType}');
@@ -109,7 +111,7 @@ class GameManager {
     listeners[type]!.add(listener);
   }
 
-  off<T extends GameEvent>(void Function(GameEvent) listener) {
+  void off<T extends GameEvent>(void Function(GameEvent) listener) {
     final type = GameEvent.eventType(T);
     if (type == null) {
       logger.warning('type not match ${T.runtimeType}');
@@ -118,15 +120,15 @@ class GameManager {
     listeners[type]?.remove(listener);
   }
 
-  add<T extends GameEvent>(T event) {
+  void add<T extends GameEvent>(T event) {
     gameEvent.add(event);
   }
 
-  clear() {
+  void clear() {
     listeners.clear();
   }
 
-  _onGameEvent(GameEvent e) {
+  void _onGameEvent(GameEvent e) {
     if (e.type == GameEventType.lock) {
       _isLock = e.data;
     }
@@ -217,7 +219,7 @@ class GameManager {
     }
   }
 
-  stop() {
+  void stop() {
     add(GameLoadEvent(-1));
     isStop = true;
     engine?.stop();
@@ -228,7 +230,7 @@ class GameManager {
     add(GameLockEvent(true));
   }
 
-  newGame([String fen = ChessManual.startFen]) {
+  void newGame([String fen = ChessManual.startFen]) {
     stop();
 
     add(GameStepEvent('clear'));
@@ -245,7 +247,7 @@ class GameManager {
     next();
   }
 
-  loadPGN(String pgn) {
+  void loadPGN(String pgn) {
     stop();
 
     _loadPGN(pgn);
@@ -253,7 +255,7 @@ class GameManager {
     next();
   }
 
-  _loadPGN(String pgn) {
+  bool _loadPGN(String pgn) {
     isStop = true;
     engine?.stop();
 
@@ -289,7 +291,7 @@ class GameManager {
   }
 
   // 重载历史局面
-  loadHistory(int index) {
+  void loadHistory(int index) {
     if (index > manual.moves.length) {
       logger.info('History error');
       return;
@@ -309,7 +311,7 @@ class GameManager {
   }
 
   /// 切换驱动
-  switchDriver(int team, DriverType driverType) {
+  void switchDriver(int team, DriverType driverType) {
     hands[team].driverType = driverType;
     if (team == curHand && driverType == DriverType.robot) {
       //add(GameLockEvent(true));
@@ -320,7 +322,7 @@ class GameManager {
   }
 
   /// 调用对应的玩家开始下一步
-  next() {
+  void next() {
     player.move().then((String move) {
       addMove(move);
       final canNext = checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
@@ -332,11 +334,11 @@ class GameManager {
   }
 
   /// 从用户落着 todo 检查出发点是否有子，检查落点是否对方子
-  addStep(ChessPos from, ChessPos next) async {
+  void addStep(ChessPos from, ChessPos next) async {
     player.completeMove('${from.toCode()}${next.toCode()}');
   }
 
-  addMove(String move) {
+  void addMove(String move) {
     logger.info('addmove $move');
     if (PlayerDriver.isAction(move)) {
       if (move == PlayerDriver.rstGiveUp) {
@@ -393,7 +395,7 @@ class GameManager {
     add(GameStepEvent(manual.moves.last.toChineseString()));
   }
 
-  setResult(String result, [String description = '']) {
+  void setResult(String result, [String description = '']) {
     if (!ChessManual.results.contains(result)) {
       logger.info('结果不合法 $result');
       return;
@@ -468,13 +470,11 @@ class GameManager {
     return true;
   }
 
-  getSteps() {
-    return manual.moves.map<String>((cs) {
-      return cs.toString();
-    }).toList();
+  List<String> getSteps() {
+    return manual.moves.map<String>((cs) => cs.toChineseString()).toList();
   }
 
-  dispose() {
+  void dispose() {
     if (engine != null) {
       engine?.stop();
       engine?.quit();
@@ -482,7 +482,7 @@ class GameManager {
     }
   }
 
-  switchPlayer() {
+  void switchPlayer() {
     curHand++;
     if (curHand >= hands.length) {
       curHand = 0;
@@ -511,7 +511,7 @@ class GameManager {
     return engineFuture.future;
   }
 
-  requestHelp() {
+  void requestHelp() {
     if (engine == null) {
       startEngine().then((v) {
         if (v) {
@@ -532,16 +532,10 @@ class GameManager {
     }
   }
 
-  String get fenStr {
-    return '${manual.currentFen.fen} ${curHand > 0 ? 'b' : 'w'}'
-        ' - - $unEatCount ${manual.moves.length ~/ 2}';
-  }
+  String get fenStr => '${manual.currentFen.fen} ${curHand > 0 ? 'b' : 'w'}'
+      ' - - $unEatCount ${manual.moves.length ~/ 2}';
 
-  Player get player {
-    return hands[curHand];
-  }
+  Player get player => hands[curHand];
 
-  Player getPlayer(int hand) {
-    return hands[hand];
-  }
+  Player getPlayer(int hand) => hands[hand];
 }

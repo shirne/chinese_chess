@@ -2,7 +2,6 @@ import 'package:chinese_chess/models/game_event.dart';
 import 'package:flutter/material.dart';
 
 import '../generated/l10n.dart';
-import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 
 /// 着法列表
@@ -18,21 +17,19 @@ class PlayStep extends StatefulWidget {
 }
 
 class PlayStepState extends State<PlayStep> {
-  List<String> steps = [];
-  late ScrollController _controller;
-  late GameManager gamer;
+  final List<String> steps = [''];
+  final ScrollController _controller = ScrollController(keepScrollOffset: true);
+  final GameManager gamer = GameManager.instance;
 
   int currentStep = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = ScrollController(keepScrollOffset: true);
-    GameWrapperState gameWrapper =
-        context.findAncestorStateOfType<GameWrapperState>()!;
-    gamer = gameWrapper.gamer;
+
     gamer.on<GameStepEvent>(updateStep);
-    steps = gamer.getSteps();
+    steps.addAll(gamer.getSteps());
+    currentStep = gamer.currentStep;
   }
 
   @override
@@ -47,11 +44,7 @@ class PlayStepState extends State<PlayStep> {
     if (message == 'clear') {
       setState(() {
         currentStep = gamer.currentStep;
-        if (gamer.currentStep == 0) {
-          steps = [S.of(context).step_start];
-        } else {
-          steps.removeRange(currentStep + 1, steps.length);
-        }
+        steps.removeRange(currentStep + 1, steps.length);
       });
     } else if (message == 'step') {
       setState(() {
@@ -75,45 +68,34 @@ class PlayStepState extends State<PlayStep> {
 
   @override
   Widget build(BuildContext context) {
-    if (steps.isEmpty) {
-      steps.insert(0, S.of(context).step_start);
-    }
-    int step = 0;
     return Container(
       width: widget.width,
       padding: const EdgeInsets.all(10),
       decoration: widget.decoration,
-      child: ListView(
+      child: ListView.builder(
         controller: _controller,
-        children: steps.map<Widget>((e) {
-          int myIndex = step;
-          return GestureDetector(
-            onTap: () {
-              if (!gamer.canBacktrace) return;
-              gamer.loadHistory(myIndex);
-              setState(() {
-                currentStep = myIndex;
-              });
-            },
-            child: Container(
-              height: 23,
-              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-              decoration: BoxDecoration(
-                color: currentStep == myIndex
-                    ? Colors.black26
-                    : Colors.transparent,
-              ),
-              child: Row(
-                children: [
-                  (step++ > 0 && step % 2 == 0)
-                      ? Text('${step ~/ 2}.')
-                      : const Text('   '),
-                  Text(e)
-                ],
-              ),
+        itemCount: steps.length,
+        itemBuilder: (context, index) => GestureDetector(
+          onTap: () {
+            if (!gamer.canBacktrace) return;
+            gamer.loadHistory(index);
+            setState(() {
+              currentStep = index;
+            });
+          },
+          child: Container(
+            height: 23,
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+            alignment: Alignment.centerLeft,
+            decoration: BoxDecoration(
+              color: currentStep == index ? Colors.black26 : Colors.transparent,
             ),
-          );
-        }).toList(),
+            child: (index > 0 && index % 2 == 1)
+                ? Text('${(index + 1) ~/ 2}.${steps[index]}')
+                : Text(
+                    '   ${index == 0 ? S.of(context).step_start : steps[index]}'),
+          ),
+        ),
       ),
     );
   }
