@@ -35,17 +35,6 @@ dependencies:
   # file_picker: ^3.0.1
   #window_manager: 0.2.5
   bitsdojo_window: ^0.1.2
-  #desktop_window: ^0.4.0
-  #window_size:
-  #  git:
-  #    url: git://github.com/google/flutter-desktop-embedding.git
-  #    path: plugins/window_size
-  #    ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
-  #menubar:
-  #  git:
-  #    url: git://github.com/google/flutter-desktop-embedding.git
-  #    path: plugins/menubar
-  #    ref: f2d8aa3820fb87316516670bf4d51a74de8ac0dd
   filesystem_picker: ^2.0.1
   file_selector: ^0.8.2
   shirne_dialog:  ^2.0.1
@@ -54,7 +43,14 @@ dependencies:
   shared_preferences: ^2.0.13
   flutter_native_splash: ^2.2.3+1
   
-  audioplayers: 1.0.1
+  soundpool: 2.3.0
+  soundpool_windux: #2.3.0
+    git:
+      url: https://github.com/ukasz123/soundpool
+      ref: windows_linux_support
+      path: soundpool_windux
+      
+  #audioplayers: 1.0.1
   #assets_audio_player: ^3.0.4+3
   ffi: 1.2.1
   # win32: 2.6.1
