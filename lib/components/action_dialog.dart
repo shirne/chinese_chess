@@ -77,32 +77,35 @@ class _ActionDialogState extends State<ActionDialog>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 220,
-      height: 220,
-      child: Opacity(
-        opacity: showAction.isCompleted ? imageAnimation.value : 1,
-        child: Stack(
-          children: [
-            Center(
-              child: FutureBuilder<bool>(
-                future: showAction.future,
-                initialData: false,
-                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                  if (snapshot.hasData && snapshot.data!) {
-                    return Image.asset(assets(widget.type));
-                  }
-                  return const SizedBox();
-                },
+    return IgnorePointer(
+      child: SizedBox(
+        width: 220,
+        height: 220,
+        child: Opacity(
+          opacity: showAction.isCompleted ? imageAnimation.value : 1,
+          child: Stack(
+            children: [
+              Center(
+                child: FutureBuilder<bool>(
+                  future: showAction.future,
+                  initialData: false,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if (snapshot.hasData && snapshot.data!) {
+                      return Image.asset(assets(widget.type));
+                    }
+                    return const SizedBox();
+                  },
+                ),
               ),
-            ),
-            Center(
-              child: Opacity(
-                opacity: showAction.isCompleted ? 1 : imageAnimation.value,
-                child: Image.asset('assets/images/action_background.png'),
+              Center(
+                child: Opacity(
+                  opacity: showAction.isCompleted ? 1 : imageAnimation.value,
+                  child: Image.asset('assets/images/action_background.png'),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
