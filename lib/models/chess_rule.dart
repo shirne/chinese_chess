@@ -138,7 +138,9 @@ class ChessRule {
     // 是否与对方老将同列，并且中间无子
     ChessPos? enemyKing = fen.find(team == 0 ? 'k' : 'K');
     if (enemyKing != null && kPos.x == enemyKing.x) {
-      List<ChessItem> items = fen.findByCol(kPos.x);
+      final isMax = enemyKing.y > kPos.y;
+      List<ChessItem> items = fen.findByCol(
+          kPos.x, isMax ? kPos.y : enemyKing.y, isMax ? enemyKing.y : kPos.y);
 
       // 原则上没有小于2的情况，这里统一按照面计算
       if (items.length <= 2) {

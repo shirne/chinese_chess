@@ -199,14 +199,12 @@ class ChessFen {
     return items;
   }
 
-  List<ChessItem> findByCol(int col) {
+  List<ChessItem> findByCol(int col, [int? min, int? max]) {
     List<ChessItem> items = [];
-    int rowNumber = 0;
-    for (var row in _rows) {
-      if (row[col] != '0') {
-        items.add(ChessItem(row[col], position: ChessPos(col, rowNumber)));
+    for (int i = min ?? 0; i <= (max ?? _rows.length - 1); i++) {
+      if (_rows[i][col] != '0') {
+        items.add(ChessItem(_rows[i][col], position: ChessPos(col, i)));
       }
-      rowNumber++;
     }
     return items;
   }
