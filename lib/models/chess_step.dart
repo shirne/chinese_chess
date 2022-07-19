@@ -1,5 +1,6 @@
 import 'chess_fen.dart';
 
+/// 招法
 class ChessStep {
   // 当前回合数
   final int round;

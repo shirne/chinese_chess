@@ -3,6 +3,7 @@ import 'chess_manual.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
 
+/// 局面
 class ChessFen {
   static const initFen =
       'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR';
@@ -119,6 +120,7 @@ class ChessFen {
     return ChessFen(positionStr);
   }
 
+  /// 移动
   bool move(String move) {
     int fromX = move.codeUnitAt(0) - colIndexBase;
     int fromY = int.parse(move[1]);
@@ -147,14 +149,17 @@ class ChessFen {
     return true;
   }
 
+  /// 获取对应位置的棋子
   String itemAtPos(ChessPos pos) {
     return _rows[pos.y][pos.x];
   }
 
+  /// 获取对应位置(String)的棋子
   String itemAt(String pos) {
     return itemAtPos(ChessPos.fromCode(pos));
   }
 
+  /// 判断对应位置是否有棋子(指定team则判断是否有红/黑子)
   bool hasItemAt(ChessPos pos, {int team = -1}) {
     String item = _rows[pos.y][pos.x];
     if (item == '0') {
@@ -170,6 +175,7 @@ class ChessFen {
     return false;
   }
 
+  /// 查询棋子位置
   ChessPos? find(String matchCode) {
     ChessPos? pos;
     int rowNumber = 0;
@@ -185,6 +191,7 @@ class ChessFen {
     return pos;
   }
 
+  /// 查询所有的指定棋子
   List<ChessPos> findAll(String matchCode) {
     List<ChessPos> items = [];
     int rowNumber = 0;
@@ -199,6 +206,7 @@ class ChessFen {
     return items;
   }
 
+  /// 按列查找棋子
   List<ChessItem> findByCol(int col, [int? min, int? max]) {
     List<ChessItem> items = [];
     for (int i = min ?? 0; i <= (max ?? _rows.length - 1); i++) {
@@ -209,6 +217,7 @@ class ChessFen {
     return items;
   }
 
+  /// 获取所有棋子
   List<ChessItem> getAll() {
     List<ChessItem> items = [];
     int rowNumber = 0;
@@ -227,6 +236,7 @@ class ChessFen {
     return items;
   }
 
+  /// 获取已被吃的子(棋盘之外)
   String getDieChr() {
     String fullChrs = initFen.replaceAll(RegExp(r'[1-9/]'), '');
     String currentChrs = getAllChr();
@@ -240,6 +250,7 @@ class ChessFen {
     return '';
   }
 
+  /// 获取棋盘上所有的子
   String getAllChr() {
     return fen.split('/').reversed.join('/').replaceAll(RegExp(r'[1-9/]'), '');
   }
@@ -249,6 +260,7 @@ class ChessFen {
     return fen;
   }
 
+  /// 位置排序
   int posSort(key1, key2) {
     if (key1.x > key2.x) {
       return -1;
@@ -263,6 +275,7 @@ class ChessFen {
     return 0;
   }
 
+  /// 将中文招法转换成字符招法
   String toPositionString(int team, String move) {
     late String code;
     late String matchCode;
@@ -378,6 +391,7 @@ class ChessFen {
     return '${curItem.toCode()}${nextItem.toCode()}';
   }
 
+  /// 获取中文结果
   static getChineseResult(String result) {
     switch (result) {
       case '1-0':
@@ -390,6 +404,7 @@ class ChessFen {
     return '未知';
   }
 
+  /// 将一系列招法转换成中文
   List<String> toChineseTree(List<String> moves) {
     ChessFen start = copy();
     List<String> results = [];
@@ -400,6 +415,7 @@ class ChessFen {
     return results;
   }
 
+  /// 将当前局面的招法转换成中文
   String toChineseString(String move) {
     if (ChessManual.results.contains(move)) {
       return getChineseResult(move);
@@ -514,6 +530,7 @@ class ChessFen {
   }
 }
 
+/// 局面的一行
 class ChessFenRow {
   String fenRow;
 

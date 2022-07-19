@@ -1,6 +1,7 @@
 import 'chess_fen.dart';
 import 'chess_pos.dart';
 
+/// 棋子
 class ChessItem {
   final String _code;
   bool isDie = false;

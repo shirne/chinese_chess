@@ -14,11 +14,12 @@ class GameSetting {
   bool sound = true;
   double soundVolume = 1;
 
-  GameSetting(
-      {this.robotType = EngineType.builtIn,
-      this.robotLevel = 10,
-      this.sound = true,
-      this.soundVolume = 1});
+  GameSetting({
+    this.robotType = EngineType.builtIn,
+    this.robotLevel = 10,
+    this.sound = true,
+    this.soundVolume = 1,
+  });
 
   GameSetting.fromJson(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) return;

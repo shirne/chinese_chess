@@ -7,6 +7,7 @@ import 'chess_pos.dart';
 import 'chess_rule.dart';
 import 'chess_step.dart';
 
+/// 棋局(包含开局及一系列招法和结果)
 class ChessManual {
   static const startFen = '${ChessFen.initFen} w - - 0 1';
   static const resultFstWin = '1-0';
@@ -141,6 +142,7 @@ class ChessManual {
     _items = [];
   }
 
+  /// 从pgn格式内容加载
   ChessManual.load(String content) {
     int idx = 0;
     String line = '';
@@ -270,6 +272,7 @@ class ChessManual {
     logger.info(moves);
   }
 
+  /// 导出为pgn格式
   String export() {
     List<String> lines = [];
     lines.add('[Game "$game"]');
@@ -302,6 +305,7 @@ class ChessManual {
     return lines.join("\n");
   }
 
+  /// 回溯到第`index`步
   loadHistory(int index) {
     if (index < 1) {
       currentFen.fen = fen.split(' ')[0];
@@ -314,6 +318,7 @@ class ChessManual {
     step = index;
   }
 
+  /// 设置初始局面
   setFen(String fenStr) {
     ChessFen startFen = ChessFen(fen);
     String initChrs = startFen.getAllChr();
@@ -359,15 +364,18 @@ class ChessManual {
     return true;
   }
 
+  /// 走子
   void doMove(String move) {
     currentFen.move(move);
     fenPosition.move(move);
   }
 
+  /// 是否有下一招
   bool get hasNext {
     return step < moves.length;
   }
 
+  /// 根据招法列表走到下一招
   String next() {
     if (step < moves.length) {
       step++;
@@ -380,6 +388,7 @@ class ChessManual {
     }
   }
 
+  /// 获取所有棋子
   List<ChessItem> _items = [];
   List<ChessItem> getChessItems() {
     ChessFen startFen = ChessFen(fen);
@@ -426,6 +435,7 @@ class ChessManual {
     return moves[step - 1];
   }
 
+  /// 清除招法
   void clearMove([int fromStep = 0]) {
     if (fromStep < 1) {
       moves.clear();
@@ -435,12 +445,14 @@ class ChessManual {
     logger.info('Clear moves $fromStep $moves');
   }
 
+  /// 批量添加招法
   void addMoves(List<String> moves) {
     for (var move in moves) {
       addMove(move);
     }
   }
 
+  /// 添加招法
   void addMove(String move, {String description = '', int addStep = -1}) {
     if (results.contains(move)) {
       result = move;
@@ -473,6 +485,7 @@ class ChessManual {
     }
   }
 
+  /// 循环次数
   int repeatRound() {
     int rewind = step - 1;
     int round = 0;
@@ -489,14 +502,17 @@ class ChessManual {
     return round;
   }
 
+  /// 是否字母招法
   static isNumberMove(String move) {
     return RegExp(r'[abcrnkpABCRNKP][0-9a-e][+\-\.][0-9]').hasMatch(move);
   }
 
+  /// 是否位置招法
   static isPosMove(String move) {
     return RegExp(r'[a-iA-I][0-9]-?[a-iA-I][0-9]').hasMatch(move);
   }
 
+  /// 是否中文招法
   static isChineseMove(String move) {
     return !isNumberMove(move) && !isPosMove(move);
   }

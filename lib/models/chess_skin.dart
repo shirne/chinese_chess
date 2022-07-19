@@ -7,6 +7,7 @@ import '../global.dart';
 import 'chess_pos.dart';
 import 'game_manager.dart';
 
+/// 棋子和棋盘的皮肤
 class ChessSkin {
   GameManager manager;
   String folder = "";

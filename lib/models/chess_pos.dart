@@ -1,3 +1,4 @@
+/// 位置
 class ChessPos {
   int x;
   int y;

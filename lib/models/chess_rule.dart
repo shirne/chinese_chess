@@ -2,6 +2,7 @@ import 'chess_fen.dart';
 import 'chess_item.dart';
 import 'chess_pos.dart';
 
+/// 走子规则，将军规则，是否结束
 class ChessRule {
   // 棋子初始权重
   static const chessWeight = {
@@ -420,6 +421,7 @@ class ChessRule {
     }
   }
 
+  /// 获取兵可以移动的位置
   List<String> moveP(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
@@ -468,6 +470,7 @@ class ChessRule {
     return points;
   }
 
+  /// 获取炮可以移动的位置
   List<String> moveC(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
@@ -510,6 +513,7 @@ class ChessRule {
     return points;
   }
 
+  /// 获取车可以移动的位置
   List<String> moveR(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
@@ -544,6 +548,7 @@ class ChessRule {
     return points;
   }
 
+  /// 获取马可以移动的位置
   List<String> moveN(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
@@ -583,6 +588,7 @@ class ChessRule {
     return points;
   }
 
+  /// 获取象可以移动的位置
   List<String> moveB(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
@@ -623,6 +629,7 @@ class ChessRule {
     return points;
   }
 
+  /// 获取士可以移动的位置
   List<String> moveA(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
@@ -658,6 +665,7 @@ class ChessRule {
     return points;
   }
 
+  /// 获取将可以移动的位置
   List<String> moveK(int team, String code, ChessPos activePos,
       [ChessPos? target]) {
     List<String> points = [];
