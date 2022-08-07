@@ -1,3 +1,4 @@
+import 'package:cchess/cchess.dart';
 import 'package:flutter/material.dart';
 
 import '../global.dart';
@@ -6,9 +7,6 @@ import 'chess_pieces.dart';
 import 'chess_single_box.dart';
 import 'board.dart';
 import '../generated/l10n.dart';
-import '../models/chess_item.dart';
-import '../models/chess_manual.dart';
-import '../models/chess_pos.dart';
 import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 

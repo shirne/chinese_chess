@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cchess/cchess.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
@@ -7,13 +8,9 @@ import '../generated/l10n.dart';
 import '../global.dart';
 import '../models/game_event.dart';
 import '../models/sound.dart';
-import '../models/chess_manual.dart';
 import 'action_dialog.dart';
 import 'board.dart';
-import '../models/chess_item.dart';
 import 'piece.dart';
-import '../models/chess_pos.dart';
-import '../models/chess_rule.dart';
 import '../models/game_manager.dart';
 import 'chess_pieces.dart';
 import '../driver/player_driver.dart';

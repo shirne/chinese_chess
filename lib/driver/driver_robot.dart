@@ -2,20 +2,16 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
 
+import 'package:cchess/cchess.dart';
+import 'package:cchess_engine/cchess_engine.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
 import '../global.dart';
 import '../models/engine_type.dart';
 import '../models/game_event.dart';
 import '../models/game_setting.dart';
-import '../xqlite/util.dart';
-import '../models/chess_rule.dart';
-import '../models/chess_item.dart';
-import '../models/chess_fen.dart';
 import '../models/engine.dart';
 import '../models/player.dart';
-import '../models/chess_pos.dart';
 
 import 'player_driver.dart';
 
@@ -96,8 +92,6 @@ class DriverRobot extends PlayerDriver {
   Future<void> getBuiltInMove() async {
     GameSetting setting = await GameSetting.getInstance();
     XQIsoSearch.level = setting.robotLevel;
-    await XQIsoSearch.init();
-    IsoMessage.bookData ??= await rootBundle.load('assets/engines/BOOK.DAT');
 
     if (kIsWeb) {
       completeMove(

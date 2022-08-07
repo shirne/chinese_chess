@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'package:cchess/cchess.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 
 import '../global.dart';
-import 'chess_pos.dart';
 import 'game_manager.dart';
 
 /// 棋子和棋盘的皮肤

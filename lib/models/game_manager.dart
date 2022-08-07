@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cchess/cchess.dart';
 import 'package:fast_gbk/fast_gbk.dart';
 
 import '../driver/player_driver.dart';
@@ -9,10 +10,6 @@ import 'chess_skin.dart';
 import 'game_event.dart';
 import 'game_setting.dart';
 import 'sound.dart';
-import 'chess_fen.dart';
-import 'chess_manual.dart';
-import 'chess_pos.dart';
-import 'chess_rule.dart';
 import 'engine.dart';
 import 'player.dart';
 

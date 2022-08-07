@@ -1,6 +1,6 @@
+import 'package:cchess/cchess.dart';
 import 'package:flutter/material.dart';
 
-import '../models/chess_item.dart';
 import '../models/game_manager.dart';
 import '../widgets/game_wrapper.dart';
 
