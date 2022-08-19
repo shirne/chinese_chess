@@ -2,9 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:fast_gbk/fast_gbk.dart';
+import 'package:file_picker/file_picker.dart';
 
-import 'package:file_selector/file_selector.dart';
-import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -312,19 +311,30 @@ class _GameBoardState extends State<GameBoard> {
     MyDialog.of(context).alert(S.of(context).copy_success);
   }
 
-  saveManual() async {
+  Future<void> saveManual() async {
     String content = gamer.manual.export();
     String filename = '${DateTime.now().millisecondsSinceEpoch ~/ 1000}.pgn';
     if (kIsWeb) {
-      _saveManualWeb(content, filename);
+      await _saveManualWeb(content, filename);
     } else if (Platform.isAndroid || Platform.isIOS) {
-      _saveManualMobile(content, filename);
-    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      _saveManualWindow(content, filename);
+      await _saveManualNative(content, filename);
     }
   }
 
-  _saveManualWeb(String content, String filename) {
+  Future<void> _saveManualNative(String content, String filename) async {
+    final result = await FilePicker.platform.saveFile(
+      dialogTitle: 'Save pgn file',
+      fileName: filename,
+      allowedExtensions: ['pgn'],
+    );
+    if (result != null) {
+      List<int> fData = gbk.encode(content);
+      await File('$result/$filename').writeAsBytes(fData);
+      MyDialog.of(context).toast(S.of(context).save_success);
+    }
+  }
+
+  Future<void> _saveManualWeb(String content, String filename) async {
     List<int> fData = gbk.encode(content);
     var link = html.window.document.createElement('a');
     link.setAttribute('download', filename);
@@ -332,101 +342,25 @@ class _GameBoardState extends State<GameBoard> {
     link.setAttribute('href', Uri.dataFromBytes(fData).toString());
     html.window.document.getElementsByTagName('body')[0].append(link);
     link.click();
-    Future<void>.delayed(const Duration(seconds: 10)).then((v) {
-      link.remove();
-    });
+    await Future<void>.delayed(const Duration(seconds: 10));
+    link.remove();
   }
 
-  _saveManualMobile(String content, String filename) async {
-    String? result = await FilesystemPicker.open(
-      title: S.of(context).select_directory_save,
-      context: context,
-      rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
-      fsType: FilesystemType.folder,
-      folderIconColor: Colors.teal,
-      fileTileSelectMode: FileTileSelectMode.wholeTile,
+  Future<void> loadFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pgn', 'PGN'],
+      withData: true,
     );
-    if (result != null && result.isNotEmpty) {
-      TextEditingController filenameController =
-          TextEditingController(text: filename);
-      filenameController.addListener(() {
-        filename = filenameController.text;
-      });
-      MyDialog.of(context)
-          .confirm(
-        TextField(
-          controller: filenameController,
-        ),
-        buttonText: 'Save',
-        title: S.of(context).save_filename,
-      )
-          .then((v) {
-        if (v ?? false) {
-          List<int> fData = gbk.encode(content);
-          File('$result/$filename').writeAsBytes(fData).then((File file) {
-            MyDialog.of(context).alert(S.of(context).save_success);
-          });
-        }
-      });
-    }
-  }
 
-  _saveManualWindow(String content, String filename) async {
-    final path = await getSavePath(
-      suggestedName: filename,
-    );
-    if (path == null) {
-      return;
-    }
-    final fileData = gbk.encode(content);
-    File(path).writeAsBytes(fileData).then((File file) {
-      MyDialog.of(context).alert(S.of(context).save_success);
-    });
-  }
-
-  loadFile() {
-    if (kIsWeb) {
-      _loadFileWindow();
-    } else if (Platform.isAndroid || Platform.isIOS) {
-      _loadFileMobile();
-    } else if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      _loadFileWindow();
-    }
-  }
-
-  void _loadFileWindow() async {
-    final typeGroup = XTypeGroup(
-      label: '棋谱文件',
-      extensions: ['pgn'],
-    );
-    final file = await openFile(acceptedTypeGroups: [typeGroup]);
-    if (file != null) {
-      String content = gbk.decode(await file.readAsBytes());
+    if (result != null && result.count == 1) {
+      String content = gbk.decode(result.files.single.bytes!);
       if (gamer.isStop) {
         gamer.newGame();
       }
       gamer.loadPGN(content);
-    }
-  }
-
-  void _loadFileMobile() async {
-    String? path = await FilesystemPicker.open(
-      title: S.of(context).select_pgn_file,
-      context: context,
-      rootDirectory: Directory(Directory('/').resolveSymbolicLinksSync()),
-      fsType: FilesystemType.file,
-      folderIconColor: Colors.teal,
-      allowedExtensions: ['.pgn', '.PGN'],
-      fileTileSelectMode: FileTileSelectMode.wholeTile,
-    );
-
-    if (path != null && path.isNotEmpty) {
-      if (gamer.isStop) {
-        gamer.newGame();
-      }
-      gamer.loadPGN(path);
     } else {
-      // cancel
+      // User canceled the picker
     }
   }
 }

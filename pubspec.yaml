@@ -26,52 +26,60 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  cchess: 0.0.1
+  cchess: 0.0.2
   cchess_engine: 0.0.1
   
   intl: ^0.17.0
   cupertino_icons: ^1.0.2
   logging: ^1.0.2
-  # file_picker: ^3.0.1
+  file_picker: ^5.0.1
   window_manager: 0.2.5
   #bitsdojo_window: ^0.1.2
-  filesystem_picker: ^2.0.1
-  file_selector: ^0.8.2
-  shirne_dialog:  ^3.0.0
+  #filesystem_picker: ^2.0.1
+  #file_selector: ^0.8.2
+  shirne_dialog:  ^3.0.1
   fast_gbk: ^1.0.0-rc
   universal_html: ^2.0.8
   shared_preferences: ^2.0.13
-  flutter_native_splash: ^2.2.3+1
+  flutter_native_splash: ^2.2.7
   
-  soundpool: 2.3.0
-  soundpool_windux: #2.3.0
-    git:
-      url: https://github.com/ukasz123/soundpool
-      ref: windows_linux_support
-      path: soundpool_windux
+  # soundpool: 2.3.0
+  # soundpool_windux: #2.3.0
+  #   git:
+  #     url: https://github.com/ukasz123/soundpool
+  #     ref: windows_linux_support
+  #     path: soundpool_windux
       
-  #audioplayers: 1.0.1
+  audioplayers: 1.0.1
   #assets_audio_player: ^3.0.4+3
-  ffi: 1.2.1
+  ffi: 2.0.1
   # win32: 2.6.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  icons_launcher: 1.2.1 
+  icons_launcher: 2.0.4
   flutter_lints: ^2.0.1
 
 # flutter pub run icons_launcher:create
-flutter_icons:
+icons_launcher:
   image_path: "assets/icon/icon.png"
-  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
-  adaptive_icon_background: "#ffffff"
-  android: true
-  ios: true
-  web: true
-  macos: true
-  windows: true
-  linux: true
+  platforms:
+    android:
+      enable: true
+      adaptive_background_color: "#ffffff"
+      adaptive_foreground_image: "assets/icon/icon_foreground.png"
+    ios: 
+      enable: true
+    web: 
+      enable: true
+      favicon_path: "assets/icon/icon.png"
+    macos: 
+      enable: true
+    windows: 
+      enable: true
+    linux: 
+      enable: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
