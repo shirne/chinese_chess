@@ -11,9 +11,11 @@ class PlaySinglePlayer extends StatefulWidget {
   final int team;
   final Alignment placeAt;
 
-  const PlaySinglePlayer(
-      {Key? key, required this.team, this.placeAt = Alignment.topCenter})
-      : super(key: key);
+  const PlaySinglePlayer({
+    Key? key,
+    required this.team,
+    this.placeAt = Alignment.topCenter,
+  }) : super(key: key);
 
   @override
   State<PlaySinglePlayer> createState() => PlaySinglePlayerState();
@@ -33,23 +35,23 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     gamer.off<GamePlayerEvent>(onChangePlayer);
     gamer.off<GameLoadEvent>(onReloadGame);
     gamer.off<GameResultEvent>(onResult);
     super.dispose();
   }
 
-  onResult(GameEvent event) {
+  void onResult(GameEvent event) {
     setState(() {});
   }
 
-  onReloadGame(GameEvent event) {
+  void onReloadGame(GameEvent event) {
     if (event.data != 0) return;
     setState(() {});
   }
 
-  onChangePlayer(GameEvent event) {
+  void onChangePlayer(GameEvent event) {
     setState(() {
       currentTeam = event.data;
     });

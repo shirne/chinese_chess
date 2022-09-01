@@ -270,8 +270,11 @@ class GameManager {
     // 加载步数
     if (manual.moves.isNotEmpty) {
       // print(manual.moves);
-      add(GameStepEvent(
-          manual.moves.map<String>((e) => e.toChineseString()).join('\n')));
+      add(
+        GameStepEvent(
+          manual.moves.map<String>((e) => e.toChineseString()).join('\n'),
+        ),
+      );
     }
     manual.loadHistory(0);
     rule.fen = manual.currentFen;
@@ -281,7 +284,7 @@ class GameManager {
     return true;
   }
 
-  loadFen(String fen) {
+  void loadFen(String fen) {
     newGame(fen);
   }
 
@@ -339,10 +342,9 @@ class GameManager {
     if (PlayerDriver.isAction(move)) {
       if (move == PlayerDriver.rstGiveUp) {
         setResult(
-            curHand == 0
-                ? ChessManual.resultFstLoose
-                : ChessManual.resultFstWin,
-            '${player.title}认输');
+          curHand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
+          '${player.title}认输',
+        );
       }
       if (move == PlayerDriver.rstDraw) {
         setResult(ChessManual.resultFstDraw);
@@ -435,23 +437,26 @@ class GameManager {
         // 长将
         if (repeatRound > 3) {
           setResult(
-              hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
-              '不变招长将作负');
+            hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
+            '不变招长将作负',
+          );
           return false;
         }
         Sound.play(Sound.check);
         add(GameResultEvent('checkMate'));
       } else {
         setResult(
-            hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
-            '绝杀');
+          hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
+          '绝杀',
+        );
         return false;
       }
     } else {
       if (rule.isTrapped(hand)) {
         setResult(
-            hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
-            '困毙');
+          hand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
+          '困毙',
+        );
         return false;
       } else if (moveStep.isEat) {
         add(GameResultEvent('eat'));

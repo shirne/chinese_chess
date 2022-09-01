@@ -95,7 +95,8 @@ class DriverRobot extends PlayerDriver {
 
     if (kIsWeb) {
       completeMove(
-          await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr)));
+        await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr)),
+      );
     } else {
       ReceivePort rPort = ReceivePort();
       rPort.listen((message) {
@@ -161,7 +162,10 @@ class DriverRobot extends PlayerDriver {
 
   /// todo 检查着法优势 吃子（被吃子是否有根以及与本子权重），躲吃，生根，将军，叫杀 将着法按权重分组
   Future<Map<String, int>> checkMoves(
-      ChessFen fen, int team, List<String> moves) async {
+    ChessFen fen,
+    int team,
+    List<String> moves,
+  ) async {
     // 着法加分
     List<int> weights = [
       49, // 0.将军
@@ -417,7 +421,7 @@ class DriverRobot extends PlayerDriver {
   }
 
   @override
-  completeMove(String move) async {
+  Future<void> completeMove(String move) async {
     player.onMove(move).then((value) {
       requestMove.complete(move);
     });

@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 
 class ListItem extends StatelessWidget {
-
   final Widget title;
   final Widget? subtitle;
   final Widget? leading;
@@ -22,20 +20,22 @@ class ListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> children = [];
     List<Widget> titles = [title];
-    if(leading != null){
+    if (leading != null) {
       children.add(leading!);
     }
-    if(subtitle != null ){
+    if (subtitle != null) {
       titles.add(subtitle!);
     }
-    children.add(Expanded(
-      flex: 1,
-      child: Column(
-        crossAxisAlignment: titleAlign,
-        children: titles,
+    children.add(
+      Expanded(
+        flex: 1,
+        child: Column(
+          crossAxisAlignment: titleAlign,
+          children: titles,
+        ),
       ),
-    ));
-    if(trailing != null){
+    );
+    if (trailing != null) {
       children.add(trailing!);
     }
     return Row(

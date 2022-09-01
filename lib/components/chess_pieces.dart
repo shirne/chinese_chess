@@ -29,7 +29,7 @@ class _ChessPiecesState extends State<ChessPieces> {
     initGamer();
   }
 
-  initGamer() {
+  void initGamer() {
     gamer.on<GamePlayerEvent>(onChangePlayer);
     curTeam = gamer.curHand;
   }

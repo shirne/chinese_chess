@@ -29,7 +29,7 @@ class PlayPageState extends State<PlayPage> {
     super.initState();
   }
 
-  initGame() async {
+  void initGame() async {
     if (inited) return;
     inited = true;
     gamer.newGame();
@@ -40,7 +40,7 @@ class PlayPageState extends State<PlayPage> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
   }
 
@@ -74,8 +74,9 @@ class PlayPageState extends State<PlayPage> {
 
   Widget _windowContainer() {
     BoxDecoration decoration = BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 0.5),
-        borderRadius: const BorderRadius.all(Radius.circular(2)));
+      border: Border.all(color: Colors.grey, width: 0.5),
+      borderRadius: const BorderRadius.all(Radius.circular(2)),
+    );
     return SizedBox(
       width: 980,
       height: 577,
@@ -92,15 +93,17 @@ class PlayPageState extends State<PlayPage> {
             width: 439,
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(2)),
-                boxShadow: [
-                  BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, .1),
-                      offset: Offset(1, 1),
-                      blurRadius: 1.0,
-                      spreadRadius: 1.0)
-                ]),
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(2)),
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, .1),
+                  offset: Offset(1, 1),
+                  blurRadius: 1.0,
+                  spreadRadius: 1.0,
+                )
+              ],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -124,7 +127,9 @@ class PlayPageState extends State<PlayPage> {
                   child: TabCard(
                     titleFit: FlexFit.tight,
                     titlePadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 30),
+                      vertical: 10,
+                      horizontal: 30,
+                    ),
                     titles: [
                       Text(S.of(context).recommend_move),
                       Text(S.of(context).remark)

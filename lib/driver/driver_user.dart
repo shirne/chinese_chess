@@ -33,7 +33,7 @@ class DriverUser extends PlayerDriver {
   }
 
   @override
-  completeMove(String move) {
+  void completeMove(String move) {
     if (!requestMove.isCompleted) {
       requestMove.complete(move);
     }

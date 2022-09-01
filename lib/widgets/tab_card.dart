@@ -11,19 +11,19 @@ class TabCard extends StatefulWidget {
   final BoxDecoration titleActiveDecoration;
   final Axis direction;
 
-  const TabCard(
-      {Key? key,
-      required this.titles,
-      required this.bodies,
-      this.direction = Axis.vertical,
-      this.titleAlign = MainAxisAlignment.start,
-      this.titlePadding,
-      this.titleDecoration =
-          const BoxDecoration(color: Color.fromRGBO(0, 0, 0, .1)),
-      this.titleActiveDecoration = const BoxDecoration(color: Colors.white),
-      this.titleFit = FlexFit.loose,
-      this.bodyAlign = Alignment.topLeft})
-      : super(key: key);
+  const TabCard({
+    Key? key,
+    required this.titles,
+    required this.bodies,
+    this.direction = Axis.vertical,
+    this.titleAlign = MainAxisAlignment.start,
+    this.titlePadding,
+    this.titleDecoration =
+        const BoxDecoration(color: Color.fromRGBO(0, 0, 0, .1)),
+    this.titleActiveDecoration = const BoxDecoration(color: Colors.white),
+    this.titleFit = FlexFit.loose,
+    this.bodyAlign = Alignment.topLeft,
+  }) : super(key: key);
 
   @override
   State<TabCard> createState() => TabCardState();
@@ -43,16 +43,17 @@ class TabCardState extends State<TabCard> {
     titles = widget.titles.map<Widget>((e) {
       int curIndex = widget.titles.indexOf(e);
       return Flexible(
-          flex: widget.titleFit == FlexFit.tight ? 0 : 1,
-          fit: widget.titleFit,
-          child: TabCardTitleItem(
-            myIndex: curIndex,
-            child: e,
-          ));
+        flex: widget.titleFit == FlexFit.tight ? 0 : 1,
+        fit: widget.titleFit,
+        child: TabCardTitleItem(
+          myIndex: curIndex,
+          child: e,
+        ),
+      );
     }).toList();
   }
 
-  updateIndex(int i) {
+  void updateIndex(int i) {
     setState(() {
       index = i;
     });
@@ -76,12 +77,13 @@ class TabCardState extends State<TabCard> {
           ),
         ),
         Expanded(
-            child: IndexedStack(
-          index: index,
-          alignment: widget.bodyAlign,
-          sizing: StackFit.expand,
-          children: widget.bodies,
-        ))
+          child: IndexedStack(
+            index: index,
+            alignment: widget.bodyAlign,
+            sizing: StackFit.expand,
+            children: widget.bodies,
+          ),
+        ),
       ],
     );
   }
@@ -114,7 +116,7 @@ class TabCardTitleItemState extends State<TabCardTitleItem> {
     }
   }
 
-  indexListener() {
+  void indexListener() {
     setState(() {
       isActive = tabCard!.index == widget.myIndex;
     });
@@ -123,17 +125,19 @@ class TabCardTitleItemState extends State<TabCardTitleItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          tabCard?.updateIndex(widget.myIndex);
-        },
-        child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutQuint,
-            padding: tabCard!.widget.titlePadding,
-            decoration: isActive
-                ? tabCard!.widget.titleActiveDecoration
-                : tabCard!.widget.titleDecoration,
-            child: Center(child: widget.child)));
+      onTap: () {
+        tabCard?.updateIndex(widget.myIndex);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutQuint,
+        padding: tabCard!.widget.titlePadding,
+        decoration: isActive
+            ? tabCard!.widget.titleActiveDecoration
+            : tabCard!.widget.titleDecoration,
+        child: Center(child: widget.child),
+      ),
+    );
   }
 
   @override

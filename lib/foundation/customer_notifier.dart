@@ -42,7 +42,7 @@ class CustomNotifier<T> {
     _lockList = false;
   }
 
-  dispose() {
+  void dispose() {
     if (_lockList) {
       Future.delayed(const Duration(milliseconds: 1)).then((v) {
         dispose();

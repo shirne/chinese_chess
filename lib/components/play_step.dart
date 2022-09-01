@@ -33,7 +33,7 @@ class PlayStepState extends State<PlayStep> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     gamer.off<GameStepEvent>(updateStep);
     super.dispose();
   }
@@ -61,8 +61,11 @@ class PlayStepState extends State<PlayStep> {
     Future.delayed(const Duration(milliseconds: 16)).then((value) {
       ScrollPositionWithSingleContext position =
           _controller.position as ScrollPositionWithSingleContext;
-      _controller.animateTo(position.maxScrollExtent,
-          duration: const Duration(milliseconds: 100), curve: Curves.easeOut);
+      _controller.animateTo(
+        position.maxScrollExtent,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
     });
   }
 
@@ -93,7 +96,8 @@ class PlayStepState extends State<PlayStep> {
             child: (index > 0 && index % 2 == 1)
                 ? Text('${(index + 1) ~/ 2}.${steps[index]}')
                 : Text(
-                    '   ${index == 0 ? S.of(context).step_start : steps[index]}'),
+                    '   ${index == 0 ? S.of(context).step_start : steps[index]}',
+                  ),
           ),
         ),
       ),

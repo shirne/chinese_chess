@@ -68,23 +68,26 @@ class Engine extends CustomNotifier<String> {
     });
   }
 
-  Future<String> requestMove(String fen,
-      {int time = 0,
-      int increment = 0,
-      String type = '',
-      int depth = 0,
-      int nodes = 0}) {
+  Future<String> requestMove(
+    String fen, {
+    int time = 0,
+    int increment = 0,
+    String type = '',
+    int depth = 0,
+    int nodes = 0,
+  }) {
     Completer<String> readyCompleter = Completer();
     stop().then((b) {
       if (b) {
         readyCompleters.add(readyCompleter);
         position(fen);
         go(
-            time: time,
-            increment: increment,
-            type: type,
-            depth: depth,
-            nodes: nodes);
+          time: time,
+          increment: increment,
+          type: type,
+          depth: depth,
+          nodes: nodes,
+        );
       } else {
         readyCompleter.complete('isbusy');
       }
@@ -113,12 +116,13 @@ class Engine extends CustomNotifier<String> {
     sendCommand('banmoves ${moveList.join(' ')}');
   }
 
-  void go(
-      {int time = 0,
-      int increment = 0,
-      String type = '',
-      int depth = 0,
-      int nodes = 0}) {
+  void go({
+    int time = 0,
+    int increment = 0,
+    String type = '',
+    int depth = 0,
+    int nodes = 0,
+  }) {
     if (time > 0) {
       sendCommand('go $type time $time increment $increment');
     } else if (depth > 0) {

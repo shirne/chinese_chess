@@ -33,7 +33,9 @@ String assets(ActionType type) {
 class _ActionDialogState extends State<ActionDialog>
     with SingleTickerProviderStateMixin {
   late AnimationController imageAnimation = AnimationController(
-      duration: const Duration(milliseconds: 500), vsync: this);
+    duration: const Duration(milliseconds: 500),
+    vsync: this,
+  );
   late Completer<bool> showAction;
 
   @override
@@ -59,7 +61,7 @@ class _ActionDialogState extends State<ActionDialog>
     super.dispose();
   }
 
-  _onAnimate() {
+  void _onAnimate() {
     if (showAction.isCompleted) {
       if (imageAnimation.value < 1) {
         if (imageAnimation.value == 0) {

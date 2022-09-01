@@ -21,9 +21,11 @@ class _SettingPageState extends State<SettingPage> {
   @override
   void initState() {
     super.initState();
-    GameSetting.getInstance().then((value) => setState(() {
-          setting = value;
-        }));
+    GameSetting.getInstance().then(
+      (value) => setState(() {
+        setting = value;
+      }),
+    );
   }
 
   @override
@@ -38,17 +40,17 @@ class _SettingPageState extends State<SettingPage> {
         title: Text(S.of(context).setting_title),
         actions: [
           TextButton(
-              onPressed: () {
-                setting?.save().then((v) {
-                  Navigator.pop(context);
-                  MyDialog.of(context)
-                      .toast('保存成功', iconType: IconType.success);
-                });
-              },
-              child: const Text(
-                '保存',
-                style: TextStyle(color: Colors.white),
-              )),
+            onPressed: () {
+              setting?.save().then((v) {
+                Navigator.pop(context);
+                MyDialog.of(context).toast('保存成功', iconType: IconType.success);
+              });
+            },
+            child: const Text(
+              '保存',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
       body: Center(
@@ -61,58 +63,63 @@ class _SettingPageState extends State<SettingPage> {
                   child: ListBody(
                     children: [
                       ListTile(
-                          title: const Text('AI类型'),
-                          trailing: CupertinoSegmentedControl(
-                            onValueChanged: (value) {
-                              if (value == null) return;
-                              setState(() {
-                                setting!.robotType = value as String;
-                              });
-                            },
-                            groupValue: setting!.robotType,
-                            children: const {
-                              EngineType.builtIn: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Text('内置引擎'),
+                        title: const Text('AI类型'),
+                        trailing: CupertinoSegmentedControl(
+                          onValueChanged: (value) {
+                            if (value == null) return;
+                            setState(() {
+                              setting!.robotType = value as String;
+                            });
+                          },
+                          groupValue: setting!.robotType,
+                          children: const {
+                            EngineType.builtIn: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
                               ),
-                              EngineType.elephantEye: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  child: Text('elephantEye'))
-                            },
-                          )),
+                              child: Text('内置引擎'),
+                            ),
+                            EngineType.elephantEye: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text('elephantEye'),
+                            )
+                          },
+                        ),
+                      ),
                       ListTile(
-                          title: const Text('AI级别'),
-                          trailing: CupertinoSegmentedControl(
-                            onValueChanged: (value) {
-                              if (value == null) return;
-                              setState(() {
-                                setting!.robotLevel = value as int;
-                              });
-                            },
-                            groupValue: setting!.robotLevel,
-                            children: const {
-                              EngineLevel.learn: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                                child: Text('初级'),
+                        title: const Text('AI级别'),
+                        trailing: CupertinoSegmentedControl(
+                          onValueChanged: (value) {
+                            if (value == null) return;
+                            setState(() {
+                              setting!.robotLevel = value as int;
+                            });
+                          },
+                          groupValue: setting!.robotLevel,
+                          children: const {
+                            EngineLevel.learn: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
                               ),
-                              EngineLevel.middle: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  child: Text('中级')),
-                              EngineLevel.master: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                  ),
-                                  child: Text('大师'))
-                            },
-                          )),
+                              child: Text('初级'),
+                            ),
+                            EngineLevel.middle: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text('中级'),
+                            ),
+                            EngineLevel.master: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text('大师'),
+                            )
+                          },
+                        ),
+                      ),
                       ListTile(
                         title: const Text('游戏声音'),
                         trailing: CupertinoSwitch(

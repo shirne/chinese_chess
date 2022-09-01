@@ -13,12 +13,12 @@ class ChessBox extends StatefulWidget {
   final String activeChr;
   final double height;
 
-  const ChessBox(
-      {Key? key,
-      required this.itemChrs,
-      this.activeChr = '',
-      required this.height})
-      : super(key: key);
+  const ChessBox({
+    Key? key,
+    required this.itemChrs,
+    this.activeChr = '',
+    required this.height,
+  }) : super(key: key);
 
   @override
   State<ChessBox> createState() => _ChessBoxState();
@@ -31,12 +31,12 @@ class _ChessBoxState extends State<ChessBox> {
     return RegExp(chr).allMatches(widget.itemChrs).length;
   }
 
-  setActive(String chr) {
+  void setActive(String chr) {
     EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.setActiveChr(chr);
   }
 
-  clearAll() {
+  void clearAll() {
     EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.clearAll();
   }
@@ -58,30 +58,38 @@ class _ChessBoxState extends State<ChessBox> {
           Wrap(
             children: allItemChrs
                 .split('')
-                .map<Widget>((String chr) => ItemWidget(
-                      chr: chr,
-                      count: matchCount(chr),
-                      isActive: widget.activeChr == chr,
-                    ))
+                .map<Widget>(
+                  (String chr) => ItemWidget(
+                    chr: chr,
+                    count: matchCount(chr),
+                    isActive: widget.activeChr == chr,
+                  ),
+                )
                 .toList(),
           ),
           Wrap(
             children: allItemChrs
                 .toUpperCase()
                 .split('')
-                .map<Widget>((String chr) => ItemWidget(
+                .map<Widget>(
+                  (String chr) => ItemWidget(
                     chr: chr,
                     count: matchCount(chr),
-                    isActive: widget.activeChr == chr))
+                    isActive: widget.activeChr == chr,
+                  ),
+                )
                 .toList(),
           ),
           Wrap(
             children: [
               ElevatedButton(
-                  onPressed: () {
-                    clearAll();
-                  },
-                  child: Text(S.of(context).clear_all))
+                onPressed: () {
+                  clearAll();
+                },
+                child: Text(
+                  S.of(context).clear_all,
+                ),
+              )
             ],
           )
         ],
@@ -95,9 +103,12 @@ class ItemWidget extends StatelessWidget {
   final int count;
   final bool isActive;
 
-  const ItemWidget(
-      {Key? key, required this.chr, required this.count, this.isActive = false})
-      : super(key: key);
+  const ItemWidget({
+    Key? key,
+    required this.chr,
+    required this.count,
+    this.isActive = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -123,21 +134,22 @@ class ItemWidget extends StatelessWidget {
               ),
             ),
             Align(
-                alignment: Alignment.topRight,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                      color: count > 0 ? Colors.red : Colors.grey,
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(10))),
-                  child: Center(
-                    child: Text(
-                      count.toString(),
-                      style: const TextStyle(color: Colors.white),
-                    ),
+              alignment: Alignment.topRight,
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: count > 0 ? Colors.red : Colors.grey,
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Center(
+                  child: Text(
+                    count.toString(),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                ))
+                ),
+              ),
+            )
           ],
         ),
       ),

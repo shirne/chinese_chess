@@ -34,12 +34,12 @@ class _ChessBoxState extends State<ChessSingleBox> {
     return RegExp(chr).allMatches(widget.itemChrs).length;
   }
 
-  setActive(String chr) {
+  void setActive(String chr) {
     EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.setActiveChr(chr);
   }
 
-  clearAll() {
+  void clearAll() {
     EditFenState parent = context.findAncestorStateOfType<EditFenState>()!;
     parent.clearAll();
   }
@@ -69,20 +69,23 @@ class _ChessBoxState extends State<ChessSingleBox> {
           Wrap(
             children: allItemChrs
                 .split('')
-                .map<Widget>((String chr) => ItemWidget(
-                      chr: chr,
-                      count: matchCount(chr),
-                      isActive: widget.activeChr == chr,
-                    ))
+                .map<Widget>(
+                  (String chr) => ItemWidget(
+                    chr: chr,
+                    count: matchCount(chr),
+                    isActive: widget.activeChr == chr,
+                  ),
+                )
                 .toList(),
           ),
           Wrap(
             children: [
               ElevatedButton(
-                  onPressed: () {
-                    clearAll();
-                  },
-                  child: Text(S.of(context).clear_all))
+                onPressed: () {
+                  clearAll();
+                },
+                child: Text(S.of(context).clear_all),
+              )
             ],
           )
         ],

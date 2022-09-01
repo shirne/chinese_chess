@@ -56,8 +56,10 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ElevatedButton.icon(
               onPressed: () {
-                MyDialog.of(context).toast(S.of(context).feature_not_available,
-                    iconType: IconType.error);
+                MyDialog.of(context).toast(
+                  S.of(context).feature_not_available,
+                  iconType: IconType.error,
+                );
               },
               icon: const Icon(Icons.wifi),
               label: Text(S.of(context).mode_online),
@@ -104,40 +106,45 @@ class _GameBoardState extends State<GameBoard> {
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-                icon: const Icon(Icons.menu),
-                tooltip: S.of(context).open_menu,
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                });
+              icon: const Icon(Icons.menu),
+              tooltip: S.of(context).open_menu,
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
           },
         ),
         actions: mode == null
             ? null
             : [
                 IconButton(
-                    icon: const Icon(Icons.swap_vert),
-                    tooltip: S.of(context).flip_board,
-                    onPressed: () {
-                      gamer.flip();
-                    }),
+                  icon: const Icon(Icons.swap_vert),
+                  tooltip: S.of(context).flip_board,
+                  onPressed: () {
+                    gamer.flip();
+                  },
+                ),
                 IconButton(
-                    icon: const Icon(Icons.copy),
-                    tooltip: S.of(context).copy_code,
-                    onPressed: () {
-                      copyFen();
-                    }),
+                  icon: const Icon(Icons.copy),
+                  tooltip: S.of(context).copy_code,
+                  onPressed: () {
+                    copyFen();
+                  },
+                ),
                 IconButton(
-                    icon: const Icon(Icons.airplay),
-                    tooltip: S.of(context).parse_code,
-                    onPressed: () {
-                      applyFen();
-                    }),
+                  icon: const Icon(Icons.airplay),
+                  tooltip: S.of(context).parse_code,
+                  onPressed: () {
+                    applyFen();
+                  },
+                ),
                 IconButton(
-                    icon: const Icon(Icons.airplay),
-                    tooltip: S.of(context).edit_code,
-                    onPressed: () {
-                      editFen();
-                    }),
+                  icon: const Icon(Icons.airplay),
+                  tooltip: S.of(context).edit_code,
+                  onPressed: () {
+                    editFen();
+                  },
+                ),
                 /*IconButton(icon: Icon(Icons.minimize), onPressed: (){
 
           }),
@@ -173,11 +180,11 @@ class _GameBoardState extends State<GameBoard> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Center(
-                    child: Column(
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Center(
+                child: Column(
                   children: [
                     Image.asset(
                       'assets/images/logo.png',
@@ -192,7 +199,9 @@ class _GameBoardState extends State<GameBoard> {
                       ),
                     ),
                   ],
-                ))),
+                ),
+              ),
+            ),
             ListTile(
               leading: const Icon(Icons.add),
               title: Text(S.of(context).new_game),
@@ -244,10 +253,11 @@ class _GameBoardState extends State<GameBoard> {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const SettingPage()));
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const SettingPage(),
+                  ),
+                );
               },
             ),
           ],
@@ -265,11 +275,13 @@ class _GameBoardState extends State<GameBoard> {
     );
   }
 
-  editFen() {
+  void editFen() {
     Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (BuildContext context) {
-        return GameWrapper(child: EditFen(fen: gamer.fenStr));
-      }),
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return GameWrapper(child: EditFen(fen: gamer.fenStr));
+        },
+      ),
     ).then((fenStr) {
       if (fenStr != null && fenStr.isNotEmpty) {
         gamer.newGame(fenStr);
@@ -277,7 +289,7 @@ class _GameBoardState extends State<GameBoard> {
     });
   }
 
-  applyFen() async {
+  Future<void> applyFen() async {
     ClipboardData? cData = await Clipboard.getData(Clipboard.kTextPlain);
     String fenStr = cData?.text ?? '';
     TextEditingController filenameController =
@@ -296,8 +308,8 @@ class _GameBoardState extends State<GameBoard> {
         .then((v) {
       if (v ?? false) {
         if (RegExp(
-                r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$')
-            .hasMatch(fenStr)) {
+          r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$',
+        ).hasMatch(fenStr)) {
           gamer.newGame(fenStr);
         } else {
           MyDialog.of(context).alert(S.of(context).invalid_code);
@@ -306,7 +318,7 @@ class _GameBoardState extends State<GameBoard> {
     });
   }
 
-  copyFen() {
+  void copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
     MyDialog.of(context).alert(S.of(context).copy_success);
   }

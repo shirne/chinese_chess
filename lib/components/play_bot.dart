@@ -25,7 +25,7 @@ class PlayStepState extends State<PlayBot> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     gamer.off<GameEngineEvent>(updateMessage);
     super.dispose();
   }
@@ -44,8 +44,11 @@ class PlayStepState extends State<PlayBot> {
     Future.delayed(const Duration(milliseconds: 16)).then((value) {
       ScrollPositionWithSingleContext position =
           _controller.position as ScrollPositionWithSingleContext;
-      _controller.animateTo(position.maxScrollExtent,
-          duration: const Duration(milliseconds: 100), curve: Curves.easeOut);
+      _controller.animateTo(
+        position.maxScrollExtent,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
     });
   }
 

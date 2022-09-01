@@ -51,7 +51,7 @@ class ChessSkin {
     });
   }
 
-  loadJson(String content) {
+  void loadJson(String content) {
     Map<String, dynamic> json = jsonDecode(content);
     json.forEach((key, value) {
       switch (key) {

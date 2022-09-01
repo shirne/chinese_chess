@@ -31,23 +31,23 @@ class PlayPlayerState extends State<PlayPlayer> {
   }
 
   @override
-  dispose() {
+  void dispose() {
     gamer.off<GamePlayerEvent>(onChangePlayer);
     gamer.off<GameLoadEvent>(onReloadGame);
     gamer.off<GameResultEvent>(onResult);
     super.dispose();
   }
 
-  onResult(GameEvent event) {
+  void onResult(GameEvent event) {
     setState(() {});
   }
 
-  onReloadGame(GameEvent event) {
+  void onReloadGame(GameEvent event) {
     if (event.data != 0) return;
     setState(() {});
   }
 
-  onChangePlayer(GameEvent event) {
+  void onChangePlayer(GameEvent event) {
     setState(() {
       currentTeam = event.data;
     });
@@ -87,8 +87,9 @@ class PlayPlayerState extends State<PlayPlayer> {
   @override
   Widget build(BuildContext context) {
     BoxDecoration decoration = BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 0.5),
-        borderRadius: const BorderRadius.all(Radius.circular(2)));
+      border: Border.all(color: Colors.grey, width: 0.5),
+      borderRadius: const BorderRadius.all(Radius.circular(2)),
+    );
     return SizedBox(
       width: 229,
       child: Column(
@@ -104,8 +105,10 @@ class PlayPlayerState extends State<PlayPlayer> {
           ),
           const SizedBox(width: 10),
           ListTile(
-            leading: Icon(Icons.person,
-                color: currentTeam == 0 ? Colors.blueAccent : Colors.black12),
+            leading: Icon(
+              Icons.person,
+              color: currentTeam == 0 ? Colors.blueAccent : Colors.black12,
+            ),
             title: Text(gamer.getPlayer(0).title),
             subtitle: Text(currentTeam == 0 ? S.of(context).thinking : ''),
             trailing: switchRobot(0),
@@ -115,66 +118,84 @@ class PlayPlayerState extends State<PlayPlayer> {
             child: Container(
               decoration: decoration,
               child: TabCard(
-                  titlePadding: const EdgeInsets.only(top: 10, bottom: 10),
-                  titles: [
-                    Text(S.of(context).current_info),
-                    Text(S.of(context).manual)
-                  ],
-                  bodies: [
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(gamer.manual.event),
-                          Text(
-                              '${gamer.manual.red} (${gamer.manual.chineseResult}) ${gamer.manual.black}'),
-                          Text(gamer.manual.ecco.isEmpty
+                titlePadding: const EdgeInsets.only(top: 10, bottom: 10),
+                titles: [
+                  Text(S.of(context).current_info),
+                  Text(S.of(context).manual)
+                ],
+                bodies: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(gamer.manual.event),
+                        Text(
+                          '${gamer.manual.red} (${gamer.manual.chineseResult}) ${gamer.manual.black}',
+                        ),
+                        Text(
+                          gamer.manual.ecco.isEmpty
                               ? ''
-                              : '${gamer.manual.opening}(${gamer.manual.ecco})'),
-                        ],
-                      ),
+                              : '${gamer.manual.opening}(${gamer.manual.ecco})',
+                        ),
+                      ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Table(
-                        border: null,
-                        columnWidths: const {
-                          0: IntrinsicColumnWidth(),
-                          1: FlexColumnWidth(),
-                        },
-                        defaultVerticalAlignment:
-                            TableCellVerticalAlignment.top,
-                        children: [
-                          TableRow(children: [
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Table(
+                      border: null,
+                      columnWidths: const {
+                        0: IntrinsicColumnWidth(),
+                        1: FlexColumnWidth(),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.top,
+                      children: [
+                        TableRow(
+                          children: [
                             Text(S.of(context).the_event),
                             Text(gamer.manual.event)
-                          ]),
-                          TableRow(children: [
+                          ],
+                        ),
+                        TableRow(
+                          children: [
                             Text(S.of(context).the_site),
                             Text(gamer.manual.site)
-                          ]),
-                          TableRow(children: [
+                          ],
+                        ),
+                        TableRow(
+                          children: [
                             Text(S.of(context).the_date),
                             Text(gamer.manual.date)
-                          ]),
-                          TableRow(children: [
+                          ],
+                        ),
+                        TableRow(
+                          children: [
                             Text(S.of(context).the_round),
                             Text(gamer.manual.round)
-                          ]),
-                          TableRow(children: [
+                          ],
+                        ),
+                        TableRow(
+                          children: [
                             Text(S.of(context).the_red),
-                            Text('${gamer.manual.redTeam}/${gamer.manual.red}'),
-                          ]),
-                          TableRow(children: [
+                            Text(
+                              '${gamer.manual.redTeam}/${gamer.manual.red}',
+                            ),
+                          ],
+                        ),
+                        TableRow(
+                          children: [
                             Text(S.of(context).the_black),
                             Text(
-                                '${gamer.manual.blackTeam}/${gamer.manual.black}'),
-                          ]),
-                        ],
-                      ),
-                    )
-                  ]),
+                              '${gamer.manual.blackTeam}/${gamer.manual.black}',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           )
         ],

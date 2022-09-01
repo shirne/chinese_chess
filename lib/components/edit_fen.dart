@@ -29,44 +29,29 @@ class EditFenState extends State<EditFen> {
   String dieChrs = '';
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     manual = ChessManual();
-    manual.diePosition = ChessPos(9, 5);
-    manual.diePositions = {
-      'k': ChessPos(9, 9),
-      'a': ChessPos(10, 9),
-      'b': ChessPos(9, 8),
-      'c': ChessPos(10, 8),
-      'n': ChessPos(9, 7),
-      'r': ChessPos(10, 7),
-      'p': ChessPos(9, 6),
-      'K': ChessPos(9, 4),
-      'A': ChessPos(10, 4),
-      'B': ChessPos(9, 3),
-      'C': ChessPos(10, 3),
-      'N': ChessPos(9, 2),
-      'R': ChessPos(10, 2),
-      'P': ChessPos(9, 1),
-    };
+
     manual.setFen(widget.fen);
     items = manual.getChessItems();
     dieChrs = manual.currentFen.getDieChr();
   }
 
   @override
-  dispose() {
+  void dispose() {
     super.dispose();
   }
 
-  editOK() {
+  void editOK() {
     Navigator.of(context).pop<String>(manual.currentFen.fen);
   }
 
   bool onPointer(ChessPos toPosition) {
     ChessItem targetItem = items.firstWhere(
-        (item) => !item.isBlank && item.position == toPosition,
-        orElse: () => ChessItem('0'));
+      (item) => !item.isBlank && item.position == toPosition,
+      orElse: () => ChessItem('0'),
+    );
     if (targetItem.isBlank) {
       if (activeItem != null) {
         manual.doMove('${activeItem!.position.toCode()}${toPosition.toCode()}');
@@ -124,7 +109,7 @@ class EditFenState extends State<EditFen> {
     return false;
   }
 
-  removeItem(ChessPos fromPosition) {
+  void removeItem(ChessPos fromPosition) {
     manual.currentFen[fromPosition.y][fromPosition.x] = '0';
     setState(() {
       items = manual.getChessItems();
@@ -133,14 +118,14 @@ class EditFenState extends State<EditFen> {
     });
   }
 
-  setActiveChr(String chr) {
+  void setActiveChr(String chr) {
     setState(() {
       activeItem = null;
       activeChr = chr;
     });
   }
 
-  clearAll() {
+  void clearAll() {
     manual.setFen('4k4/9/9/9/9/9/9/9/9/4K4');
     setState(() {
       items = manual.getChessItems();
@@ -183,7 +168,8 @@ class EditFenState extends State<EditFen> {
         ],
       ),
       body: Center(
-          child: gamer!.scale < 1 ? _mobileContainer() : _windowContainer()),
+        child: gamer!.scale < 1 ? _mobileContainer() : _windowContainer(),
+      ),
     );
   }
 
@@ -196,9 +182,10 @@ class EditFenState extends State<EditFen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           ChessSingleBox(
-              width: gamer!.skin.width * gamer!.scale,
-              itemChrs: dieChrs,
-              activeChr: activeChr),
+            width: gamer!.skin.width * gamer!.scale,
+            itemChrs: dieChrs,
+            activeChr: activeChr,
+          ),
           const SizedBox(width: 10),
           GestureDetector(
             onTapUp: (detail) {
@@ -225,9 +212,10 @@ class EditFenState extends State<EditFen> {
           ),
           const SizedBox(width: 10),
           ChessSingleBox(
-              width: gamer!.skin.width * gamer!.scale,
-              itemChrs: dieChrs,
-              activeChr: activeChr)
+            width: gamer!.skin.width * gamer!.scale,
+            itemChrs: dieChrs,
+            activeChr: activeChr,
+          )
         ],
       ),
     );
@@ -264,9 +252,10 @@ class EditFenState extends State<EditFen> {
           ),
           const SizedBox(width: 10),
           ChessBox(
-              height: gamer!.skin.height,
-              itemChrs: dieChrs,
-              activeChr: activeChr)
+            height: gamer!.skin.height,
+            itemChrs: dieChrs,
+            activeChr: activeChr,
+          )
         ],
       ),
     );

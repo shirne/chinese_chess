@@ -33,8 +33,10 @@ abstract class PlayerDriver {
 
   PlayerDriver(this.player);
 
-  static PlayerDriver createDriver(Player manager,
-      [DriverType type = DriverType.user]) {
+  static PlayerDriver createDriver(
+    Player manager, [
+    DriverType type = DriverType.user,
+  ]) {
     switch (type) {
       case DriverType.robot:
         return DriverRobot(manager);

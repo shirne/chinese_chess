@@ -17,18 +17,20 @@ class MarkComponent extends StatelessWidget {
           width: 22,
           height: 22,
           decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              border: Border.all(
-                width: 1.0,
-                color: const Color.fromRGBO(255, 255, 255, .8),
-              )),
+            borderRadius: const BorderRadius.all(Radius.circular(30)),
+            border: Border.all(
+              width: 1.0,
+              color: const Color.fromRGBO(255, 255, 255, .8),
+            ),
+          ),
           child: Center(
             child: Container(
               width: 15,
               height: 15,
               decoration: const BoxDecoration(
-                  color: Color.fromRGBO(255, 255, 255, .8),
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
+                color: Color.fromRGBO(255, 255, 255, .8),
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+              ),
             ),
           ),
         ),

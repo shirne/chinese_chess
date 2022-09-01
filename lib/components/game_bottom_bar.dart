@@ -29,7 +29,7 @@ class GameBottomBarState extends State<GameBottomBar> {
     return freeBottomBar();
   }
 
-  _showStepList() {
+  void _showStepList() {
     final size = MediaQuery.of(context).size;
     MyDialog.of(context).popup(
       SizedBox(
@@ -44,17 +44,17 @@ class GameBottomBarState extends State<GameBottomBar> {
     );
   }
 
-  _showCode() {}
+  void _showCode() {}
 
-  _doReply() {}
+  void _doReply() {}
 
-  _goPrev() {
+  void _goPrev() {
     if (gamer.currentStep < 1) return;
     gamer.loadHistory(gamer.currentStep - 1);
     setState(() {});
   }
 
-  _goNext() {
+  void _goNext() {
     if (gamer.currentStep >= gamer.stepCount) return;
     gamer.loadHistory(gamer.currentStep + 1);
     setState(() {});
@@ -68,7 +68,9 @@ class GameBottomBarState extends State<GameBottomBar> {
           IconButton(icon: const Icon(Icons.list), onPressed: _showStepList),
           IconButton(icon: const Icon(Icons.code), onPressed: _showCode),
           IconButton(
-              icon: const Icon(Icons.navigate_before), onPressed: _goPrev),
+            icon: const Icon(Icons.navigate_before),
+            onPressed: _goPrev,
+          ),
           IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
         ],
       ),
@@ -83,7 +85,9 @@ class GameBottomBarState extends State<GameBottomBar> {
           IconButton(icon: const Icon(Icons.list), onPressed: _showStepList),
           IconButton(icon: const Icon(Icons.replay), onPressed: _doReply),
           IconButton(
-              icon: const Icon(Icons.navigate_before), onPressed: _goPrev),
+            icon: const Icon(Icons.navigate_before),
+            onPressed: _goPrev,
+          ),
           IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
         ],
       ),
@@ -98,7 +102,9 @@ class GameBottomBarState extends State<GameBottomBar> {
           IconButton(icon: const Icon(Icons.list), onPressed: _showStepList),
           IconButton(icon: const Icon(Icons.replay), onPressed: _doReply),
           IconButton(
-              icon: const Icon(Icons.navigate_before), onPressed: _goPrev),
+            icon: const Icon(Icons.navigate_before),
+            onPressed: _goPrev,
+          ),
           IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
         ],
       ),

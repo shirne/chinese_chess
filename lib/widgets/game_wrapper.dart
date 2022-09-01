@@ -56,9 +56,11 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
 
   Future<bool> _willPop() async {
     logger.info('onwillpop');
-    final sure = await MyDialog.of(context).confirm(S.of(context).exit_now,
-        buttonText: S.of(context).yes_exit,
-        cancelText: S.of(context).dont_exit);
+    final sure = await MyDialog.of(context).confirm(
+      S.of(context).exit_now,
+      buttonText: S.of(context).yes_exit,
+      cancelText: S.of(context).dont_exit,
+    );
 
     if (sure ?? false) {
       logger.info('gamer destroy');
