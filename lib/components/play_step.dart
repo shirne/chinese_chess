@@ -44,7 +44,7 @@ class PlayStepState extends State<PlayStep> {
     if (message == 'clear') {
       setState(() {
         currentStep = gamer.currentStep - 1;
-        steps.removeRange(currentStep + 1, steps.length);
+        steps.removeRange(currentStep + 2, steps.length);
       });
     } else if (message == 'step') {
       setState(() {
@@ -81,7 +81,7 @@ class PlayStepState extends State<PlayStep> {
         itemBuilder: (context, index) => GestureDetector(
           onTap: () {
             if (!gamer.canBacktrace) return;
-            gamer.loadHistory(index);
+            gamer.loadHistory(index - 1);
             setState(() {
               currentStep = index;
             });

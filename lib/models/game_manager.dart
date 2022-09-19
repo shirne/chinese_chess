@@ -46,10 +46,10 @@ class GameManager {
   // 当前着法序号
   int currentStep = 0;
 
-  int get stepCount => manual.moves.length;
+  int get stepCount => manual.moveCount;
 
   // 是否将军
-  bool get isCheckMate => manual.moves[currentStep - 1].isCheckMate;
+  bool get isCheckMate => manual.currentMove?.isCheckMate ?? false;
 
   // 未吃子着数(半回合数)
   int unEatCount = 0;
@@ -143,12 +143,8 @@ class GameManager {
 
   ChessFen get fen => manual.currentFen;
 
-  String get lastMove {
-    if (manual.moves.isEmpty || currentStep == 0) {
-      return '';
-    }
-    return manual.moves[currentStep - 1].move;
-  }
+  /// not last but current
+  String get lastMove => manual.currentMove?.move ?? '';
 
   void parseMessage(String message) {
     List<String> parts = message.split(' ');
@@ -220,7 +216,7 @@ class GameManager {
     add(GameLoadEvent(-1));
     isStop = true;
     engine?.stop();
-    currentStep = 0;
+    //currentStep = 0;
 
     add(GameLockEvent(true));
   }
@@ -268,7 +264,7 @@ class GameManager {
     hands[0].title = manual.red;
     hands[1].title = manual.black;
     // 加载步数
-    if (manual.moves.isNotEmpty) {
+    if (manual.moveCount > 0) {
       // print(manual.moves);
       add(
         GameStepEvent(
@@ -290,7 +286,7 @@ class GameManager {
 
   // 重载历史局面
   void loadHistory(int index) {
-    if (index > manual.moves.length) {
+    if (index > manual.moveCount) {
       logger.info('History error');
       return;
     }
@@ -301,9 +297,9 @@ class GameManager {
     currentStep = index;
     manual.loadHistory(index);
     rule.fen = manual.currentFen;
-    curHand = currentStep % 2;
+    curHand = (currentStep + 1) % 2;
     add(GamePlayerEvent(curHand));
-    add(GameLoadEvent(currentStep));
+    add(GameLoadEvent(currentStep + 1));
 
     logger.info('history $currentStep');
   }
@@ -368,7 +364,7 @@ class GameManager {
     }
 
     // 如果当前不是最后一步，移除后面着法
-    if (currentStep < manual.moves.length) {
+    if (!manual.isLast) {
       add(GameLoadEvent(-2));
       add(GameStepEvent('clear'));
       manual.addMove(move, addStep: currentStep);
@@ -377,12 +373,12 @@ class GameManager {
       manual.addMove(move);
     }
 
-    currentStep = manual.moves.length;
+    final curMove = manual.currentMove!;
 
-    if (manual.moves[currentStep - 1].isCheckMate) {
+    if (curMove.isCheckMate) {
       unEatCount++;
       Sound.play(Sound.move);
-    } else if (manual.moves[currentStep - 1].isEat) {
+    } else if (curMove.isEat) {
       unEatCount = 0;
       Sound.play(Sound.capture);
     } else {
@@ -390,7 +386,7 @@ class GameManager {
       Sound.play(Sound.move);
     }
 
-    add(GameStepEvent(manual.moves.last.toChineseString()));
+    add(GameStepEvent(curMove.toChineseString()));
   }
 
   void setResult(String result, [String description = '']) {
@@ -426,7 +422,7 @@ class GameManager {
     }
 
     //isCheckMate = rule.isCheck(hand);
-    final moveStep = manual.moves[curMove];
+    final moveStep = manual.currentMove!;
     logger.info('是否将军 ${moveStep.isCheckMate}');
 
     // 判断输赢，包括能否应将，长将
@@ -534,7 +530,7 @@ class GameManager {
   }
 
   String get fenStr => '${manual.currentFen.fen} ${curHand > 0 ? 'b' : 'w'}'
-      ' - - $unEatCount ${manual.moves.length ~/ 2}';
+      ' - - $unEatCount ${manual.moveCount ~/ 2}';
 
   Player get player => hands[curHand];
 
