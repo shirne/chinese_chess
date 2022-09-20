@@ -44,7 +44,8 @@ class GameManager {
   int curHand = 0;
 
   // 当前着法序号
-  int currentStep = 0;
+  int _currentStep = 0;
+  int get currentStep => _currentStep;
 
   int get stepCount => manual.moveCount;
 
@@ -286,22 +287,22 @@ class GameManager {
 
   // 重载历史局面
   void loadHistory(int index) {
-    if (index > manual.moveCount) {
+    if (index >= manual.moveCount) {
       logger.info('History error');
       return;
     }
-    if (index == currentStep) {
+    if (index == _currentStep) {
       logger.info('History no change');
       return;
     }
-    currentStep = index;
+    _currentStep = index;
     manual.loadHistory(index);
     rule.fen = manual.currentFen;
-    curHand = (currentStep + 1) % 2;
+    curHand = (_currentStep + 1) % 2;
     add(GamePlayerEvent(curHand));
-    add(GameLoadEvent(currentStep + 1));
+    add(GameLoadEvent(_currentStep + 1));
 
-    logger.info('history $currentStep');
+    logger.info('history $_currentStep');
   }
 
   /// 切换驱动
@@ -321,14 +322,14 @@ class GameManager {
     if (move == null) return;
 
     addMove(move);
-    final canNext = checkResult(curHand == 0 ? 1 : 0, currentStep - 1);
+    final canNext = checkResult(curHand == 0 ? 1 : 0, _currentStep - 1);
     logger.info('canNext $canNext');
     if (canNext) {
       switchPlayer();
     }
   }
 
-  /// 从用户落着 todo 检查出发点是否有子，检查落点是否对方子
+  /// 从用户落着 TODO 检查出发点是否有子，检查落点是否对方子
   void addStep(ChessPos from, ChessPos next) async {
     player.completeMove('${from.toCode()}${next.toCode()}');
   }
@@ -367,11 +368,12 @@ class GameManager {
     if (!manual.isLast) {
       add(GameLoadEvent(-2));
       add(GameStepEvent('clear'));
-      manual.addMove(move, addStep: currentStep);
+      manual.addMove(move, addStep: _currentStep);
     } else {
       add(GameLoadEvent(-2));
       manual.addMove(move);
     }
+    _currentStep = manual.currentStep;
 
     final curMove = manual.currentMove!;
 

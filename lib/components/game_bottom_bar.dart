@@ -55,7 +55,7 @@ class GameBottomBarState extends State<GameBottomBar> {
   }
 
   void _goNext() {
-    if (gamer.currentStep >= gamer.stepCount) return;
+    if (gamer.currentStep + 1 >= gamer.stepCount) return;
     gamer.loadHistory(gamer.currentStep + 1);
     setState(() {});
   }
