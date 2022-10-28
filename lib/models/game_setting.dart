@@ -9,7 +9,7 @@ class GameSetting {
   static GameSetting? _instance;
   static const cacheKey = 'setting';
 
-  String robotType = EngineType.builtIn;
+  EngineType robotType = EngineType.builtIn;
   int robotLevel = 10;
   bool sound = true;
   double soundVolume = 1;
@@ -25,7 +25,7 @@ class GameSetting {
     if (jsonStr == null || jsonStr.isEmpty) return;
     Map<String, dynamic> json = jsonDecode(jsonStr);
     if (json.containsKey('robotType')) {
-      robotType = json['robotType'];
+      robotType = EngineType.fromName(json['robotType']) ?? EngineType.builtIn;
     }
     if (json.containsKey('robotLevel')) {
       robotLevel = json['robotLevel'];
@@ -60,7 +60,7 @@ class GameSetting {
 
   @override
   String toString() => jsonEncode({
-        'robotType': robotType,
+        'robotType': robotType.name,
         'robotLevel': robotLevel,
         'sound': sound,
         'soundVolume': soundVolume,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cchess/cchess.dart';
+import 'package:chinese_chess/models/engine_type.dart';
 import 'package:fast_gbk/fast_gbk.dart';
 
 import '../driver/player_driver.dart';
@@ -500,7 +501,7 @@ class GameManager {
       return Future.value(true);
     }
     Completer<bool> engineFuture = Completer<bool>();
-    engine = Engine();
+    engine = Engine(EngineType.pikafish);
     engineOK = false;
     engine?.init().then((Process? v) {
       engineOK = true;

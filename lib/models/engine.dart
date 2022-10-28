@@ -5,9 +5,12 @@ import 'package:flutter/foundation.dart';
 
 import '../foundation/customer_notifier.dart';
 import '../global.dart';
+import 'engine_type.dart';
 
 class Engine extends CustomNotifier<String> {
-  String engine = 'eleeye.exe';
+  Engine(this.engine);
+
+  final EngineType engine;
   List<Completer<String>> readyCompleters = [];
   Completer<bool>? stopCompleter;
   bool ready = false;
@@ -20,16 +23,16 @@ class Engine extends CustomNotifier<String> {
       return Future.value(null);
     }
 
-    String path = '${Directory.current.path}/assets/engines/$engine';
+    String path = '${Directory.current.path}/assets/engines/${engine.path}';
     if (!File(path).existsSync()) {
       path =
-          '${Directory.current.path}/data/flutter_assets/assets/engines/$engine';
+          '${Directory.current.path}/data/flutter_assets/assets/engines/${engine.path}';
     }
     return Process.start(path, [], mode: ProcessStartMode.normal).then((value) {
       process = value;
       ready = true;
       process?.stdout.listen(onMessage);
-      process?.stdin.writeln('ucci');
+      process?.stdin.writeln(engine.scheme);
       return process!;
     });
   }

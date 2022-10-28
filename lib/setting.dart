@@ -68,7 +68,7 @@ class _SettingPageState extends State<SettingPage> {
                           onValueChanged: (value) {
                             if (value == null) return;
                             setState(() {
-                              setting!.robotType = value as String;
+                              setting!.robotType = value as EngineType;
                             });
                           },
                           groupValue: setting!.robotType,
@@ -84,7 +84,13 @@ class _SettingPageState extends State<SettingPage> {
                                 horizontal: 10,
                               ),
                               child: Text('elephantEye'),
-                            )
+                            ),
+                            EngineType.pikafish: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                              child: Text('皮卡鱼'),
+                            ),
                           },
                         ),
                       ),
