@@ -8,6 +8,7 @@ import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n.dart';
+import 'theme.dart';
 import 'widgets/game_wrapper.dart';
 import 'game_board.dart';
 
@@ -66,8 +67,12 @@ class MainApp extends StatelessWidget {
         Locale('en', ''),
         Locale('zh', 'CN'),
       ],
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      theme: AppTheme.createTheme(),
+      highContrastTheme: AppTheme.createTheme(isHighContrast: true),
+      darkTheme: AppTheme.createTheme(isDark: true),
+      highContrastDarkTheme: AppTheme.createTheme(
+        isDark: true,
+        isHighContrast: true,
       ),
       home: const GameWrapper(
         isMain: true,
