@@ -87,7 +87,7 @@ class _ChessBoxState extends State<ChessBox> {
                   clearAll();
                 },
                 child: Text(
-                  context.l10n.clear_all,
+                  context.l10n.clearAll,
                 ),
               )
             ],

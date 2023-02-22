@@ -9,7 +9,7 @@ import 'app_localizations_en.dart';
 import 'app_localizations_zh.dart';
 
 /// Callers can lookup localized strings with an instance of AppLocalizations
-/// returned by `AppLocalizationcontext.l10n`.
+/// returned by `AppLocalizations.of(context)`.
 ///
 /// Applications need to include `AppLocalizations.delegate()` in their app's
 /// `localizationDelegates` list, and the locales they support in the app's
@@ -60,8 +60,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -69,8 +68,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,8 +80,7 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -96,11 +93,11 @@ abstract class AppLocalizations {
     Locale('zh')
   ];
 
-  /// No description provided for @app_title.
+  /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
   /// **'Chinese Chess'**
-  String get app_title;
+  String get appTitle;
 
   /// No description provided for @menu.
   ///
@@ -108,53 +105,53 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menu;
 
-  /// No description provided for @open_menu.
+  /// No description provided for @openMenu.
   ///
   /// In en, this message translates to:
   /// **'Open Menu'**
-  String get open_menu;
+  String get openMenu;
 
-  /// No description provided for @flip_board.
+  /// No description provided for @flipBoard.
   ///
   /// In en, this message translates to:
   /// **'Flip Board'**
-  String get flip_board;
+  String get flipBoard;
 
-  /// No description provided for @copy_code.
+  /// No description provided for @copyCode.
   ///
   /// In en, this message translates to:
   /// **'Copy Chess Code'**
-  String get copy_code;
+  String get copyCode;
 
-  /// No description provided for @parse_code.
+  /// No description provided for @parseCode.
   ///
   /// In en, this message translates to:
   /// **'Parse Chess Code'**
-  String get parse_code;
+  String get parseCode;
 
-  /// No description provided for @edit_code.
+  /// No description provided for @editCode.
   ///
   /// In en, this message translates to:
   /// **'Edit Chess'**
-  String get edit_code;
+  String get editCode;
 
-  /// No description provided for @new_game.
+  /// No description provided for @newGame.
   ///
   /// In en, this message translates to:
   /// **'New Game'**
-  String get new_game;
+  String get newGame;
 
-  /// No description provided for @load_manual.
+  /// No description provided for @loadManual.
   ///
   /// In en, this message translates to:
   /// **'Load Chess Manual'**
-  String get load_manual;
+  String get loadManual;
 
-  /// No description provided for @save_manual.
+  /// No description provided for @saveManual.
   ///
   /// In en, this message translates to:
   /// **'Save Chess Manual'**
-  String get save_manual;
+  String get saveManual;
 
   /// No description provided for @setting.
   ///
@@ -162,35 +159,35 @@ abstract class AppLocalizations {
   /// **'Setting'**
   String get setting;
 
-  /// No description provided for @feature_not_available.
+  /// No description provided for @featureNotAvailable.
   ///
   /// In en, this message translates to:
   /// **'Feature is not available'**
-  String get feature_not_available;
+  String get featureNotAvailable;
 
-  /// No description provided for @mode_robot.
+  /// No description provided for @modeRobot.
   ///
   /// In en, this message translates to:
   /// **'Robot Mode'**
-  String get mode_robot;
+  String get modeRobot;
 
-  /// No description provided for @mode_online.
+  /// No description provided for @modeOnline.
   ///
   /// In en, this message translates to:
   /// **'Online Mode'**
-  String get mode_online;
+  String get modeOnline;
 
-  /// No description provided for @mode_free.
+  /// No description provided for @modeFree.
   ///
   /// In en, this message translates to:
   /// **'Free Mode'**
-  String get mode_free;
+  String get modeFree;
 
-  /// No description provided for @clear_all.
+  /// No description provided for @clearAll.
   ///
   /// In en, this message translates to:
   /// **'Clear All'**
-  String get clear_all;
+  String get clearAll;
 
   /// No description provided for @save.
   ///
@@ -198,17 +195,17 @@ abstract class AppLocalizations {
   /// **'Apply'**
   String get save;
 
-  /// No description provided for @trusteeship_to_robots.
+  /// No description provided for @trusteeshipToRobots.
   ///
   /// In en, this message translates to:
   /// **'Trusteeship to Robots'**
-  String get trusteeship_to_robots;
+  String get trusteeshipToRobots;
 
-  /// No description provided for @cancel_robots.
+  /// No description provided for @cancelRobots.
   ///
   /// In en, this message translates to:
   /// **'Cancel Trusteeship'**
-  String get cancel_robots;
+  String get cancelRobots;
 
   /// No description provided for @thinking.
   ///
@@ -216,11 +213,11 @@ abstract class AppLocalizations {
   /// **'Thinking...'**
   String get thinking;
 
-  /// No description provided for @current_info.
+  /// No description provided for @currentInfo.
   ///
   /// In en, this message translates to:
   /// **'Current'**
-  String get current_info;
+  String get currentInfo;
 
   /// No description provided for @manual.
   ///
@@ -228,71 +225,71 @@ abstract class AppLocalizations {
   /// **'Manual'**
   String get manual;
 
-  /// No description provided for @the_event.
+  /// No description provided for @theEvent.
   ///
   /// In en, this message translates to:
   /// **'Event: '**
-  String get the_event;
+  String get theEvent;
 
-  /// No description provided for @the_site.
+  /// No description provided for @theSite.
   ///
   /// In en, this message translates to:
   /// **'Site: '**
-  String get the_site;
+  String get theSite;
 
-  /// No description provided for @the_date.
+  /// No description provided for @theDate.
   ///
   /// In en, this message translates to:
   /// **'Date: '**
-  String get the_date;
+  String get theDate;
 
-  /// No description provided for @the_round.
+  /// No description provided for @theRound.
   ///
   /// In en, this message translates to:
   /// **'Round: '**
-  String get the_round;
+  String get theRound;
 
-  /// No description provided for @the_red.
+  /// No description provided for @theRed.
   ///
   /// In en, this message translates to:
   /// **'Red: '**
-  String get the_red;
+  String get theRed;
 
-  /// No description provided for @the_black.
+  /// No description provided for @theBlack.
   ///
   /// In en, this message translates to:
   /// **'Black: '**
-  String get the_black;
+  String get theBlack;
 
-  /// No description provided for @step_start.
+  /// No description provided for @stepStart.
   ///
   /// In en, this message translates to:
   /// **'==Start=='**
-  String get step_start;
+  String get stepStart;
 
-  /// No description provided for @exit_now.
+  /// No description provided for @exitNow.
   ///
   /// In en, this message translates to:
   /// **'Exit Now ?'**
-  String get exit_now;
+  String get exitNow;
 
-  /// No description provided for @dont_exit.
+  /// No description provided for @dontExit.
   ///
   /// In en, this message translates to:
   /// **'Wait a moment'**
-  String get dont_exit;
+  String get dontExit;
 
-  /// No description provided for @yes_exit.
+  /// No description provided for @yesExit.
   ///
   /// In en, this message translates to:
   /// **'Yes exit'**
-  String get yes_exit;
+  String get yesExit;
 
-  /// No description provided for @click_again_to_exit.
+  /// No description provided for @clickAgainToExit.
   ///
   /// In en, this message translates to:
   /// **'Click again to Exit'**
-  String get click_again_to_exit;
+  String get clickAgainToExit;
 
   /// No description provided for @apply.
   ///
@@ -300,53 +297,53 @@ abstract class AppLocalizations {
   /// **'Apply'**
   String get apply;
 
-  /// No description provided for @situation_code.
+  /// No description provided for @situationCode.
   ///
   /// In en, this message translates to:
   /// **'Chess Code'**
-  String get situation_code;
+  String get situationCode;
 
-  /// No description provided for @invalid_code.
+  /// No description provided for @invalidCode.
   ///
   /// In en, this message translates to:
   /// **'Invalid Chess Code'**
-  String get invalid_code;
+  String get invalidCode;
 
-  /// No description provided for @copy_success.
+  /// No description provided for @copySuccess.
   ///
   /// In en, this message translates to:
   /// **'Copy Success'**
-  String get copy_success;
+  String get copySuccess;
 
-  /// No description provided for @save_success.
+  /// No description provided for @saveSuccess.
   ///
   /// In en, this message translates to:
   /// **'Save Success'**
-  String get save_success;
+  String get saveSuccess;
 
-  /// No description provided for @select_directory_save.
+  /// No description provided for @selectDirectorySave.
   ///
   /// In en, this message translates to:
   /// **'Select a Directory to Save'**
-  String get select_directory_save;
+  String get selectDirectorySave;
 
-  /// No description provided for @save_filename.
+  /// No description provided for @saveFilename.
   ///
   /// In en, this message translates to:
   /// **'Filename to Save'**
-  String get save_filename;
+  String get saveFilename;
 
-  /// No description provided for @select_pgn_file.
+  /// No description provided for @selectPgnFile.
   ///
   /// In en, this message translates to:
   /// **'Select .PGN file'**
-  String get select_pgn_file;
+  String get selectPgnFile;
 
-  /// No description provided for @recommend_move.
+  /// No description provided for @recommendMove.
   ///
   /// In en, this message translates to:
   /// **'Recommend Move'**
-  String get recommend_move;
+  String get recommendMove;
 
   /// No description provided for @remark.
   ///
@@ -354,11 +351,11 @@ abstract class AppLocalizations {
   /// **'Remark'**
   String get remark;
 
-  /// No description provided for @no_remark.
+  /// No description provided for @noRemark.
   ///
   /// In en, this message translates to:
   /// **'No remark'**
-  String get no_remark;
+  String get noRemark;
 
   /// No description provided for @check.
   ///
@@ -372,17 +369,17 @@ abstract class AppLocalizations {
   /// **'Checkmate'**
   String get checkmate;
 
-  /// No description provided for @long_recheck_loose.
+  /// No description provided for @longRecheckLoose.
   ///
   /// In en, this message translates to:
   /// **'The same move 3 round to Lose'**
-  String get long_recheck_loose;
+  String get longRecheckLoose;
 
-  /// No description provided for @no_eat_to_draw.
+  /// No description provided for @noEatToDraw.
   ///
   /// In en, this message translates to:
   /// **'60 round with no eat to Draw'**
-  String get no_eat_to_draw;
+  String get noEatToDraw;
 
   /// No description provided for @trapped.
   ///
@@ -390,87 +387,86 @@ abstract class AppLocalizations {
   /// **'Checkmate'**
   String get trapped;
 
-  /// No description provided for @red_loose.
+  /// No description provided for @redLoose.
   ///
   /// In en, this message translates to:
   /// **'Loose'**
-  String get red_loose;
+  String get redLoose;
 
-  /// No description provided for @red_win.
+  /// No description provided for @redWin.
   ///
   /// In en, this message translates to:
   /// **'Win'**
-  String get red_win;
+  String get redWin;
 
-  /// No description provided for @red_draw.
+  /// No description provided for @redDraw.
   ///
   /// In en, this message translates to:
   /// **'Draw'**
-  String get red_draw;
+  String get redDraw;
 
-  /// No description provided for @request_draw.
+  /// No description provided for @requestDraw.
   ///
   /// In en, this message translates to:
   /// **'Asked for a draw'**
-  String get request_draw;
+  String get requestDraw;
 
-  /// No description provided for @agree_to_draw.
+  /// No description provided for @agreeToDraw.
   ///
   /// In en, this message translates to:
   /// **'Agree to draw'**
-  String get agree_to_draw;
+  String get agreeToDraw;
 
-  /// No description provided for @request_retract.
+  /// No description provided for @requestRetract.
   ///
   /// In en, this message translates to:
   /// **'Asked for a Retract'**
-  String get request_retract;
+  String get requestRetract;
 
-  /// No description provided for @agree_retract.
+  /// No description provided for @agreeRetract.
   ///
   /// In en, this message translates to:
   /// **'Agree to retract'**
-  String get agree_retract;
+  String get agreeRetract;
 
-  /// No description provided for @disagree_retract.
+  /// No description provided for @disagreeRetract.
   ///
   /// In en, this message translates to:
   /// **'Disagree to retract'**
-  String get disagree_retract;
+  String get disagreeRetract;
 
-  /// No description provided for @cant_send_check.
+  /// No description provided for @cantSendCheck.
   ///
   /// In en, this message translates to:
   /// **'You can\'t send Check'**
-  String get cant_send_check;
+  String get cantSendCheck;
 
-  /// No description provided for @pls_parry_check.
+  /// No description provided for @plsParryCheck.
   ///
   /// In en, this message translates to:
   /// **'Please parry the Check'**
-  String get pls_parry_check;
+  String get plsParryCheck;
 
-  /// No description provided for @one_more_game.
+  /// No description provided for @oneMoreGame.
   ///
   /// In en, this message translates to:
   /// **'New Game'**
-  String get one_more_game;
+  String get oneMoreGame;
 
-  /// No description provided for @let_me_see.
+  /// No description provided for @letMeSee.
   ///
   /// In en, this message translates to:
   /// **'Not now'**
-  String get let_me_see;
+  String get letMeSee;
 
-  /// No description provided for @setting_title.
+  /// No description provided for @settingTitle.
   ///
   /// In en, this message translates to:
   /// **'Settings'**
-  String get setting_title;
+  String get settingTitle;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -479,25 +475,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'zh'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'zh':
-      return AppLocalizationsZh();
+    case 'en': return AppLocalizationsEn();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.'
+  );
 }

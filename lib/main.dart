@@ -52,9 +52,9 @@ class MainApp extends StatelessWidget {
       onGenerateTitle: (BuildContext context) {
         if (!kIsWeb &&
             (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-          windowManager.setTitle(context.l10n.app_title);
+          windowManager.setTitle(context.l10n.appTitle);
         }
-        return context.l10n.app_title;
+        return context.l10n.appTitle;
       },
       navigatorKey: MyDialog.navigatorKey,
       localizationsDelegates: const [

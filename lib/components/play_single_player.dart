@@ -61,7 +61,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
     if (gamer.hands[team].isUser) {
       return IconButton(
         icon: const Icon(Icons.android),
-        tooltip: context.l10n.trusteeship_to_robots,
+        tooltip: context.l10n.trusteeshipToRobots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
         },
@@ -72,7 +72,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
           Icons.android,
           color: Colors.blueAccent,
         ),
-        tooltip: context.l10n.cancel_robots,
+        tooltip: context.l10n.cancelRobots,
         onPressed: () {
           changePlayDriver(team, DriverType.user);
         },

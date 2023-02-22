@@ -84,7 +84,7 @@ class _ChessBoxState extends State<ChessSingleBox> {
                 onPressed: () {
                   clearAll();
                 },
-                child: Text(context.l10n.clear_all),
+                child: Text(context.l10n.clearAll),
               )
             ],
           )

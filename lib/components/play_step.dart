@@ -96,7 +96,7 @@ class PlayStepState extends State<PlayStep> {
             child: (index > 0 && index % 2 == 1)
                 ? Text('${(index + 1) ~/ 2}.${steps[index]}')
                 : Text(
-                    '   ${index == 0 ? context.l10n.step_start : steps[index]}',
+                    '   ${index == 0 ? context.l10n.stepStart : steps[index]}',
                   ),
           ),
         ),

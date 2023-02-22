@@ -57,7 +57,7 @@ class PlayPlayerState extends State<PlayPlayer> {
     if (gamer.hands[team].isUser) {
       return IconButton(
         icon: const Icon(Icons.android),
-        tooltip: context.l10n.trusteeship_to_robots,
+        tooltip: context.l10n.trusteeshipToRobots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
         },
@@ -68,7 +68,7 @@ class PlayPlayerState extends State<PlayPlayer> {
           Icons.android,
           color: Colors.blueAccent,
         ),
-        tooltip: context.l10n.cancel_robots,
+        tooltip: context.l10n.cancelRobots,
         onPressed: () {
           changePlayDriver(team, DriverType.user);
         },
@@ -120,7 +120,7 @@ class PlayPlayerState extends State<PlayPlayer> {
               child: TabCard(
                 titlePadding: const EdgeInsets.only(top: 10, bottom: 10),
                 titles: [
-                  Text(context.l10n.current_info),
+                  Text(context.l10n.currentInfo),
                   Text(context.l10n.manual)
                 ],
                 bodies: [
@@ -153,31 +153,31 @@ class PlayPlayerState extends State<PlayPlayer> {
                       children: [
                         TableRow(
                           children: [
-                            Text(context.l10n.the_event),
+                            Text(context.l10n.theEvent),
                             Text(gamer.manual.event)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(context.l10n.the_site),
+                            Text(context.l10n.theSite),
                             Text(gamer.manual.site)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(context.l10n.the_date),
+                            Text(context.l10n.theDate),
                             Text(gamer.manual.date)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(context.l10n.the_round),
+                            Text(context.l10n.theRound),
                             Text(gamer.manual.round)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(context.l10n.the_red),
+                            Text(context.l10n.theRed),
                             Text(
                               '${gamer.manual.redTeam}/${gamer.manual.red}',
                             ),
@@ -185,7 +185,7 @@ class PlayPlayerState extends State<PlayPlayer> {
                         ),
                         TableRow(
                           children: [
-                            Text(context.l10n.the_black),
+                            Text(context.l10n.theBlack),
                             Text(
                               '${gamer.manual.blackTeam}/${gamer.manual.black}',
                             ),

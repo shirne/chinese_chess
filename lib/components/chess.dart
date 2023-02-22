@@ -96,13 +96,13 @@ class ChessState extends State<Chess> {
         showAction(ActionType.eat);
         break;
       case ChessManual.resultFstLoose:
-        alertResult(resultText ?? context.l10n.red_loose);
+        alertResult(resultText ?? context.l10n.redLoose);
         break;
       case ChessManual.resultFstWin:
-        alertResult(resultText ?? context.l10n.red_win);
+        alertResult(resultText ?? context.l10n.redWin);
         break;
       case ChessManual.resultFstDraw:
-        alertResult(resultText ?? context.l10n.red_draw);
+        alertResult(resultText ?? context.l10n.redDraw);
         break;
       default:
         break;
@@ -165,9 +165,9 @@ class ChessState extends State<Chess> {
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
       toast(
-        context.l10n.request_draw,
+        context.l10n.requestDraw,
         SnackBarAction(
-          label: context.l10n.agree_to_draw,
+          label: context.l10n.agreeToDraw,
           onPressed: () {
             gamer.player.completeMove(PlayerDriver.rstDraw);
           },
@@ -181,9 +181,9 @@ class ChessState extends State<Chess> {
     }
     if (move == PlayerDriver.rstRqstRetract) {
       confirm(
-        context.l10n.request_retract,
-        context.l10n.agree_retract,
-        context.l10n.disagree_retract,
+        context.l10n.requestRetract,
+        context.l10n.agreeRetract,
+        context.l10n.disagreeRetract,
       ).then((bool? isAgree) {
         gamer.player
             .completeMove(isAgree == true ? PlayerDriver.rstRetract : '');
@@ -259,16 +259,16 @@ class ChessState extends State<Chess> {
     ChessRule rule = ChessRule(gamer.fen.copy());
     rule.fen.move(move);
     if (rule.isKingMeet(gamer.curHand)) {
-      toast(context.l10n.cant_send_check);
+      toast(context.l10n.cantSendCheck);
       return false;
     }
 
     // 区分应将和送将
     if (rule.isCheck(gamer.curHand)) {
       if (gamer.isCheckMate) {
-        toast(context.l10n.pls_parry_check);
+        toast(context.l10n.plsParryCheck);
       } else {
-        toast(context.l10n.cant_send_check);
+        toast(context.l10n.cantSendCheck);
       }
       return false;
     }
@@ -384,12 +384,15 @@ class ChessState extends State<Chess> {
   }
 
   void toast(String message, [SnackBarAction? action, int duration = 3]) {
-    MyDialog.snack(message,
-        action: action, duration: Duration(seconds: duration));
+    MyDialog.snack(
+      message,
+      action: action,
+      duration: Duration(seconds: duration),
+    );
   }
 
   void alertResult(message) {
-    confirm(message, context.l10n.one_more_game, context.l10n.let_me_see)
+    confirm(message, context.l10n.oneMoreGame, context.l10n.letMeSee)
         .then((isConfirm) {
       if (isConfirm ?? false) {
         gamer.newGame();
@@ -398,8 +401,11 @@ class ChessState extends State<Chess> {
   }
 
   Future<bool?> confirm(String message, String agreeText, String cancelText) {
-    return MyDialog.confirm(message,
-        buttonText: agreeText, cancelText: cancelText);
+    return MyDialog.confirm(
+      message,
+      buttonText: agreeText,
+      cancelText: cancelText,
+    );
   }
 
   Future<bool?> alert(String message) async {

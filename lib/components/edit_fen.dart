@@ -153,7 +153,7 @@ class EditFenState extends State<EditFen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.edit_code),
+        title: Text(context.l10n.editCode),
         actions: [
           TextButton(
             onPressed: () {

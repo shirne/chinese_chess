@@ -37,7 +37,7 @@ class _SettingPageState extends State<SettingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.setting_title),
+        title: Text(context.l10n.settingTitle),
         actions: [
           TextButton(
             onPressed: () {

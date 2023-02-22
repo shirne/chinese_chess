@@ -51,17 +51,17 @@ class _GameBoardState extends State<GameBoard> {
                 });
               },
               icon: const Icon(Icons.android),
-              label: Text(context.l10n.mode_robot),
+              label: Text(context.l10n.modeRobot),
             ),
             ElevatedButton.icon(
               onPressed: () {
                 MyDialog.toast(
-                  context.l10n.feature_not_available,
+                  context.l10n.featureNotAvailable,
                   iconType: IconType.error,
                 );
               },
               icon: const Icon(Icons.wifi),
-              label: Text(context.l10n.mode_online),
+              label: Text(context.l10n.modeOnline),
             ),
             ElevatedButton.icon(
               onPressed: () {
@@ -70,7 +70,7 @@ class _GameBoardState extends State<GameBoard> {
                 });
               },
               icon: const Icon(Icons.map),
-              label: Text(context.l10n.mode_free),
+              label: Text(context.l10n.modeFree),
             ),
             if (kIsWeb)
               TextButton(
@@ -101,12 +101,12 @@ class _GameBoardState extends State<GameBoard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.app_title),
+        title: Text(context.l10n.appTitle),
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
               icon: const Icon(Icons.menu),
-              tooltip: context.l10n.open_menu,
+              tooltip: context.l10n.openMenu,
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
@@ -118,28 +118,28 @@ class _GameBoardState extends State<GameBoard> {
             : [
                 IconButton(
                   icon: const Icon(Icons.swap_vert),
-                  tooltip: context.l10n.flip_board,
+                  tooltip: context.l10n.flipBoard,
                   onPressed: () {
                     gamer.flip();
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy),
-                  tooltip: context.l10n.copy_code,
+                  tooltip: context.l10n.copyCode,
                   onPressed: () {
                     copyFen();
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.airplay),
-                  tooltip: context.l10n.parse_code,
+                  tooltip: context.l10n.parseCode,
                   onPressed: () {
                     applyFen();
                   },
                 ),
                 IconButton(
                   icon: const Icon(Icons.airplay),
-                  tooltip: context.l10n.edit_code,
+                  tooltip: context.l10n.editCode,
                   onPressed: () {
                     editFen();
                   },
@@ -191,7 +191,7 @@ class _GameBoardState extends State<GameBoard> {
                       height: 100,
                     ),
                     Text(
-                      context.l10n.app_title,
+                      context.l10n.appTitle,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -203,7 +203,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: const Icon(Icons.add),
-              title: Text(context.l10n.new_game),
+              title: Text(context.l10n.newGame),
               onTap: () {
                 Navigator.pop(context);
                 setState(() {
@@ -219,7 +219,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: const Icon(Icons.description),
-              title: Text(context.l10n.load_manual),
+              title: Text(context.l10n.loadManual),
               onTap: () {
                 Navigator.pop(context);
                 if (mode == null) {
@@ -232,7 +232,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: const Icon(Icons.save),
-              title: Text(context.l10n.save_manual),
+              title: Text(context.l10n.saveManual),
               onTap: () {
                 Navigator.pop(context);
                 saveManual();
@@ -240,7 +240,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ListTile(
               leading: const Icon(Icons.copy),
-              title: Text(context.l10n.copy_code),
+              title: Text(context.l10n.copyCode),
               onTap: () {
                 Navigator.pop(context);
                 copyFen();
@@ -301,7 +301,7 @@ class _GameBoardState extends State<GameBoard> {
         controller: filenameController,
       ),
       buttonText: context.l10n.apply,
-      title: context.l10n.situation_code,
+      title: context.l10n.situationCode,
     ).then((v) {
       if (v ?? false) {
         if (RegExp(
@@ -309,7 +309,7 @@ class _GameBoardState extends State<GameBoard> {
         ).hasMatch(fenStr)) {
           gamer.newGame(fenStr);
         } else {
-          MyDialog.alert(context.l10n.invalid_code);
+          MyDialog.alert(context.l10n.invalidCode);
         }
       }
     });
@@ -317,7 +317,7 @@ class _GameBoardState extends State<GameBoard> {
 
   void copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
-    MyDialog.alert(context.l10n.copy_success);
+    MyDialog.alert(context.l10n.copySuccess);
   }
 
   Future<void> saveManual() async {
@@ -339,7 +339,7 @@ class _GameBoardState extends State<GameBoard> {
     if (result != null) {
       List<int> fData = gbk.encode(content);
       await File('$result/$filename').writeAsBytes(fData);
-      MyDialog.toast(context.l10n.save_success);
+      MyDialog.toast(context.l10n.saveSuccess);
     }
   }
 

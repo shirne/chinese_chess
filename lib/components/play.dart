@@ -131,13 +131,13 @@ class PlayPageState extends State<PlayPage> {
                       horizontal: 30,
                     ),
                     titles: [
-                      Text(context.l10n.recommend_move),
+                      Text(context.l10n.recommendMove),
                       Text(context.l10n.remark)
                     ],
                     bodies: [
                       const PlayBot(),
                       Center(
-                        child: Text(context.l10n.no_remark),
+                        child: Text(context.l10n.noRemark),
                       )
                     ],
                   ),
