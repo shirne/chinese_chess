@@ -265,6 +265,8 @@ class GameManager {
     manual = ChessManual.load(content);
     hands[0].title = manual.red;
     hands[1].title = manual.black;
+
+    add(GameLoadEvent(0));
     // 加载步数
     if (manual.moveCount > 0) {
       // print(manual.moves);
@@ -274,7 +276,7 @@ class GameManager {
         ),
       );
     }
-    manual.loadHistory(0);
+    manual.loadHistory(-1);
     rule.fen = manual.currentFen;
     add(GameStepEvent('step'));
 
