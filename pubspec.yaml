@@ -33,11 +33,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   logging: ^1.0.2
   file_picker: ^5.0.1
-  window_manager: 0.2.5
+  window_manager: 0.3.0
   #bitsdojo_window: ^0.1.2
   #filesystem_picker: ^2.0.1
   #file_selector: ^0.8.2
-  shirne_dialog:  ^3.0.1
+  shirne_dialog:  ^4.5.0
   fast_gbk: ^1.0.0-rc
   universal_html: ^2.0.8
   shared_preferences: ^2.0.13
@@ -50,15 +50,15 @@ dependencies:
   #     ref: windows_linux_support
   #     path: soundpool_windux
       
-  audioplayers: 1.0.1
+  audioplayers: 3.0.1
   #assets_audio_player: ^3.0.4+3
-  ffi: 2.0.1
+  ffi:
   # win32: 2.6.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  icons_launcher: 2.0.4
+  icons_launcher: 2.1.0
   flutter_lints: ^2.0.1
 
 # flutter pub run icons_launcher:create

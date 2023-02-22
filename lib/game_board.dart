@@ -55,7 +55,7 @@ class _GameBoardState extends State<GameBoard> {
             ),
             ElevatedButton.icon(
               onPressed: () {
-                MyDialog.of(context).toast(
+                MyDialog.toast(
                   context.l10n.feature_not_available,
                   iconType: IconType.error,
                 );
@@ -296,22 +296,20 @@ class _GameBoardState extends State<GameBoard> {
     filenameController.addListener(() {
       fenStr = filenameController.text;
     });
-    MyDialog.of(context)
-        .confirm(
+    MyDialog.confirm(
       TextField(
         controller: filenameController,
       ),
       buttonText: context.l10n.apply,
       title: context.l10n.situation_code,
-    )
-        .then((v) {
+    ).then((v) {
       if (v ?? false) {
         if (RegExp(
           r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$',
         ).hasMatch(fenStr)) {
           gamer.newGame(fenStr);
         } else {
-          MyDialog.of(context).alert(context.l10n.invalid_code);
+          MyDialog.alert(context.l10n.invalid_code);
         }
       }
     });
@@ -319,7 +317,7 @@ class _GameBoardState extends State<GameBoard> {
 
   void copyFen() {
     Clipboard.setData(ClipboardData(text: gamer.fenStr));
-    MyDialog.of(context).alert(context.l10n.copy_success);
+    MyDialog.alert(context.l10n.copy_success);
   }
 
   Future<void> saveManual() async {
@@ -341,7 +339,7 @@ class _GameBoardState extends State<GameBoard> {
     if (result != null) {
       List<int> fData = gbk.encode(content);
       await File('$result/$filename').writeAsBytes(fData);
-      MyDialog.of(context).toast(context.l10n.save_success);
+      MyDialog.toast(context.l10n.save_success);
     }
   }
 

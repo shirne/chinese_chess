@@ -384,7 +384,8 @@ class ChessState extends State<Chess> {
   }
 
   void toast(String message, [SnackBarAction? action, int duration = 3]) {
-    MyDialog.of(context).snack(message, action: action, duration: duration);
+    MyDialog.snack(message,
+        action: action, duration: Duration(seconds: duration));
   }
 
   void alertResult(message) {
@@ -397,12 +398,12 @@ class ChessState extends State<Chess> {
   }
 
   Future<bool?> confirm(String message, String agreeText, String cancelText) {
-    return MyDialog.of(context)
-        .confirm(message, buttonText: agreeText, cancelText: cancelText);
+    return MyDialog.confirm(message,
+        buttonText: agreeText, cancelText: cancelText);
   }
 
   Future<bool?> alert(String message) async {
-    return MyDialog.of(context).alert(message);
+    return MyDialog.alert(message);
   }
 
   // 显示吃/将效果

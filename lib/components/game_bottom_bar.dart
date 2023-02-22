@@ -31,7 +31,7 @@ class GameBottomBarState extends State<GameBottomBar> {
 
   void _showStepList() {
     final size = MediaQuery.of(context).size;
-    MyDialog.of(context).popup(
+    MyDialog.popup(
       SizedBox(
         height: size.height * 0.75,
         child: Center(

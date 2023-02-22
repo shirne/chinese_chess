@@ -56,6 +56,7 @@ class MainApp extends StatelessWidget {
         }
         return context.l10n.app_title;
       },
+      navigatorKey: MyDialog.navigatorKey,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         ShirneDialogLocalizations.delegate,

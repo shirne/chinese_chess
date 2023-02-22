@@ -43,7 +43,7 @@ class _SettingPageState extends State<SettingPage> {
             onPressed: () {
               setting?.save().then((v) {
                 Navigator.pop(context);
-                MyDialog.of(context).toast('保存成功', iconType: IconType.success);
+                MyDialog.toast('保存成功', iconType: IconType.success);
               });
             },
             child: const Text(

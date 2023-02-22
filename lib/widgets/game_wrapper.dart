@@ -55,7 +55,7 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
 
   Future<bool> _willPop() async {
     logger.info('onwillpop');
-    final sure = await MyDialog.of(context).confirm(
+    final sure = await MyDialog.confirm(
       context.l10n.exit_now,
       buttonText: context.l10n.yes_exit,
       cancelText: context.l10n.dont_exit,
