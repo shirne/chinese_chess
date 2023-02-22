@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 
-import 'generated/l10n.dart';
+import 'global.dart';
 import 'models/engine_type.dart';
 import 'models/engine_level.dart';
 import 'models/game_setting.dart';
@@ -37,7 +37,7 @@ class _SettingPageState extends State<SettingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).setting_title),
+        title: Text(context.l10n.setting_title),
         actions: [
           TextButton(
             onPressed: () {

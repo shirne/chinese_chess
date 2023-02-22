@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:chinese_chess/models/game_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'generated/l10n.dart';
-import 'theme.dart';
+import 'global.dart';
+import 'l10n/generated/app_localizations.dart';
+import 'models/game_manager.dart';
 import 'widgets/game_wrapper.dart';
 import 'game_board.dart';
 
@@ -52,12 +52,12 @@ class MainApp extends StatelessWidget {
       onGenerateTitle: (BuildContext context) {
         if (!kIsWeb &&
             (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-          windowManager.setTitle(S.of(context).app_title);
+          windowManager.setTitle(context.l10n.app_title);
         }
-        return S.of(context).app_title;
+        return context.l10n.app_title;
       },
       localizationsDelegates: const [
-        S.delegate,
+        AppLocalizations.delegate,
         ShirneDialogLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

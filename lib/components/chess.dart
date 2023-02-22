@@ -4,15 +4,14 @@ import 'package:cchess/cchess.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 
-import '../generated/l10n.dart';
-import '../global.dart';
-import '../models/game_event.dart';
-import '../models/sound.dart';
 import 'action_dialog.dart';
 import 'board.dart';
 import 'piece.dart';
-import '../models/game_manager.dart';
 import 'chess_pieces.dart';
+import '../global.dart';
+import '../models/game_event.dart';
+import '../models/sound.dart';
+import '../models/game_manager.dart';
 import '../driver/player_driver.dart';
 import 'mark_component.dart';
 import 'point_component.dart';
@@ -90,20 +89,20 @@ class ChessState extends State<Chess> {
         (parts.length > 1 && parts[1].isNotEmpty) ? parts[1] : null;
     switch (parts[0]) {
       case 'checkMate':
-        //toast(S.of(context).check);
+        //toast(context.l10n.check);
         showAction(ActionType.checkMate);
         break;
       case 'eat':
         showAction(ActionType.eat);
         break;
       case ChessManual.resultFstLoose:
-        alertResult(resultText ?? S.of(context).red_loose);
+        alertResult(resultText ?? context.l10n.red_loose);
         break;
       case ChessManual.resultFstWin:
-        alertResult(resultText ?? S.of(context).red_win);
+        alertResult(resultText ?? context.l10n.red_win);
         break;
       case ChessManual.resultFstDraw:
-        alertResult(resultText ?? S.of(context).red_draw);
+        alertResult(resultText ?? context.l10n.red_draw);
         break;
       default:
         break;
@@ -166,9 +165,9 @@ class ChessState extends State<Chess> {
     if (move == PlayerDriver.rstGiveUp) return;
     if (move.contains(PlayerDriver.rstRqstDraw)) {
       toast(
-        S.of(context).request_draw,
+        context.l10n.request_draw,
         SnackBarAction(
-          label: S.of(context).agree_to_draw,
+          label: context.l10n.agree_to_draw,
           onPressed: () {
             gamer.player.completeMove(PlayerDriver.rstDraw);
           },
@@ -182,9 +181,9 @@ class ChessState extends State<Chess> {
     }
     if (move == PlayerDriver.rstRqstRetract) {
       confirm(
-        S.of(context).request_retract,
-        S.of(context).agree_retract,
-        S.of(context).disagree_retract,
+        context.l10n.request_retract,
+        context.l10n.agree_retract,
+        context.l10n.disagree_retract,
       ).then((bool? isAgree) {
         gamer.player
             .completeMove(isAgree == true ? PlayerDriver.rstRetract : '');
@@ -260,16 +259,16 @@ class ChessState extends State<Chess> {
     ChessRule rule = ChessRule(gamer.fen.copy());
     rule.fen.move(move);
     if (rule.isKingMeet(gamer.curHand)) {
-      toast(S.of(context).cant_send_check);
+      toast(context.l10n.cant_send_check);
       return false;
     }
 
     // 区分应将和送将
     if (rule.isCheck(gamer.curHand)) {
       if (gamer.isCheckMate) {
-        toast(S.of(context).pls_parry_check);
+        toast(context.l10n.pls_parry_check);
       } else {
-        toast(S.of(context).cant_send_check);
+        toast(context.l10n.cant_send_check);
       }
       return false;
     }
@@ -389,7 +388,7 @@ class ChessState extends State<Chess> {
   }
 
   void alertResult(message) {
-    confirm(message, S.of(context).one_more_game, S.of(context).let_me_see)
+    confirm(message, context.l10n.one_more_game, context.l10n.let_me_see)
         .then((isConfirm) {
       if (isConfirm ?? false) {
         gamer.newGame();
@@ -409,21 +408,20 @@ class ChessState extends State<Chess> {
   // 显示吃/将效果
   void showAction(ActionType type) {
     final overlay = Overlay.of(context);
-    if (overlay != null) {
-      late OverlayEntry entry;
-      entry = OverlayEntry(
-        builder: (context) => Center(
-          child: ActionDialog(
-            type,
-            delay: 2,
-            onHide: () {
-              entry.remove();
-            },
-          ),
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (context) => Center(
+        child: ActionDialog(
+          type,
+          delay: 2,
+          onHide: () {
+            entry.remove();
+          },
         ),
-      );
-      overlay.insert(entry);
-    }
+      ),
+    );
+    overlay.insert(entry);
   }
 
   @override

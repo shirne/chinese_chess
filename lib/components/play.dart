@@ -5,10 +5,10 @@ import 'play_step.dart';
 import 'play_single_player.dart';
 import 'play_bot.dart';
 import 'play_player.dart';
+import '../global.dart';
 import '../widgets/tab_card.dart';
 import '../models/game_manager.dart';
 import '../models/play_mode.dart';
-import '../generated/l10n.dart';
 import '../driver/player_driver.dart';
 
 /// 游戏布局框
@@ -131,13 +131,13 @@ class PlayPageState extends State<PlayPage> {
                       horizontal: 30,
                     ),
                     titles: [
-                      Text(S.of(context).recommend_move),
-                      Text(S.of(context).remark)
+                      Text(context.l10n.recommend_move),
+                      Text(context.l10n.remark)
                     ],
                     bodies: [
                       const PlayBot(),
                       Center(
-                        child: Text(S.of(context).no_remark),
+                        child: Text(context.l10n.no_remark),
                       )
                     ],
                   ),

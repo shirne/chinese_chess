@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../global.dart';
 import '../driver/player_driver.dart';
-import '../generated/l10n.dart';
 import '../models/game_event.dart';
 import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
@@ -57,7 +57,7 @@ class PlayPlayerState extends State<PlayPlayer> {
     if (gamer.hands[team].isUser) {
       return IconButton(
         icon: const Icon(Icons.android),
-        tooltip: S.of(context).trusteeship_to_robots,
+        tooltip: context.l10n.trusteeship_to_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
         },
@@ -68,7 +68,7 @@ class PlayPlayerState extends State<PlayPlayer> {
           Icons.android,
           color: Colors.blueAccent,
         ),
-        tooltip: S.of(context).cancel_robots,
+        tooltip: context.l10n.cancel_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.user);
         },
@@ -100,7 +100,7 @@ class PlayPlayerState extends State<PlayPlayer> {
               color: currentTeam == 1 ? Colors.blueAccent : Colors.black12,
             ),
             title: Text(gamer.getPlayer(1).title),
-            subtitle: Text(currentTeam == 1 ? S.of(context).thinking : ''),
+            subtitle: Text(currentTeam == 1 ? context.l10n.thinking : ''),
             trailing: switchRobot(1),
           ),
           const SizedBox(width: 10),
@@ -110,7 +110,7 @@ class PlayPlayerState extends State<PlayPlayer> {
               color: currentTeam == 0 ? Colors.blueAccent : Colors.black12,
             ),
             title: Text(gamer.getPlayer(0).title),
-            subtitle: Text(currentTeam == 0 ? S.of(context).thinking : ''),
+            subtitle: Text(currentTeam == 0 ? context.l10n.thinking : ''),
             trailing: switchRobot(0),
           ),
           const SizedBox(width: 10),
@@ -120,8 +120,8 @@ class PlayPlayerState extends State<PlayPlayer> {
               child: TabCard(
                 titlePadding: const EdgeInsets.only(top: 10, bottom: 10),
                 titles: [
-                  Text(S.of(context).current_info),
-                  Text(S.of(context).manual)
+                  Text(context.l10n.current_info),
+                  Text(context.l10n.manual)
                 ],
                 bodies: [
                   Center(
@@ -153,31 +153,31 @@ class PlayPlayerState extends State<PlayPlayer> {
                       children: [
                         TableRow(
                           children: [
-                            Text(S.of(context).the_event),
+                            Text(context.l10n.the_event),
                             Text(gamer.manual.event)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(S.of(context).the_site),
+                            Text(context.l10n.the_site),
                             Text(gamer.manual.site)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(S.of(context).the_date),
+                            Text(context.l10n.the_date),
                             Text(gamer.manual.date)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(S.of(context).the_round),
+                            Text(context.l10n.the_round),
                             Text(gamer.manual.round)
                           ],
                         ),
                         TableRow(
                           children: [
-                            Text(S.of(context).the_red),
+                            Text(context.l10n.the_red),
                             Text(
                               '${gamer.manual.redTeam}/${gamer.manual.red}',
                             ),
@@ -185,7 +185,7 @@ class PlayPlayerState extends State<PlayPlayer> {
                         ),
                         TableRow(
                           children: [
-                            Text(S.of(context).the_black),
+                            Text(context.l10n.the_black),
                             Text(
                               '${gamer.manual.blackTeam}/${gamer.manual.black}',
                             ),

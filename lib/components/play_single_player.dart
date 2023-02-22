@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../global.dart';
 import '../driver/player_driver.dart';
-import '../generated/l10n.dart';
 import '../models/game_event.dart';
 import '../models/game_manager.dart';
 import '../widgets/list_item.dart';
@@ -61,7 +61,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
     if (gamer.hands[team].isUser) {
       return IconButton(
         icon: const Icon(Icons.android),
-        tooltip: S.of(context).trusteeship_to_robots,
+        tooltip: context.l10n.trusteeship_to_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.robot);
         },
@@ -72,7 +72,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
           Icons.android,
           color: Colors.blueAccent,
         ),
-        tooltip: S.of(context).cancel_robots,
+        tooltip: context.l10n.cancel_robots,
         onPressed: () {
           changePlayDriver(team, DriverType.user);
         },
@@ -121,7 +121,7 @@ class PlaySinglePlayerState extends State<PlaySinglePlayer> {
           ),
           subtitle: currentTeam == widget.team
               ? Text(
-                  S.of(context).thinking,
+                  context.l10n.thinking,
                   style: const TextStyle(fontSize: 10),
                   textDirection: tDirect,
                 )

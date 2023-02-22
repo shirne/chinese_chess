@@ -5,7 +5,6 @@ import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../generated/l10n.dart';
 import '../global.dart';
 import '../models/game_manager.dart';
 
@@ -57,9 +56,9 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
   Future<bool> _willPop() async {
     logger.info('onwillpop');
     final sure = await MyDialog.of(context).confirm(
-      S.of(context).exit_now,
-      buttonText: S.of(context).yes_exit,
-      cancelText: S.of(context).dont_exit,
+      context.l10n.exit_now,
+      buttonText: context.l10n.yes_exit,
+      cancelText: context.l10n.dont_exit,
     );
 
     if (sure ?? false) {

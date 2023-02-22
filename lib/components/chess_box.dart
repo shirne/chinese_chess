@@ -2,8 +2,8 @@ import 'package:cchess/cchess.dart';
 import 'package:flutter/material.dart';
 
 import 'edit_fen.dart';
-import '../generated/l10n.dart';
 import 'piece.dart';
+import '../global.dart';
 import '../models/game_manager.dart';
 import '../widgets/game_wrapper.dart';
 
@@ -87,7 +87,7 @@ class _ChessBoxState extends State<ChessBox> {
                   clearAll();
                 },
                 child: Text(
-                  S.of(context).clear_all,
+                  context.l10n.clear_all,
                 ),
               )
             ],

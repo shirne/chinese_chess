@@ -1,7 +1,7 @@
 import 'package:chinese_chess/models/game_event.dart';
 import 'package:flutter/material.dart';
 
-import '../generated/l10n.dart';
+import '../global.dart';
 import '../models/game_manager.dart';
 
 /// 着法列表
@@ -96,7 +96,7 @@ class PlayStepState extends State<PlayStep> {
             child: (index > 0 && index % 2 == 1)
                 ? Text('${(index + 1) ~/ 2}.${steps[index]}')
                 : Text(
-                    '   ${index == 0 ? S.of(context).step_start : steps[index]}',
+                    '   ${index == 0 ? context.l10n.step_start : steps[index]}',
                   ),
           ),
         ),

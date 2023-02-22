@@ -1,12 +1,11 @@
 import 'package:cchess/cchess.dart';
 import 'package:flutter/material.dart';
 
-import '../global.dart';
 import 'chess_box.dart';
 import 'chess_pieces.dart';
 import 'chess_single_box.dart';
 import 'board.dart';
-import '../generated/l10n.dart';
+import '../global.dart';
 import '../widgets/game_wrapper.dart';
 import '../models/game_manager.dart';
 
@@ -154,14 +153,14 @@ class EditFenState extends State<EditFen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(S.of(context).edit_code),
+        title: Text(context.l10n.edit_code),
         actions: [
           TextButton(
             onPressed: () {
               editOK();
             },
             child: Text(
-              S.of(context).save,
+              context.l10n.save,
               style: const TextStyle(color: Colors.white),
             ),
           )

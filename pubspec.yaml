@@ -29,7 +29,7 @@ dependencies:
   cchess: 0.0.4
   cchess_engine: 0.0.1
   
-  intl: ^0.17.0
+  intl: any
   cupertino_icons: ^1.0.2
   logging: ^1.0.2
   file_picker: ^5.0.1
@@ -86,6 +86,8 @@ icons_launcher:
 # The following section is specific to Flutter.
 flutter:
 
+  generate: true
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -123,5 +125,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-flutter_intl:
-  enabled: true
+
