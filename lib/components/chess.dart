@@ -8,13 +8,13 @@ import 'action_dialog.dart';
 import 'board.dart';
 import 'piece.dart';
 import 'chess_pieces.dart';
+import 'mark_component.dart';
+import 'point_component.dart';
 import '../global.dart';
 import '../models/game_event.dart';
 import '../models/sound.dart';
 import '../models/game_manager.dart';
 import '../driver/player_driver.dart';
-import 'mark_component.dart';
-import 'point_component.dart';
 import '../widgets/game_wrapper.dart';
 
 class Chess extends StatefulWidget {

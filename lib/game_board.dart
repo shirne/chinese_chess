@@ -289,6 +289,7 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   Future<void> applyFen() async {
+    final l10n = context.l10n;
     ClipboardData? cData = await Clipboard.getData(Clipboard.kTextPlain);
     String fenStr = cData?.text ?? '';
     TextEditingController filenameController =
@@ -296,23 +297,23 @@ class _GameBoardState extends State<GameBoard> {
     filenameController.addListener(() {
       fenStr = filenameController.text;
     });
-    MyDialog.confirm(
+
+    final confirmed = await MyDialog.confirm(
       TextField(
         controller: filenameController,
       ),
-      buttonText: context.l10n.apply,
-      title: context.l10n.situationCode,
-    ).then((v) {
-      if (v ?? false) {
-        if (RegExp(
-          r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$',
-        ).hasMatch(fenStr)) {
-          gamer.newGame(fenStr);
-        } else {
-          MyDialog.alert(context.l10n.invalidCode);
-        }
+      buttonText: l10n.apply,
+      title: l10n.situationCode,
+    );
+    if (confirmed ?? false) {
+      if (RegExp(
+        r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$',
+      ).hasMatch(fenStr)) {
+        gamer.newGame(fenStr);
+      } else {
+        MyDialog.alert(l10n.invalidCode);
       }
-    });
+    }
   }
 
   void copyFen() {
@@ -336,7 +337,7 @@ class _GameBoardState extends State<GameBoard> {
       fileName: filename,
       allowedExtensions: ['pgn'],
     );
-    if (result != null) {
+    if (context.mounted && result != null) {
       List<int> fData = gbk.encode(content);
       await File('$result/$filename').writeAsBytes(fData);
       MyDialog.toast(context.l10n.saveSuccess);
