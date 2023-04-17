@@ -4,15 +4,17 @@
 import 'package:engine_interface/engine_interface.dart';
 
 class EngineWindows extends EngineInterfaceBase {
+
+  @override
+  List<EngineInfo> get supported => [
+    const EngineInfo(type: EngineType.ucci, name: 'eleeye'),
+    const EngineInfo(type: EngineType.uci, name: 'pikafish'),
+  ];
   
   @override
-  Future<String> getEnginePath() {
-    return Future.value('windows path');
-  }
-  
-  @override
-  Future<bool> initEngine() {
+  Future<bool> initEngine(EngineInfo engine) {
     // TODO: implement initEngine
     throw UnimplementedError();
   }
+  
 }
