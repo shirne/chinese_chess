@@ -1,5 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 enum MessageType {
   id,
@@ -16,37 +21,56 @@ class EngineMessage {
   const EngineMessage({
     required this.type,
     required this.origin,
+    this.moves = const [],
+    this.message = '',
   });
 
-  EngineMessage.parse(String message)
-      : this(
-          type: mapType(message),
-          origin: message,
-        );
-
-  static MessageType mapType(String message) {
-    switch (message.substring(0, message.indexOf(' '))) {
+  factory EngineMessage.parse(String message) {
+    int firstBlank = message.indexOf(' ');
+    final typeStr = firstBlank > 0 ? '' : message.substring(0, firstBlank);
+    MessageType type;
+    switch (typeStr) {
       case 'id':
-        return MessageType.id;
+        type = MessageType.id;
+        break;
       case 'ucciok':
       case 'uciok':
-        return MessageType.uciok;
+        type = MessageType.uciok;
+        break;
       case 'readyok':
-        return MessageType.readyok;
+        type = MessageType.readyok;
+        break;
       case 'info':
-        return MessageType.info;
+        type = MessageType.info;
+        break;
       case 'bestmove':
-        return MessageType.bestmove;
+        type = MessageType.bestmove;
+        break;
       case 'nobestmove':
-        return MessageType.nobestmove;
+        type = MessageType.nobestmove;
+        break;
       case 'bye':
-        return MessageType.bye;
+        type = MessageType.bye;
+        break;
       default:
-        return MessageType.unknown;
+        type = MessageType.unknown;
     }
+
+    final msg = type == MessageType.unknown
+        ? message
+        : message.substring(firstBlank + 1);
+
+    return EngineMessage(
+      type: type,
+      origin: message,
+      moves: type == MessageType.bestmove ? msg.split(' ') : [],
+      message: msg,
+    );
   }
 
   final MessageType type;
+  final List<String> moves;
+  final String message;
   final String origin;
 }
 
@@ -59,20 +83,87 @@ class EngineInfo {
   const EngineInfo({
     this.type = EngineType.ucci,
     required this.name,
+    required this.data,
     String? path,
-  }) : path = path ?? '$name/$name.o';
+  }) : path = path ?? '$name/$name';
 
   final EngineType type;
   final String name;
   final String path;
+  final String data;
+}
+
+class _NotSupportedEngine extends EngineInterfaceBase {
+  @override
+  String get package => 'engine_interface';
 }
 
 /// An EngineInterfaceBase.
-abstract class EngineInterfaceBase {
+abstract class EngineInterfaceBase extends PlatformInterface {
+  static EngineInterfaceBase _instance = _NotSupportedEngine();
+
+  /// The default instance of [SharedPreferencesStorePlatform] to use.
+  ///
+  /// Defaults to [MethodChannelSharedPreferencesStore].
+  static EngineInterfaceBase get instance => _instance;
+
+  /// Platform-specific plugins should set this with their own platform-specific
+  /// class that extends [SharedPreferencesStorePlatform] when they register themselves.
+  static set instance(EngineInterfaceBase instance) {
+    if (!instance.isMock) {
+      PlatformInterface.verify(instance, _token);
+    }
+    _instance = instance;
+  }
+
+  static final Object _token = Object();
+
+  EngineInterfaceBase() : super(token: _token);
+
+  bool get isMock => false;
+
   List<EngineInfo> supported = [];
+  String get package;
 
   late EngineInfo current;
-  Future<bool> initEngine(EngineInfo engine);
+
+  Future<bool> initEngine(EngineInfo info) async {
+    if (supported.isEmpty) {
+      return Future.value(false);
+    }
+
+    try {
+      final directory = await getApplicationSupportDirectory();
+      final path = File('${directory.path}/engines/${info.path}');
+      if (!path.existsSync()) {
+        final data = await rootBundle
+            .load('packages/$package/assets/engines/${info.path}');
+        path.writeAsBytesSync(data.buffer.asUint8List());
+      }
+      final dataPath = File('${directory.path}/engines/${info.data}');
+      if (!dataPath.existsSync()) {
+        final data = await rootBundle
+            .load('packages/$package/assets/engines/${info.data}');
+        dataPath.writeAsBytesSync(data.buffer.asUint8List());
+      }
+
+      engineProcess = await Process.start(
+        path.path,
+        [],
+        mode: ProcessStartMode.normal,
+      );
+
+      engineProcess.stdout.listen(
+        (event) {
+          engineMessage.add(ascii.decode(event));
+        },
+      );
+      engineProcess.stdin.writeln(info.type.name);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   late final Process engineProcess;
 
@@ -111,7 +202,7 @@ abstract class EngineInterfaceBase {
     return result == MessageType.readyok.name;
   }
 
-  position(String fen, {List<String>? moves, bool isStart = false}) {
+  void position(String fen, {List<String>? moves, bool isStart = false}) {
     String command = isStart ? 'startpos' : 'fen $fen';
     if (moves != null && moves.isNotEmpty) {
       command += ' moves ${moves.join(' ')}';
@@ -120,11 +211,11 @@ abstract class EngineInterfaceBase {
   }
 
   /// ucci
-  banMoves(List<String> moves) {
+  void banMoves(List<String> moves) {
     engineProcess.stdin.write('banmoves ${moves.join(' ')}');
   }
 
-  go({
+  void go({
     bool isPonder = false,
     bool isDraw = false,
     int? depth,
@@ -149,15 +240,15 @@ abstract class EngineInterfaceBase {
     engineProcess.stdin.write(command);
   }
 
-  ponderhit({bool isDraw = false}) {
+  void ponderhit({bool isDraw = false}) {
     engineProcess.stdin.write('ponderhit${isDraw ? ' draw' : ''}');
   }
 
-  stop() {
+  void stop() {
     engineProcess.stdin.write('stop');
   }
 
-  quit() {
+  void quit() {
     engineProcess.stdin.write('quit');
   }
 }

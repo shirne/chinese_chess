@@ -24,6 +24,11 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  plugin:
+    implements: engine_interface
+    platforms:
+      windows:
+        dartPluginClass: EngineWindows
 
   # To add assets to your plugin package, add an assets section, like this:
   assets:

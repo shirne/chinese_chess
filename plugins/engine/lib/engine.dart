@@ -5,17 +5,19 @@
 // platforms in the `pubspec.yaml` at
 // https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
 
+import 'package:engine_interface/engine_interface.dart';
 
-
-import 'engine_platform_interface.dart';
+export 'package:engine_interface/engine_interface.dart';
 
 class Engine {
-  Future<String?> getEnginePath() {
-    return EnginePlatform.instance.getEnginePath();
+  static EngineInterfaceBase get engine => EngineInterfaceBase.instance;
+
+  List<EngineInfo> getSupportedEngines() {
+    return engine.supported;
   }
 
-  Future<bool> init() async{
-    final result = await EnginePlatform.instance.init();
-    return result ?? false;
+  Future<bool> init(EngineInfo info) async {
+    final result = await engine.initEngine(info);
+    return result;
   }
 }

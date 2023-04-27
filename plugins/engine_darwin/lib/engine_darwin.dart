@@ -1,12 +1,11 @@
-
-
 import 'package:engine_interface/engine_interface.dart';
 
 class EngineDarwin extends EngineInterfaceBase {
-  @override
-  Future<bool> initEngine(EngineInfo engine) {
-    // TODO: implement initEngine
-    throw UnimplementedError();
+  /// Registers the Darwin implementation.
+  static void registerWith() {
+    EngineInterfaceBase.instance = EngineDarwin();
   }
-  
+
+  @override
+  String get package => 'engine_darwin';
 }
