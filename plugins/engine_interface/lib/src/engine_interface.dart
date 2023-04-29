@@ -6,110 +6,25 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-enum MessageType {
-  id,
-  uciok,
-  readyok,
-  info,
-  bestmove,
-  nobestmove,
-  bye,
-  unknown,
-}
+import 'model.dart';
 
-class EngineMessage {
-  const EngineMessage({
-    required this.type,
-    required this.origin,
-    this.moves = const [],
-    this.message = '',
-  });
-
-  factory EngineMessage.parse(String message) {
-    int firstBlank = message.indexOf(' ');
-    final typeStr = firstBlank > 0 ? '' : message.substring(0, firstBlank);
-    MessageType type;
-    switch (typeStr) {
-      case 'id':
-        type = MessageType.id;
-        break;
-      case 'ucciok':
-      case 'uciok':
-        type = MessageType.uciok;
-        break;
-      case 'readyok':
-        type = MessageType.readyok;
-        break;
-      case 'info':
-        type = MessageType.info;
-        break;
-      case 'bestmove':
-        type = MessageType.bestmove;
-        break;
-      case 'nobestmove':
-        type = MessageType.nobestmove;
-        break;
-      case 'bye':
-        type = MessageType.bye;
-        break;
-      default:
-        type = MessageType.unknown;
-    }
-
-    final msg = type == MessageType.unknown
-        ? message
-        : message.substring(firstBlank + 1);
-
-    return EngineMessage(
-      type: type,
-      origin: message,
-      moves: type == MessageType.bestmove ? msg.split(' ') : [],
-      message: msg,
-    );
-  }
-
-  final MessageType type;
-  final List<String> moves;
-  final String message;
-  final String origin;
-}
-
-enum EngineType {
-  uci,
-  ucci,
-}
-
-class EngineInfo {
-  const EngineInfo({
-    this.type = EngineType.ucci,
-    required this.name,
-    required this.data,
-    String? path,
-  }) : path = path ?? '$name/$name';
-
-  final EngineType type;
-  final String name;
-  final String path;
-  final String data;
-}
-
-class _NotSupportedEngine extends EngineInterfaceBase {
+class _NotSupportedEngine extends EngineInterface {
   @override
   String get package => 'engine_interface';
 }
 
 /// An EngineInterfaceBase.
-abstract class EngineInterfaceBase extends PlatformInterface {
-  static EngineInterfaceBase _instance = _NotSupportedEngine();
+abstract class EngineInterface extends PlatformInterface {
+  static EngineInterface _instance = _NotSupportedEngine();
 
-  /// The default instance of [SharedPreferencesStorePlatform] to use.
+  /// The default instance of [EngineInterface] to use.
   ///
-  /// Defaults to [MethodChannelSharedPreferencesStore].
-  static EngineInterfaceBase get instance => _instance;
+  /// Defaults to [EngineInterface].
+  static EngineInterface get instance => _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [SharedPreferencesStorePlatform] when they register themselves.
-  static set instance(EngineInterfaceBase instance) {
+  /// class that extends [EngineInterface] when they register themselves.
+  static set instance(EngineInterface instance) {
     if (!instance.isMock) {
       PlatformInterface.verify(instance, _token);
     }
@@ -118,7 +33,7 @@ abstract class EngineInterfaceBase extends PlatformInterface {
 
   static final Object _token = Object();
 
-  EngineInterfaceBase() : super(token: _token);
+  EngineInterface() : super(token: _token);
 
   bool get isMock => false;
 
@@ -159,6 +74,12 @@ abstract class EngineInterfaceBase extends PlatformInterface {
         },
       );
       engineProcess.stdin.writeln(info.type.name);
+
+      /// ucci默认启用毫秒制
+      if(info.type == EngineType.ucci){
+        setOption('usemillisec','true');
+      }
+
       return true;
     } catch (e) {
       return false;
@@ -182,17 +103,25 @@ abstract class EngineInterfaceBase extends PlatformInterface {
     return engineMessage.stream.transform(_streamTransformer).listen(listener);
   }
 
+  Completer<bool>? readyCompleter;
+  Completer<String>? moveCompleter;
+  Completer<bool>? stopCompleter;
+
+  void sendCommand(String cmd) {
+    engineProcess.stdin.write(cmd);
+  }
+
   void setOption(String name, [String? value]) {
     if (current.type == EngineType.ucci) {
-      engineProcess.stdin.write('setoption $name $value');
+      sendCommand('setoption $name $value');
     } else {
-      engineProcess.stdin
-          .write('setoption name $name${value == null ? '' : ' value $value'}');
+      sendCommand(
+          'setoption name $name${value == null ? '' : ' value $value'}');
     }
   }
 
   Future<bool> isReady() async {
-    engineProcess.stdin.write('isready');
+    sendCommand('isready');
 
     final result = await engineMessage.stream
         .skipWhile(
@@ -207,17 +136,16 @@ abstract class EngineInterfaceBase extends PlatformInterface {
     if (moves != null && moves.isNotEmpty) {
       command += ' moves ${moves.join(' ')}';
     }
-    engineProcess.stdin.write(command);
+    sendCommand(command);
   }
 
   /// ucci
   void banMoves(List<String> moves) {
-    engineProcess.stdin.write('banmoves ${moves.join(' ')}');
+    sendCommand('banmoves ${moves.join(' ')}');
   }
 
   void go({
     bool isPonder = false,
-    bool isDraw = false,
     int? depth,
     int? nodes,
     int? time,
@@ -227,28 +155,94 @@ abstract class EngineInterfaceBase extends PlatformInterface {
     int? oppmovestogo,
     int? oppincrement,
 
+    /// ucci 专用
+    bool isDraw = false,
+
     /// uci 专用
     int? mate,
+    int? movetime,
+    bool isInfinite = false,
     List<String>? searchmoves,
   }) {
     String command = 'go ';
-    if (isPonder) {
-      command += 'ponder ';
-    } else if (isDraw) {
-      command += 'draw ';
+    if (current.type == EngineType.ucci) {
+      if (isPonder) {
+        command += 'ponder ';
+      } else if (isDraw) {
+        command += 'draw ';
+      }
+      if (depth != null) {
+        command += 'depth ${depth < 0 ? 'infinite' : depth} ';
+      } else if (nodes != null) {
+        command += 'nodes $nodes ';
+      } else if (time != null) {
+        command += 'time $time ';
+        if (movestogo != null) {
+          command += 'movestogo $movestogo ';
+        } else if (increment != null) {
+          command += 'increment $increment ';
+        }
+
+        if (opptime != null) {
+          command += 'opptime $opptime ';
+          if (oppmovestogo != null) {
+            command += 'oppmovestogo $oppmovestogo ';
+          } else if (oppincrement != null) {
+            command += 'oppincrement $oppincrement ';
+          }
+        }
+      }
+    } else {
+      if (isPonder) {
+        command += 'ponder ';
+      }
+
+      if (depth != null) {
+        command += 'depth ${depth < 0 ? 'infinite' : depth} ';
+      }
+      if (nodes != null) {
+        command += 'nodes $nodes ';
+      }
+      if (mate != null) {
+        command += 'mate $mate ';
+      }
+      if (searchmoves != null) {
+        command += 'searchmoves ${searchmoves.join(' ')} ';
+      }
+      if (time != null) {
+        command += 'wtime $time ';
+      }
+      if (opptime != null) {
+        command += 'btime $opptime} ';
+      }
+      if (increment != null) {
+        command += 'winc $increment ';
+      }
+      if (oppincrement != null) {
+        command += 'binc $oppincrement ';
+      }
+      if (movestogo != null) {
+        command += 'movestogo $movestogo ';
+      }
+      if (movetime != null) {
+        command += 'movetime $movetime ';
+      }
+      if (isInfinite) {
+        command += 'infinite';
+      }
     }
-    engineProcess.stdin.write(command);
+    sendCommand(command);
   }
 
   void ponderhit({bool isDraw = false}) {
-    engineProcess.stdin.write('ponderhit${isDraw ? ' draw' : ''}');
+    sendCommand('ponderhit${isDraw ? ' draw' : ''}');
   }
 
   void stop() {
-    engineProcess.stdin.write('stop');
+    sendCommand('stop');
   }
 
   void quit() {
-    engineProcess.stdin.write('quit');
+    sendCommand('quit');
   }
 }

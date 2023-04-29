@@ -1,9 +1,9 @@
 import 'package:engine_interface/engine_interface.dart';
 
-class EngineLinux extends EngineInterfaceBase {
+class EngineLinux extends EngineInterface {
   /// Registers the Linux implementation.
   static void registerWith() {
-    EngineInterfaceBase.instance = EngineLinux();
+    EngineInterface.instance = EngineLinux();
   }
 
   @override

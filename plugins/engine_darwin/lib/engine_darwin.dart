@@ -1,9 +1,9 @@
 import 'package:engine_interface/engine_interface.dart';
 
-class EngineDarwin extends EngineInterfaceBase {
+class EngineDarwin extends EngineInterface {
   /// Registers the Darwin implementation.
   static void registerWith() {
-    EngineInterfaceBase.instance = EngineDarwin();
+    EngineInterface.instance = EngineDarwin();
   }
 
   @override

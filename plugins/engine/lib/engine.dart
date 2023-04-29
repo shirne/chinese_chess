@@ -10,7 +10,7 @@ import 'package:engine_interface/engine_interface.dart';
 export 'package:engine_interface/engine_interface.dart';
 
 class Engine {
-  static EngineInterfaceBase get engine => EngineInterfaceBase.instance;
+  static EngineInterface get engine => EngineInterface.instance;
 
   List<EngineInfo> getSupportedEngines() {
     return engine.supported;

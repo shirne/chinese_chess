@@ -1,9 +1,9 @@
 import 'package:engine_interface/engine_interface.dart';
 
-class EngineAndroid extends EngineInterfaceBase {
+class EngineAndroid extends EngineInterface {
   /// Registers the Android implementation.
   static void registerWith() {
-    EngineInterfaceBase.instance = EngineAndroid();
+    EngineInterface.instance = EngineAndroid();
   }
 
   @override

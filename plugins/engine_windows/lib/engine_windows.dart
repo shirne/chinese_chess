@@ -1,9 +1,9 @@
 import 'package:engine_interface/engine_interface.dart';
 
-class EngineWindows extends EngineInterfaceBase {
+class EngineWindows extends EngineInterface {
   /// Registers the Windows implementation.
   static void registerWith() {
-    EngineInterfaceBase.instance = EngineWindows();
+    EngineInterface.instance = EngineWindows();
   }
 
   @override

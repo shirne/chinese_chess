@@ -3,5 +3,6 @@
 /// More dartdocs go here.
 library engine_interface;
 
-export 'src/engine_interface_base.dart';
+export 'src/model.dart';
+export 'src/engine_interface.dart';
 
