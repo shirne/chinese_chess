@@ -62,25 +62,23 @@ abstract class EngineInterface extends PlatformInterface {
         dataPath.writeAsBytesSync(data.buffer.asUint8List());
       }
 
+      okCompleter = Completer();
       engineProcess = await Process.start(
         path.path,
         [],
         mode: ProcessStartMode.normal,
       );
 
-      engineProcess.stdout.listen(
-        (event) {
-          engineMessage.add(ascii.decode(event));
-        },
-      );
+      engineProcess.stdout
+          .listen(_onMessage, onError: _onError, onDone: _onDone);
       engineProcess.stdin.writeln(info.type.name);
 
       /// ucci默认启用毫秒制
-      if(info.type == EngineType.ucci){
-        setOption('usemillisec','true');
+      if (info.type == EngineType.ucci) {
+        setOption('usemillisec', 'true');
       }
 
-      return true;
+      return (await okCompleter?.future) ?? false;
     } catch (e) {
       return false;
     }
@@ -88,24 +86,54 @@ abstract class EngineInterface extends PlatformInterface {
 
   late final Process engineProcess;
 
-  late final engineMessage = StreamController<String>.broadcast();
-
-  final _streamTransformer =
-      StreamTransformer<String, EngineMessage>.fromHandlers(
-    handleData: (data, sink) {
-      sink.add(EngineMessage.parse(data));
-    },
-    handleDone: (sink) {},
-    handleError: (error, stackTrace, sink) {},
-  );
+  late final engineMessage = StreamController<EngineMessage>.broadcast();
 
   StreamSubscription<EngineMessage> listen(Function(EngineMessage) listener) {
-    return engineMessage.stream.transform(_streamTransformer).listen(listener);
+    return engineMessage.stream.listen(listener);
   }
 
+  EngineState state = EngineState.uninit;
+
+  Completer<bool>? okCompleter;
   Completer<bool>? readyCompleter;
   Completer<String>? moveCompleter;
   Completer<bool>? stopCompleter;
+  Completer<bool>? quitCompleter;
+
+  void _onMessage(List<int> event) {
+    final eventString = ascii.decode(event);
+    final message = EngineMessage.parse(eventString);
+    if (message.type == MessageType.uciok) {
+      state = EngineState.init;
+      if (okCompleter?.isCompleted ?? true) {
+        okCompleter?.complete(true);
+      }
+    } else if (message.type == MessageType.readyok) {
+      state = EngineState.ready;
+      if (readyCompleter?.isCompleted ?? true) {
+        readyCompleter?.complete(true);
+      }
+    } else if (message.type == MessageType.bestmove) {
+      state = EngineState.idle;
+      if (moveCompleter?.isCompleted ?? true) {
+        moveCompleter?.complete(message.message);
+      }
+    } else if (message.type == MessageType.nobestmove) {
+      state = EngineState.idle;
+      if (stopCompleter?.isCompleted ?? true) {
+        stopCompleter?.complete(true);
+      }
+    } else if (message.type == MessageType.bye) {
+      state = EngineState.quit;
+      if (quitCompleter?.isCompleted ?? true) {
+        quitCompleter?.complete(true);
+      }
+    }
+    engineMessage.add(message);
+  }
+
+  void _onError(err) {}
+  void _onDone() {}
 
   void sendCommand(String cmd) {
     engineProcess.stdin.write(cmd);
@@ -121,14 +149,11 @@ abstract class EngineInterface extends PlatformInterface {
   }
 
   Future<bool> isReady() async {
+    readyCompleter = Completer();
     sendCommand('isready');
 
-    final result = await engineMessage.stream
-        .skipWhile(
-            (e) => e != MessageType.readyok.name && e != MessageType.bye.name)
-        .first;
-
-    return result == MessageType.readyok.name;
+    final isReady = await readyCompleter?.future;
+    return isReady ?? false;
   }
 
   void position(String fen, {List<String>? moves, bool isStart = false}) {
@@ -144,7 +169,7 @@ abstract class EngineInterface extends PlatformInterface {
     sendCommand('banmoves ${moves.join(' ')}');
   }
 
-  void go({
+  Future<String> go({
     bool isPonder = false,
     int? depth,
     int? nodes,
@@ -231,18 +256,33 @@ abstract class EngineInterface extends PlatformInterface {
         command += 'infinite';
       }
     }
+    if (isPonder) {
+      state = EngineState.ponder;
+    } else {
+      state = EngineState.go;
+    }
+    moveCompleter = Completer();
     sendCommand(command);
+    return moveCompleter!.future;
   }
 
   void ponderhit({bool isDraw = false}) {
+    state = EngineState.ponder;
     sendCommand('ponderhit${isDraw ? ' draw' : ''}');
   }
 
-  void stop() {
+  Future<bool> stop() async {
+    stopCompleter = Completer();
     sendCommand('stop');
+    await stopCompleter!.future;
+
+    state = EngineState.idle;
+    return true;
   }
 
-  void quit() {
+  Future<bool> quit() {
+    quitCompleter = Completer();
     sendCommand('quit');
+    return quitCompleter!.future;
   }
 }

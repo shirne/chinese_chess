@@ -9,6 +9,16 @@ enum MessageType {
   unknown,
 }
 
+enum EngineState {
+  uninit,
+  init,
+  ready,
+  idle,
+  ponder,
+  go,
+  quit,
+}
+
 class EngineMessage {
   const EngineMessage({
     required this.type,
