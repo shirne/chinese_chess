@@ -100,15 +100,6 @@ abstract class EngineInterface extends PlatformInterface {
 
   final engineMessage = StreamController<EngineMessage>.broadcast();
 
-  final _streamTransformer =
-      StreamTransformer<String, EngineMessage>.fromHandlers(
-    handleData: (data, sink) {
-      sink.add(EngineMessage.parse(data));
-    },
-    handleDone: (sink) {},
-    handleError: (error, stackTrace, sink) {},
-  );
-
   StreamSubscription<EngineMessage> listen(Function(EngineMessage) listener) {
     return engineMessage.stream.listen(listener);
   }
