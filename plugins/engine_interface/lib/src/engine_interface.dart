@@ -40,14 +40,21 @@ abstract class EngineInterface extends PlatformInterface {
   List<EngineInfo> supported = [];
   String get package;
 
-  late EngineInfo current;
+  EngineInfo? _current;
+  EngineInfo get current => _current!;
+  bool _inited = false;
+  bool get inited => _inited;
 
   Future<bool> initEngine(EngineInfo info) async {
-    if (supported.isEmpty) {
-      return Future.value(false);
+    if (engineProcess != null) {
+      if (info == current) {
+        return true;
+      }
+      stop();
+      quit();
     }
-
     try {
+      _current = info;
       final directory = await getApplicationSupportDirectory();
       final path = File('${directory.path}/engines/${info.path}');
       if (!path.existsSync()) {
@@ -69,24 +76,38 @@ abstract class EngineInterface extends PlatformInterface {
         mode: ProcessStartMode.normal,
       );
 
-      engineProcess.stdout
-          .listen(_onMessage, onError: _onError, onDone: _onDone);
-      engineProcess.stdin.writeln(info.type.name);
+      engineProcess!.stdout.listen(
+        _onMessage,
+        onError: _onError,
+        onDone: _onDone,
+      );
+      engineProcess!.stdin.writeln(info.type.name);
 
       /// ucci默认启用毫秒制
       if (info.type == EngineType.ucci) {
         setOption('usemillisec', 'true');
       }
 
+      _inited = true;
       return (await okCompleter?.future) ?? false;
     } catch (e) {
+      _current = null;
       return false;
     }
   }
 
-  late final Process engineProcess;
+  Process? engineProcess;
 
-  late final engineMessage = StreamController<EngineMessage>.broadcast();
+  final engineMessage = StreamController<EngineMessage>.broadcast();
+
+  final _streamTransformer =
+      StreamTransformer<String, EngineMessage>.fromHandlers(
+    handleData: (data, sink) {
+      sink.add(EngineMessage.parse(data));
+    },
+    handleDone: (sink) {},
+    handleError: (error, stackTrace, sink) {},
+  );
 
   StreamSubscription<EngineMessage> listen(Function(EngineMessage) listener) {
     return engineMessage.stream.listen(listener);
@@ -136,7 +157,7 @@ abstract class EngineInterface extends PlatformInterface {
   void _onDone() {}
 
   void sendCommand(String cmd) {
-    engineProcess.stdin.write(cmd);
+    engineProcess?.stdin.write(cmd);
   }
 
   void setOption(String name, [String? value]) {

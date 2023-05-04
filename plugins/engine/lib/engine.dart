@@ -16,8 +16,18 @@ class Engine {
     return engine.supported;
   }
 
-  Future<bool> init(EngineInfo info) async {
+  Future<bool> init([EngineInfo? info]) async {
+    if(info==null && engine.supported.isEmpty){
+      throw const NotSupportedException();
+    }
+    info ??= engine.supported.first;
     final result = await engine.initEngine(info);
     return result;
   }
+}
+
+
+class NotSupportedException implements Exception{
+  final String message;
+  const NotSupportedException([this.message='unsupported platform']);
 }
