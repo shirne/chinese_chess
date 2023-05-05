@@ -28,6 +28,8 @@ dependencies:
 
   cchess: 0.0.4
   cchess_engine: 0.0.1
+  engine:
+    path: plugins/engine
   
   intl:
   cupertino_icons:

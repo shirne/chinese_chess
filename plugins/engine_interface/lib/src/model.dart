@@ -1,5 +1,6 @@
 enum MessageType {
   id,
+  option,
   uciok,
   readyok,
   info,
@@ -38,6 +39,9 @@ class EngineMessage {
       case 'ucciok':
       case 'uciok':
         type = MessageType.uciok;
+        break;
+      case 'option':
+        type = MessageType.option;
         break;
       case 'readyok':
         type = MessageType.readyok;

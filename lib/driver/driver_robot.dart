@@ -4,13 +4,12 @@ import 'dart:math';
 
 import 'package:cchess/cchess.dart';
 import 'package:cchess_engine/cchess_engine.dart';
+import 'package:engine/engine.dart';
 import 'package:flutter/foundation.dart';
 
 import '../global.dart';
-import '../models/engine_type.dart';
 import '../models/game_event.dart';
 import '../models/game_setting.dart';
-import '../models/engine.dart';
 import '../models/player.dart';
 
 import 'player_driver.dart';
@@ -32,8 +31,7 @@ class DriverRobot extends PlayerDriver {
 
     // 网页版用不了引擎
     Future.delayed(const Duration(seconds: 1)).then((value) {
-      if (Engine.isSupportEngine &&
-          player.manager.setting.robotType == EngineType.elephantEye) {
+      if (player.manager.engineOK) {
         getMoveFromEngine();
       } else {
         // getMove();
@@ -47,8 +45,9 @@ class DriverRobot extends PlayerDriver {
   Future<void> getMoveFromEngine() async {
     player.manager.startEngine().then((v) {
       if (v) {
-        player.manager.engine!
-            .requestMove(player.manager.fenStr, depth: 10)
+        player.manager.engine
+            ..position(player.manager.fenStr)
+            ..go(depth: 10)
             .then(onEngineMessage);
       } else {
         getMove();
@@ -68,7 +67,6 @@ class DriverRobot extends PlayerDriver {
           return;
         }
         if (!requestMove.isCompleted) {
-          player.manager.engine!.removeListener(onEngineMessage);
           getMove();
         }
         break;
@@ -77,7 +75,6 @@ class DriverRobot extends PlayerDriver {
           isCleared = true;
           return;
         }
-        player.manager.engine!.removeListener(onEngineMessage);
         completeMove(parts[1]);
         break;
       case 'info':
@@ -91,7 +88,7 @@ class DriverRobot extends PlayerDriver {
 
   Future<void> getBuiltInMove() async {
     GameSetting setting = await GameSetting.getInstance();
-    XQIsoSearch.level = setting.robotLevel;
+    XQIsoSearch.level = setting.engineLevel;
 
     if (kIsWeb) {
       completeMove(

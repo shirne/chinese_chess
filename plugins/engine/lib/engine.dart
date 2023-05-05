@@ -5,12 +5,16 @@
 // platforms in the `pubspec.yaml` at
 // https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin-platforms.
 
+import 'dart:async';
+
 import 'package:engine_interface/engine_interface.dart';
 
 export 'package:engine_interface/engine_interface.dart';
 
 class Engine {
   static EngineInterface get engine => EngineInterface.instance;
+
+  bool get started => engine.inited;
 
   List<EngineInfo> getSupportedEngines() {
     return engine.supported;
@@ -25,8 +29,34 @@ class Engine {
     return result;
   }
 
+  StreamSubscription<EngineMessage> listen(Function(EngineMessage) listener) {
+    return engine.listen(listener);
+  }
+
   Future<bool> isReady() {
     return engine.isReady();
+  }
+
+  Future<String> requestMove(
+    String fen, {
+    bool isDraw = false,
+    bool isPonder = false,
+    int time = 0,
+    int increment = 0,
+    String type = '',
+    int depth = 0,
+    int nodes = 0,
+  }) async {
+    await stop();
+    position(fen);
+    return await go(
+      time: time,
+      increment: increment,
+      isDraw: isDraw,
+      isPonder: isPonder,
+      depth: depth,
+      nodes: nodes,
+    );
   }
 
   void position(String fen, {List<String>? moves, bool isStart = false}) {

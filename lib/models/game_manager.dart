@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cchess/cchess.dart';
-import 'package:chinese_chess/models/engine_type.dart';
+import 'package:engine/engine.dart';
 import 'package:fast_gbk/fast_gbk.dart';
 
 import '../driver/player_driver.dart';
@@ -11,7 +11,6 @@ import 'chess_skin.dart';
 import 'game_event.dart';
 import 'game_setting.dart';
 import 'sound.dart';
-import 'engine.dart';
 import 'player.dart';
 
 class GameManager {
@@ -22,7 +21,8 @@ class GameManager {
   late ChessManual manual;
 
   // 算法引擎
-  Engine? engine;
+  Engine engine = Engine();
+  StreamSubscription<EngineMessage>? listener;
   bool engineOK = false;
 
   // 是否重新请求招法时的强制stop
@@ -95,6 +95,8 @@ class GameManager {
       add(GameLoadEvent(0));
     });
 
+    listener = engine.listen(parseMessage);
+
     return true;
   }
 
@@ -148,35 +150,35 @@ class GameManager {
   /// not last but current
   String get lastMove => manual.currentMove?.move ?? '';
 
-  void parseMessage(String message) {
-    List<String> parts = message.split(' ');
-    String instruct = parts.removeAt(0);
-    switch (instruct) {
-      case 'ucciok':
+  void parseMessage(EngineMessage message) {
+    String tMessage = message.message;
+    switch (message.type) {
+      case MessageType.uciok:
+      case MessageType.readyok:
         engineOK = true;
         add(GameEngineEvent('Engine is OK!'));
         break;
-      case 'nobestmove':
+      case MessageType.nobestmove:
         // 强行stop后的nobestmove忽略
         if (isStop) {
           isStop = false;
           return;
         }
         break;
-      case 'bestmove':
+      case MessageType.bestmove:
         logger.info(message);
-        message = parseBaseMove(parts);
+        tMessage = parseBaseMove(tMessage.split(' '));
         break;
-      case 'info':
+      case MessageType.info:
         logger.info(message);
-        message = parseInfo(parts);
+        tMessage = parseInfo(tMessage.split(' '));
         break;
-      case 'id':
-      case 'option':
+      case MessageType.id:
+      case MessageType.option:
       default:
         return;
     }
-    add(GameEngineEvent(message));
+    add(GameEngineEvent(tMessage));
   }
 
   String parseBaseMove(List<String> infos) {
@@ -217,7 +219,7 @@ class GameManager {
   void stop() {
     add(GameLoadEvent(-1));
     isStop = true;
-    engine?.stop();
+    engine.stop();
     //currentStep = 0;
 
     add(GameLockEvent(true));
@@ -250,7 +252,7 @@ class GameManager {
 
   bool _loadPGN(String pgn) {
     isStop = true;
-    engine?.stop();
+    engine.stop();
 
     String content = '';
     if (!pgn.contains('\n')) {
@@ -477,11 +479,8 @@ class GameManager {
   }
 
   void dispose() {
-    if (engine != null) {
-      engine?.stop();
-      engine?.quit();
-      engine = null;
-    }
+    engine.stop();
+    engine.quit();
   }
 
   void switchPlayer() {
@@ -499,38 +498,22 @@ class GameManager {
   }
 
   Future<bool> startEngine() {
-    if (engine != null) {
-      return Future.value(true);
-    }
-    Completer<bool> engineFuture = Completer<bool>();
-    engine = Engine(EngineType.pikafish);
-    engineOK = false;
-    engine?.init().then((Process? v) {
-      engineOK = true;
-      engine?.addListener(parseMessage);
-      engineFuture.complete(true);
-    });
-    return engineFuture.future;
+    return engine.init();
   }
 
   void requestHelp() {
-    if (engine == null) {
-      startEngine().then((v) {
-        if (v) {
+    if (engine.started) {
+      isStop = true;
+      engine.stop();
+      engine.position(fenStr);
+      engine.go(depth: 10);
+    } else {
+      engine.init().then((value) {
+        if(value){
           requestHelp();
-        } else {
-          logger.info('engine is not support');
         }
       });
-    } else {
-      if (engineOK) {
-        isStop = true;
-        engine?.stop();
-        engine?.position(fenStr);
-        engine?.go(depth: 10);
-      } else {
-        logger.info('engine is not ok');
-      }
+      logger.info('engine is not started');
     }
   }
 
