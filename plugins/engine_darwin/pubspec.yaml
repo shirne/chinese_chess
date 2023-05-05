@@ -6,7 +6,7 @@ homepage:
 publish_to: none
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.17.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -26,7 +26,7 @@ dev_dependencies:
 flutter:
 
   plugin:
-    implements: engine_interface
+    implements: engine
     platforms:
       ios:
         dartPluginClass: EngineDarwin

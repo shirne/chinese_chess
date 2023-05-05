@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'logger.dart';
 import 'model.dart';
 
 class _NotSupportedEngine extends EngineInterface {
@@ -58,16 +59,24 @@ abstract class EngineInterface extends PlatformInterface {
       final directory = await getApplicationSupportDirectory();
       final path = File('${directory.path}/engines/${info.path}');
       if (!path.existsSync()) {
+        if (!path.parent.existsSync()) {
+          path.parent.createSync(recursive: true);
+        }
         final data = await rootBundle
             .load('packages/$package/assets/engines/${info.path}');
         path.writeAsBytesSync(data.buffer.asUint8List());
       }
       final dataPath = File('${directory.path}/engines/${info.data}');
       if (!dataPath.existsSync()) {
+        if (!dataPath.parent.existsSync()) {
+          dataPath.parent.createSync(recursive: true);
+        }
         final data = await rootBundle
             .load('packages/$package/assets/engines/${info.data}');
         dataPath.writeAsBytesSync(data.buffer.asUint8List());
       }
+      logger.fine('path: $path');
+      logger.fine('dataPath: $dataPath');
 
       okCompleter = Completer();
       engineProcess = await Process.start(
@@ -83,14 +92,16 @@ abstract class EngineInterface extends PlatformInterface {
       );
       engineProcess!.stdin.writeln(info.type.name);
 
+      _inited = (await okCompleter?.future) ?? false;
+
       /// ucci默认启用毫秒制
       if (info.type == EngineType.ucci) {
         setOption('usemillisec', 'true');
       }
 
-      _inited = true;
-      return (await okCompleter?.future) ?? false;
+      return _inited;
     } catch (e) {
+      logger.warning('$e', e);
       _current = null;
       return false;
     }
@@ -113,42 +124,47 @@ abstract class EngineInterface extends PlatformInterface {
   Completer<bool>? quitCompleter;
 
   void _onMessage(List<int> event) {
-    final eventString = ascii.decode(event);
-    final message = EngineMessage.parse(eventString);
-    if (message.type == MessageType.uciok) {
-      state = EngineState.init;
-      if (okCompleter?.isCompleted ?? true) {
-        okCompleter?.complete(true);
+    final events = ascii.decode(event).trim().split(RegExp(r'[\r\n]+'));
+    for (var estr in events) {
+      if (estr.trim().isEmpty) continue;
+      logger.fine('engine message: $estr');
+      final message = EngineMessage.parse(estr.trim());
+      if (message.type == MessageType.uciok) {
+        state = EngineState.init;
+        if (okCompleter?.isCompleted ?? true) {
+          okCompleter?.complete(true);
+        }
+      } else if (message.type == MessageType.readyok) {
+        state = EngineState.ready;
+        if (readyCompleter?.isCompleted ?? true) {
+          readyCompleter?.complete(true);
+        }
+      } else if (message.type == MessageType.bestmove) {
+        state = EngineState.idle;
+        if (moveCompleter?.isCompleted ?? true) {
+          moveCompleter?.complete(message.message);
+        }
+      } else if (message.type == MessageType.nobestmove) {
+        state = EngineState.idle;
+        if (stopCompleter?.isCompleted ?? true) {
+          stopCompleter?.complete(true);
+        }
+      } else if (message.type == MessageType.bye) {
+        state = EngineState.quit;
+        if (quitCompleter?.isCompleted ?? true) {
+          quitCompleter?.complete(true);
+        }
       }
-    } else if (message.type == MessageType.readyok) {
-      state = EngineState.ready;
-      if (readyCompleter?.isCompleted ?? true) {
-        readyCompleter?.complete(true);
-      }
-    } else if (message.type == MessageType.bestmove) {
-      state = EngineState.idle;
-      if (moveCompleter?.isCompleted ?? true) {
-        moveCompleter?.complete(message.message);
-      }
-    } else if (message.type == MessageType.nobestmove) {
-      state = EngineState.idle;
-      if (stopCompleter?.isCompleted ?? true) {
-        stopCompleter?.complete(true);
-      }
-    } else if (message.type == MessageType.bye) {
-      state = EngineState.quit;
-      if (quitCompleter?.isCompleted ?? true) {
-        quitCompleter?.complete(true);
-      }
+      engineMessage.add(message);
     }
-    engineMessage.add(message);
   }
 
   void _onError(err) {}
   void _onDone() {}
 
   void sendCommand(String cmd) {
-    engineProcess?.stdin.write(cmd);
+    logger.fine('send command: $cmd');
+    engineProcess?.stdin.writeln(cmd);
   }
 
   void setOption(String name, [String? value]) {

@@ -30,7 +30,7 @@ class EngineMessage {
 
   factory EngineMessage.parse(String message) {
     int firstBlank = message.indexOf(' ');
-    final typeStr = firstBlank > 0 ? '' : message.substring(0, firstBlank);
+    final typeStr = firstBlank > 0 ? message.substring(0, firstBlank) : message;
     MessageType type;
     switch (typeStr) {
       case 'id':

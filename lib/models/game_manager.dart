@@ -167,11 +167,11 @@ class GameManager {
         break;
       case MessageType.bestmove:
         logger.info(message);
-        tMessage = parseBaseMove(tMessage.split(' '));
+        tMessage = parseBaseMove(tMessage.trim().split(' '));
         break;
       case MessageType.info:
         logger.info(message);
-        tMessage = parseInfo(tMessage.split(' '));
+        tMessage = parseInfo(tMessage.trim().split(' '));
         break;
       case MessageType.id:
       case MessageType.option:
@@ -182,15 +182,18 @@ class GameManager {
   }
 
   String parseBaseMove(List<String> infos) {
+    if (infos.isEmpty) {
+      return '';
+    }
     return "推荐着法: ${fen.toChineseString(infos[0])}"
-        "${infos.length > 2 ? ' 猜测对方: ${fen.toChineseString(infos[2])}' : ''}";
+        "${infos.length > 2 ? ' 对方应招: ${fen.toChineseString(infos[2])}' : ''}";
   }
 
   String parseInfo(List<String> infos) {
     String first = infos.removeAt(0);
     switch (first) {
       case 'depth':
-        String msg = infos[0];
+        String msg = infos.removeAt(0);
         if (infos.isNotEmpty) {
           String sub = infos.removeAt(0);
           while (sub.isNotEmpty) {
@@ -509,7 +512,7 @@ class GameManager {
       engine.go(depth: 10);
     } else {
       engine.init().then((value) {
-        if(value){
+        if (value) {
           requestHelp();
         }
       });

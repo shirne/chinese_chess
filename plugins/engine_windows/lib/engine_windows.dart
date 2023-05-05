@@ -11,11 +11,13 @@ class EngineWindows extends EngineInterface {
         const EngineInfo(
           type: EngineType.ucci,
           name: 'eleeye',
+          path: 'eleeye/eleeye.exe',
           data: 'eleeye/BOOK.DAT',
         ),
         const EngineInfo(
           type: EngineType.uci,
           name: 'pikafish',
+          path: 'pikafish/pikafish.exe',
           data: 'pikafish.nnue',
         ),
       ];
