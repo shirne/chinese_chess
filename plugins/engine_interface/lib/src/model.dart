@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 enum MessageType {
   id,
   option,
@@ -78,6 +80,16 @@ class EngineMessage {
   final List<String> moves;
   final String message;
   final String origin;
+
+  Map<String, dynamic> toJson() => {
+        'type': type.name,
+        'moves': moves,
+        'message': message,
+        'origin': origin,
+      };
+
+  @override
+  String toString() => jsonEncode(toJson());
 }
 
 enum EngineType {

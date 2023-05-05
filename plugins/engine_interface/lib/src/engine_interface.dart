@@ -64,7 +64,18 @@ abstract class EngineInterface extends PlatformInterface {
         }
         final data = await rootBundle
             .load('packages/$package/assets/engines/${info.path}');
-        path.writeAsBytesSync(data.buffer.asUint8List());
+        path.writeAsBytesSync(data.buffer.asUint8List(), flush: true);
+
+        // TODO(shirne) how to set +x?
+        if (Platform.isLinux) {
+          final process = await Process.start(
+            'chmod',
+            ['+x'],
+            runInShell: true,
+            mode: ProcessStartMode.normal,
+          );
+          process.kill();
+        }
       }
       final dataPath = File('${directory.path}/engines/${info.data}');
       if (!dataPath.existsSync()) {
@@ -73,10 +84,11 @@ abstract class EngineInterface extends PlatformInterface {
         }
         final data = await rootBundle
             .load('packages/$package/assets/engines/${info.data}');
-        dataPath.writeAsBytesSync(data.buffer.asUint8List());
+        dataPath.writeAsBytesSync(data.buffer.asUint8List(), flush: true);
       }
       logger.fine('path: $path');
       logger.fine('dataPath: $dataPath');
+      logger.fine(path.statSync());
 
       okCompleter = Completer();
       engineProcess = await Process.start(
