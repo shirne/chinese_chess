@@ -166,11 +166,9 @@ class GameManager {
         }
         break;
       case MessageType.bestmove:
-        logger.info(message);
         tMessage = parseBaseMove(tMessage.trim().split(' '));
         break;
       case MessageType.info:
-        logger.info(message);
         tMessage = parseInfo(tMessage.trim().split(' '));
         break;
       case MessageType.id:

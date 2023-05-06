@@ -66,15 +66,19 @@ abstract class EngineInterface extends PlatformInterface {
             .load('packages/$package/assets/engines/${info.path}');
         path.writeAsBytesSync(data.buffer.asUint8List(), flush: true);
 
-        // TODO(shirne) how to set +x?
+        // add +x for exe file
         if (Platform.isLinux) {
-          final process = await Process.start(
+          final result = await Process.run(
             'chmod',
-            ['+x'],
+            ['+x', info.name],
             runInShell: true,
-            mode: ProcessStartMode.normal,
+            workingDirectory: path.parent.path,
           );
-          process.kill();
+          if(result.exitCode!=0){
+            logger.warning(result.stderr);
+          }else{
+            logger.fine(result.stdout);
+          }
         }
       }
       final dataPath = File('${directory.path}/engines/${info.data}');
@@ -86,9 +90,6 @@ abstract class EngineInterface extends PlatformInterface {
             .load('packages/$package/assets/engines/${info.data}');
         dataPath.writeAsBytesSync(data.buffer.asUint8List(), flush: true);
       }
-      logger.fine('path: $path');
-      logger.fine('dataPath: $dataPath');
-      logger.fine(path.statSync());
 
       okCompleter = Completer();
       engineProcess = await Process.start(
