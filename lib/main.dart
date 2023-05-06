@@ -28,22 +28,55 @@ void main() async {
       await windowManager.show();
       await windowManager.focus();
     });
-    windowManager.addListener(MainWindowListener());
   }
   final gamer = GameManager();
   await gamer.init();
   runApp(const MainApp());
 }
 
-class MainWindowListener extends WindowListener {
+class MainApp extends StatefulWidget {
+  const MainApp({Key? key}) : super(key: key);
+
   @override
-  void onWindowClose() {
-    GameManager.instance.engine?.dispose();
-  }
+  State<MainApp> createState() => _MainAppState();
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
+class _MainAppState extends State<MainApp> with WindowListener {
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+    windowManager.setPreventClose(true).then((v) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowClose() async {
+    bool isPreventClose = await windowManager.isPreventClose();
+    if (isPreventClose && context.mounted) {
+      final ctx = MyDialog.navigatorKey.currentContext!;
+      final sure = await MyDialog.confirm(
+        ctx.l10n.exitNow,
+        buttonText: ctx.l10n.yesExit,
+        cancelText: ctx.l10n.dontExit,
+      );
+
+      if (sure ?? false) {
+        GameManager.instance.dispose();
+        await windowManager.destroy();
+      }
+    }
+  }
+
+  @override
+  void onWindowFocus() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {

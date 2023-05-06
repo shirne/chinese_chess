@@ -29,12 +29,6 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
   @override
   void initState() {
     super.initState();
-    if (widget.isMain) {
-      if (!kIsWeb &&
-          (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
-        windowManager.addListener(this);
-      }
-    }
   }
 
   @override
@@ -48,27 +42,7 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
   @override
   void onWindowClose() {
     logger.info('gamer destroy');
-    windowManager.removeListener(this);
     gamer.dispose();
-    GameManager.instance.engine?.dispose();
-  }
-
-  Future<bool> _willPop() async {
-    logger.info('onwillpop');
-    final sure = await MyDialog.confirm(
-      context.l10n.exitNow,
-      buttonText: context.l10n.yesExit,
-      cancelText: context.l10n.dontExit,
-    );
-
-    if (sure ?? false) {
-      logger.info('gamer destroy');
-      gamer.dispose();
-      //gamer = null;
-      await Future.delayed(const Duration(milliseconds: 200));
-      return true;
-    }
-    return false;
   }
 
   @override
@@ -79,9 +53,6 @@ class GameWrapperState extends State<GameWrapper> with WindowListener {
     } else {
       gamer.scale = 1;
     }
-    return WillPopScope(
-      onWillPop: widget.isMain ? _willPop : null,
-      child: widget.child,
-    );
+    return widget.child;
   }
 }
