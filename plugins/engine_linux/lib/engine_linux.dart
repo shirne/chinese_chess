@@ -19,6 +19,10 @@ class EngineLinux extends EngineInterface {
           data: 'pikafish.nnue',
         ),
       ];
+      
   @override
   String get package => 'engine_linux';
+
+  @override
+  EngineInterface create() => EngineLinux();
 }

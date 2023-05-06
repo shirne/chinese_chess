@@ -25,6 +25,7 @@ class Engine {
       throw const NotSupportedException();
     }
     info ??= engine.supported.first;
+
     final result = await engine.initEngine(info);
     return result;
   }
@@ -39,6 +40,7 @@ class Engine {
 
   Future<String> requestMove(
     String fen, {
+    List<String>? moves,
     bool isDraw = false,
     bool isPonder = false,
     int time = 0,
@@ -48,7 +50,7 @@ class Engine {
     int nodes = 0,
   }) async {
     await stop();
-    position(fen);
+    position(fen, moves: moves);
     return await go(
       time: time,
       increment: increment,

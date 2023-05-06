@@ -16,6 +16,7 @@ class PlayPage extends StatefulWidget {
   final PlayMode mode;
 
   const PlayPage({Key? key, required this.mode}) : super(key: key);
+  
   @override
   State<StatefulWidget> createState() => PlayPageState();
 }
@@ -27,6 +28,7 @@ class PlayPageState extends State<PlayPage> {
   @override
   void initState() {
     super.initState();
+    initGame();
   }
 
   void initGame() async {
@@ -46,7 +48,6 @@ class PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    initGame();
     return MediaQuery.of(context).size.width < 980
         ? _mobileContainer()
         : _windowContainer();

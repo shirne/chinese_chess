@@ -8,4 +8,7 @@ class EngineDarwin extends EngineInterface {
 
   @override
   String get package => 'engine_darwin';
+
+  @override
+  EngineInterface create() => EngineDarwin();
 }

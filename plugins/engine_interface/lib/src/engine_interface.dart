@@ -12,6 +12,9 @@ import 'model.dart';
 class _NotSupportedEngine extends EngineInterface {
   @override
   String get package => 'engine_interface';
+
+  @override
+  EngineInterface create() => _NotSupportedEngine();
 }
 
 /// An EngineInterfaceBase.
@@ -41,20 +44,32 @@ abstract class EngineInterface extends PlatformInterface {
   List<EngineInfo> supported = [];
   String get package;
 
+  EngineInterface create();
+
   EngineInfo? _current;
   EngineInfo get current => _current!;
   bool _inited = false;
   bool get inited => _inited;
 
+  Completer<bool>? initLock;
+
   Future<bool> initEngine(EngineInfo info) async {
+    logger.fine('initEngine: $info');
     if (engineProcess != null) {
       if (info == current) {
         return true;
       }
-      stop();
-      quit();
+      await stop();
+      await quit();
+      initLock = null;
     }
+    if (await initLock?.future ?? false) {
+      return _inited;
+    }
+
     try {
+      initLock = Completer();
+      _inited = false;
       _current = info;
       final directory = await getApplicationSupportDirectory();
       final path = File('${directory.path}/engines/${info.path}');
@@ -74,9 +89,9 @@ abstract class EngineInterface extends PlatformInterface {
             runInShell: true,
             workingDirectory: path.parent.path,
           );
-          if(result.exitCode!=0){
+          if (result.exitCode != 0) {
             logger.warning(result.stderr);
-          }else{
+          } else {
             logger.fine(result.stdout);
           }
         }
@@ -108,14 +123,15 @@ abstract class EngineInterface extends PlatformInterface {
       _inited = (await okCompleter?.future) ?? false;
 
       /// ucci默认启用毫秒制
-      if (info.type == EngineType.ucci) {
+      if (_inited && info.type == EngineType.ucci) {
         setOption('usemillisec', 'true');
       }
-
+      initLock?.complete(_inited);
       return _inited;
     } catch (e) {
       logger.warning('$e', e);
       _current = null;
+      initLock?.complete(false);
       return false;
     }
   }
@@ -202,7 +218,7 @@ abstract class EngineInterface extends PlatformInterface {
     if (moves != null && moves.isNotEmpty) {
       command += ' moves ${moves.join(' ')}';
     }
-    sendCommand(command);
+    sendCommand('position $command');
   }
 
   /// ucci

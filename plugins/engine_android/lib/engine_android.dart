@@ -8,4 +8,7 @@ class EngineAndroid extends EngineInterface {
 
   @override
   String get package => 'engine_android';
+
+  @override
+  EngineInterface create() => EngineAndroid();
 }

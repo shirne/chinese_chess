@@ -109,4 +109,14 @@ class EngineInfo {
   final String name;
   final String path;
   final String data;
+
+  Map<String, dynamic> toJson() => {
+        'type': type.name,
+        'name': name,
+        'path': path,
+        'data': data,
+      };
+
+  @override
+  String toString() => jsonEncode(toJson());
 }

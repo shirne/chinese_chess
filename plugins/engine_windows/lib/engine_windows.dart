@@ -24,4 +24,7 @@ class EngineWindows extends EngineInterface {
 
   @override
   String get package => 'engine_windows';
+
+  @override
+  EngineInterface create() => EngineWindows();
 }

@@ -272,7 +272,6 @@ class GameManager {
     add(GameLoadEvent(0));
     // 加载步数
     if (manual.moveCount > 0) {
-      // print(manual.moves);
       add(
         GameStepEvent(
           manual.moves.map<String>((e) => e.toChineseString()).join('\n'),
@@ -502,19 +501,18 @@ class GameManager {
     return engine.init();
   }
 
-  void requestHelp() {
+  void requestHelp() async {
     if (engine.started) {
       isStop = true;
-      engine.stop();
+      await engine.stop();
       engine.position(fenStr);
-      engine.go(depth: 10);
+      await engine.go(depth: 10);
     } else {
-      engine.init().then((value) {
-        if (value) {
-          requestHelp();
-        }
-      });
       logger.info('engine is not started');
+      final inited = await engine.init();
+      if (inited) {
+        requestHelp();
+      }
     }
   }
 
