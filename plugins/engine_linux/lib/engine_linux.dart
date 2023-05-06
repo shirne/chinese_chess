@@ -16,7 +16,7 @@ class EngineLinux extends EngineInterface {
         const EngineInfo(
           type: EngineType.uci,
           name: 'pikafish',
-          data: 'pikafish.nnue',
+          data: 'pikafish/pikafish.nnue',
         ),
       ];
       

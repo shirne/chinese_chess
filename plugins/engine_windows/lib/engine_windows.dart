@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:engine_interface/engine_interface.dart';
 
 class EngineWindows extends EngineInterface {
@@ -11,14 +13,14 @@ class EngineWindows extends EngineInterface {
         const EngineInfo(
           type: EngineType.ucci,
           name: 'eleeye',
-          path: 'eleeye/eleeye.exe',
-          data: 'eleeye/BOOK.DAT',
+          path: r'eleeye\eleeye.exe',
+          data: r'eleeye\BOOK.DAT',
         ),
         const EngineInfo(
           type: EngineType.uci,
           name: 'pikafish',
-          path: 'pikafish/pikafish.exe',
-          data: 'pikafish.nnue',
+          path: r'pikafish\pikafish.exe',
+          data: r'pikafish\pikafish.nnue',
         ),
       ];
 
