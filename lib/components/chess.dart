@@ -159,35 +159,43 @@ class ChessState extends State<Chess> {
 
   /// 从外部过来的指令
   void onMove(GameEvent event) {
-    String move = event.data!;
-    logger.info('onmove $move');
-    if (move.isEmpty) return;
-    if (move == PlayerDriver.rstGiveUp) return;
-    if (move.contains(PlayerDriver.rstRqstDraw)) {
-      toast(
-        context.l10n.requestDraw,
-        SnackBarAction(
-          label: context.l10n.agreeToDraw,
-          onPressed: () {
-            gamer.player.completeMove(PlayerDriver.rstDraw);
-          },
-        ),
-        5,
-      );
-      move = move.replaceAll(PlayerDriver.rstRqstDraw, '').trim();
-      if (move.isEmpty) {
-        return;
+    PlayerAction action = event.data!;
+    logger.info('onmove $action');
+    String? move = action.move;
+    if (action.type != PlayerActionType.rstMove) {
+      if (action.type == PlayerActionType.rstGiveUp) return;
+      if (action.type == PlayerActionType.rstRqstDraw) {
+        toast(
+          context.l10n.requestDraw,
+          SnackBarAction(
+            label: context.l10n.agreeToDraw,
+            onPressed: () {
+              gamer.player.completeMove(
+                PlayerAction(type: PlayerActionType.rstDraw),
+              );
+            },
+          ),
+          5,
+        );
+      }
+      if (action.type == PlayerActionType.rstRqstRetract) {
+        confirm(
+          context.l10n.requestRetract,
+          context.l10n.agreeRetract,
+          context.l10n.disagreeRetract,
+        ).then((bool? isAgree) {
+          gamer.player.completeMove(
+            PlayerAction(
+              type: isAgree == true
+                  ? PlayerActionType.rstRetract
+                  : PlayerActionType.rjctRetract,
+            ),
+          );
+        });
       }
     }
-    if (move == PlayerDriver.rstRqstRetract) {
-      confirm(
-        context.l10n.requestRetract,
-        context.l10n.agreeRetract,
-        context.l10n.disagreeRetract,
-      ).then((bool? isAgree) {
-        gamer.player
-            .completeMove(isAgree == true ? PlayerDriver.rstRetract : '');
-      });
+
+    if (move == null || move.isEmpty) {
       return;
     }
 
@@ -283,6 +291,7 @@ class ChessState extends State<Chess> {
     );
 
     int ticker = DateTime.now().millisecondsSinceEpoch;
+    // 走子
     if (newActive.isBlank) {
       if (activeItem != null && activeItem!.team == gamer.curHand) {
         String activePos = activeItem!.position.toCode();
@@ -315,9 +324,9 @@ class ChessState extends State<Chess> {
       return false;
     }
 
-    // 置空当前选中状态
     if (activeItem != null && activeItem!.position == toPosition) {
       Sound.play(Sound.click);
+      // 放下
       setState(() {
         activeItem = null;
         lastPosition = '';
@@ -433,7 +442,6 @@ class ChessState extends State<Chess> {
 
   @override
   Widget build(BuildContext context) {
-    initGamer();
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(),

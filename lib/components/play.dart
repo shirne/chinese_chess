@@ -16,7 +16,7 @@ class PlayPage extends StatefulWidget {
   final PlayMode mode;
 
   const PlayPage({Key? key, required this.mode}) : super(key: key);
-  
+
   @override
   State<StatefulWidget> createState() => PlayPageState();
 }
@@ -34,11 +34,10 @@ class PlayPageState extends State<PlayPage> {
   void initGame() async {
     if (inited) return;
     inited = true;
-    gamer.newGame();
     if (widget.mode == PlayMode.modeRobot) {
       gamer.switchDriver(1, DriverType.robot);
     }
-    gamer.next();
+    gamer.newGame();
   }
 
   @override

@@ -156,31 +156,32 @@ abstract class EngineInterface extends PlatformInterface {
     final events = ascii.decode(event).trim().split(RegExp(r'[\r\n]+'));
     for (var estr in events) {
       if (estr.trim().isEmpty) continue;
-      logger.fine('engine message: $estr');
+      logger.fine('engine($hashCode) message: $estr');
       final message = EngineMessage.parse(estr.trim());
       if (message.type == MessageType.uciok) {
         state = EngineState.init;
-        if (okCompleter?.isCompleted ?? true) {
+        if (okCompleter != null && !okCompleter!.isCompleted) {
           okCompleter?.complete(true);
         }
       } else if (message.type == MessageType.readyok) {
         state = EngineState.ready;
-        if (readyCompleter?.isCompleted ?? true) {
+        if (readyCompleter != null && !readyCompleter!.isCompleted) {
           readyCompleter?.complete(true);
         }
       } else if (message.type == MessageType.bestmove) {
         state = EngineState.idle;
-        if (moveCompleter?.isCompleted ?? true) {
-          moveCompleter?.complete(message.message);
+        if (moveCompleter != null && !moveCompleter!.isCompleted) {
+          moveCompleter?.complete(message.moves[0]);
         }
       } else if (message.type == MessageType.nobestmove) {
         state = EngineState.idle;
-        if (stopCompleter?.isCompleted ?? true) {
+        moveCompleter = null;
+        if (stopCompleter != null && !stopCompleter!.isCompleted) {
           stopCompleter?.complete(true);
         }
       } else if (message.type == MessageType.bye) {
         state = EngineState.quit;
-        if (quitCompleter?.isCompleted ?? true) {
+        if (quitCompleter != null && !quitCompleter!.isCompleted) {
           quitCompleter?.complete(true);
         }
       }
@@ -192,7 +193,7 @@ abstract class EngineInterface extends PlatformInterface {
   void _onDone() {}
 
   void sendCommand(String cmd) {
-    logger.fine('send command: $cmd');
+    logger.fine('send command($hashCode): $cmd');
     engineProcess?.stdin.writeln(cmd);
   }
 
@@ -329,8 +330,10 @@ abstract class EngineInterface extends PlatformInterface {
   }
 
   Future<bool> stop() async {
-    stopCompleter = Completer();
-    sendCommand('stop');
+    if (stopCompleter == null || stopCompleter!.isCompleted) {
+      stopCompleter = Completer();
+      sendCommand('stop');
+    }
     await stopCompleter!.future;
 
     state = EngineState.idle;
@@ -338,8 +341,10 @@ abstract class EngineInterface extends PlatformInterface {
   }
 
   Future<bool> quit() {
-    quitCompleter = Completer();
-    sendCommand('quit');
+    if (quitCompleter == null || quitCompleter!.isCompleted) {
+      quitCompleter = Completer();
+      sendCommand('quit');
+    }
     return quitCompleter!.future;
   }
 }

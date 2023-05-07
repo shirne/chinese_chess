@@ -33,6 +33,7 @@ class _GameBoardState extends State<GameBoard> {
   @override
   void initState() {
     super.initState();
+    gamer.init();
   }
 
   Widget selectMode() {
@@ -213,7 +214,6 @@ class _GameBoardState extends State<GameBoard> {
                     });
                   }
                   gamer.newGame();
-                  //mode = null;
                 });
               },
             ),
@@ -340,7 +340,9 @@ class _GameBoardState extends State<GameBoard> {
     if (context.mounted && result != null) {
       List<int> fData = gbk.encode(content);
       await File('$result/$filename').writeAsBytes(fData);
-      MyDialog.toast(context.l10n.saveSuccess);
+      if (context.mounted) {
+        MyDialog.toast(context.l10n.saveSuccess);
+      }
     }
   }
 

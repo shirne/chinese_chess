@@ -26,8 +26,12 @@ class Engine {
     }
     info ??= engine.supported.first;
 
-    final result = await engine.initEngine(info);
-    return result;
+    try {
+      final result = await engine.initEngine(info);
+      return result;
+    } catch (_) {}
+
+    return false;
   }
 
   StreamSubscription<EngineMessage> listen(Function(EngineMessage) listener) {

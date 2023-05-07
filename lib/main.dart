@@ -29,8 +29,6 @@ void main() async {
       await windowManager.focus();
     });
   }
-  final gamer = GameManager();
-  await gamer.init();
   runApp(const MainApp());
 }
 

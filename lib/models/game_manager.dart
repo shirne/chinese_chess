@@ -18,7 +18,7 @@ class GameManager {
   double scale = 1;
 
   // 当前对局
-  late ChessManual manual;
+  late ChessManual manual = ChessManual();
 
   // 算法引擎
   Engine engine = Engine();
@@ -82,7 +82,7 @@ class GameManager {
 
   Future<bool> init() async {
     setting = await GameSetting.getInstance();
-    manual = ChessManual();
+    await engine.init();
     rule = ChessRule(manual.currentFen);
 
     hands.add(Player('r', this, title: manual.red));
@@ -231,7 +231,7 @@ class GameManager {
 
     add(GameStepEvent('clear'));
     add(GameEngineEvent('clear'));
-    manual = ChessManual(fen: fen);
+    manual.initFen(fen);
     rule = ChessRule(manual.currentFen);
     hands[0].title = manual.red;
     hands[0].driverType = DriverType.user;
@@ -323,6 +323,9 @@ class GameManager {
 
   /// 调用对应的玩家开始下一步
   Future<void> next() async {
+    // 请求提示
+    requestHelp();
+
     final move = await player.move();
     if (move == null) return;
 
@@ -336,32 +339,31 @@ class GameManager {
 
   /// 从用户落着 TODO 检查出发点是否有子，检查落点是否对方子
   void addStep(ChessPos from, ChessPos next) async {
-    player.completeMove('${from.toCode()}${next.toCode()}');
+    player.completeMove(PlayerAction(move: '${from.toCode()}${next.toCode()}'));
   }
 
-  void addMove(String move) {
-    logger.info('addmove $move');
-    if (PlayerDriver.isAction(move)) {
-      if (move == PlayerDriver.rstGiveUp) {
+  void addMove(PlayerAction action) {
+    logger.info('addmove $action');
+    String? move = action.move;
+    if (action.type != PlayerActionType.rstMove) {
+      if (action.type == PlayerActionType.rstGiveUp) {
         setResult(
           curHand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
           '${player.title}认输',
         );
       }
-      if (move == PlayerDriver.rstDraw) {
+      if (action.type == PlayerActionType.rstDraw) {
         setResult(ChessManual.resultFstDraw);
       }
-      if (move == PlayerDriver.rstRetract) {
+      if (action.type == PlayerActionType.rstRetract) {
         // todo 悔棋
       }
-      if (move.contains(PlayerDriver.rstRqstDraw)) {
-        move = move.replaceAll(PlayerDriver.rstRqstDraw, '').trim();
-        if (move.isEmpty) {
-          return;
-        }
-      } else {
-        return;
+      if (action.type == PlayerActionType.rstRqstDraw) {
+        // todo 和棋
       }
+    }
+    if (move == null || move.isEmpty) {
+      return;
     }
 
     if (!ChessManual.isPosMove(move)) {
@@ -479,8 +481,10 @@ class GameManager {
   }
 
   void dispose() {
+    listener?.cancel();
     engine.stop();
     engine.quit();
+    hands.map((e) => e.driver?.dispose());
   }
 
   void switchPlayer() {
@@ -503,16 +507,13 @@ class GameManager {
 
   void requestHelp() async {
     if (engine.started) {
+      logger.info('manager($hashCode) requested help');
       isStop = true;
       await engine.stop();
       engine.position(fenStr);
       await engine.go(depth: 10);
     } else {
       logger.info('engine is not started');
-      final inited = await engine.init();
-      if (inited) {
-        requestHelp();
-      }
     }
   }
 

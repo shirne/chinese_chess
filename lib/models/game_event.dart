@@ -1,3 +1,5 @@
+import '../driver/player_driver.dart';
+
 enum GameEventType {
   move,
   engine,
@@ -40,8 +42,8 @@ abstract class GameEvent<T> {
   }
 }
 
-class GameMoveEvent extends GameEvent<String> {
-  GameMoveEvent(String move) : super(GameEventType.move, move);
+class GameMoveEvent extends GameEvent<PlayerAction> {
+  GameMoveEvent(PlayerAction move) : super(GameEventType.move, move);
 }
 
 class GameEngineEvent extends GameEvent<String> {

@@ -8,12 +8,17 @@ class DriverOnline extends PlayerDriver {
   }
 
   @override
+  Future<void> init() async {}
+  @override
+  Future<void> dispose() async {}
+
+  @override
   Future<bool> tryDraw() {
     return Future.value(true);
   }
 
   @override
-  Future<String?> move() {
+  Future<PlayerAction?> move() {
     player.manager.add(GameLockEvent(true));
     throw UnimplementedError();
   }
@@ -24,7 +29,7 @@ class DriverOnline extends PlayerDriver {
   }
 
   @override
-  void completeMove(String move) {
+  void completeMove(PlayerAction move) {
     throw UnimplementedError();
   }
 
