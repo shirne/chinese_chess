@@ -82,13 +82,19 @@ abstract class EngineInterface extends PlatformInterface {
         path.writeAsBytesSync(data.buffer.asUint8List(), flush: true);
 
         // add +x for exe file
-        if (Platform.isLinux) {
+        if (Platform.isLinux ||
+            Platform.isMacOS ||
+            Platform.isIOS ||
+            Platform.isAndroid) {
+          logger.info('add +x for exefile');
           final result = await Process.run(
             'chmod',
             ['+x', info.name],
             runInShell: true,
             workingDirectory: path.parent.path,
           );
+
+          logger.info('${result.exitCode} ${result.stderr} ${result.stdout}');
           if (result.exitCode != 0) {
             logger.warning(result.stderr);
           } else {

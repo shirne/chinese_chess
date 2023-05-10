@@ -32,3 +32,6 @@ flutter:
         dartPluginClass: EngineDarwin
       macos:
         dartPluginClass: EngineDarwin
+  assets:
+    - assets/engines/eleeye/
+    - assets/engines/pikafish/

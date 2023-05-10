@@ -7,6 +7,20 @@ class EngineDarwin extends EngineInterface {
   }
 
   @override
+  List<EngineInfo> get supported => [
+        const EngineInfo(
+          type: EngineType.ucci,
+          name: 'eleeye',
+          data: 'eleeye/BOOK.DAT',
+        ),
+        const EngineInfo(
+          type: EngineType.uci,
+          name: 'pikafish',
+          data: 'pikafish/pikafish.nnue',
+        ),
+      ];
+
+  @override
   String get package => 'engine_darwin';
 
   @override
