@@ -33,7 +33,7 @@ class _GameBoardState extends State<GameBoard> {
   @override
   void initState() {
     super.initState();
-    gamer.init();
+    Future.delayed(Duration.zero).then((value) => gamer.init());
   }
 
   Widget selectMode() {

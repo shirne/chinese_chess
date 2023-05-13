@@ -1,10 +1,14 @@
 import 'dart:developer' as dev;
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 export 'utils/core.dart';
 export 'theme.dart';
+
+final isWindow =
+    !kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
 final logger = Logger('LOG')
   ..onRecord.listen((record) {

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -14,7 +11,7 @@ import 'game_board.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+  if (isWindow) {
     await windowManager.ensureInitialized();
 
     const windowOptions = WindowOptions(
@@ -28,18 +25,60 @@ void main() async {
       await windowManager.show();
       await windowManager.focus();
     });
+    runApp(const MainWindowApp());
+  } else {
+    runApp(const MainApp());
   }
-  runApp(const MainApp());
 }
 
-class MainApp extends StatefulWidget {
-  const MainApp({Key? key}) : super(key: key);
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
-  State<MainApp> createState() => _MainAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: '',
+      onGenerateTitle: (BuildContext context) {
+        if (isWindow) {
+          windowManager.setTitle(context.l10n.appTitle);
+        }
+        return context.l10n.appTitle;
+      },
+      navigatorKey: MyDialog.navigatorKey,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        ShirneDialogLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('zh', 'CN'),
+      ],
+      theme: AppTheme.createTheme(),
+      highContrastTheme: AppTheme.createTheme(isHighContrast: true),
+      darkTheme: AppTheme.createTheme(isDark: true),
+      highContrastDarkTheme: AppTheme.createTheme(
+        isDark: true,
+        isHighContrast: true,
+      ),
+      home: const GameWrapper(
+        isMain: true,
+        child: GameBoard(),
+      ),
+    );
+  }
 }
 
-class _MainAppState extends State<MainApp> with WindowListener {
+class MainWindowApp extends StatefulWidget {
+  const MainWindowApp({Key? key}) : super(key: key);
+
+  @override
+  State<MainWindowApp> createState() => _MainWindowAppState();
+}
+
+class _MainWindowAppState extends State<MainWindowApp> with WindowListener {
   @override
   void initState() {
     super.initState();
@@ -78,38 +117,6 @@ class _MainAppState extends State<MainApp> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '',
-      onGenerateTitle: (BuildContext context) {
-        if (!kIsWeb &&
-            (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-          windowManager.setTitle(context.l10n.appTitle);
-        }
-        return context.l10n.appTitle;
-      },
-      navigatorKey: MyDialog.navigatorKey,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        ShirneDialogLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('zh', 'CN'),
-      ],
-      theme: AppTheme.createTheme(),
-      highContrastTheme: AppTheme.createTheme(isHighContrast: true),
-      darkTheme: AppTheme.createTheme(isDark: true),
-      highContrastDarkTheme: AppTheme.createTheme(
-        isDark: true,
-        isHighContrast: true,
-      ),
-      home: const GameWrapper(
-        isMain: true,
-        child: GameBoard(),
-      ),
-    );
+    return const MainApp();
   }
 }
