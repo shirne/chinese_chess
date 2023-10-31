@@ -20,7 +20,7 @@ import '../widgets/game_wrapper.dart';
 class Chess extends StatefulWidget {
   final String skin;
 
-  const Chess({Key? key, this.skin = 'woods'}) : super(key: key);
+  const Chess({super.key, this.skin = 'woods'});
 
   @override
   State<Chess> createState() => ChessState();

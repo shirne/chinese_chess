@@ -15,7 +15,7 @@ import '../driver/player_driver.dart';
 class PlayPage extends StatefulWidget {
   final PlayMode mode;
 
-  const PlayPage({Key? key, required this.mode}) : super(key: key);
+  const PlayPage({super.key, required this.mode});
 
   @override
   State<StatefulWidget> createState() => PlayPageState();
@@ -101,7 +101,7 @@ class PlayPageState extends State<PlayPage> {
                   offset: Offset(1, 1),
                   blurRadius: 1.0,
                   spreadRadius: 1.0,
-                )
+                ),
               ],
             ),
             child: Column(
@@ -132,16 +132,16 @@ class PlayPageState extends State<PlayPage> {
                     ),
                     titles: [
                       Text(context.l10n.recommendMove),
-                      Text(context.l10n.remark)
+                      Text(context.l10n.remark),
                     ],
                     bodies: [
                       const PlayBot(),
                       Center(
                         child: Text(context.l10n.noRemark),
-                      )
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),

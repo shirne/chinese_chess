@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class MarkComponent extends StatelessWidget {
   final double size;
 
-  const MarkComponent({Key? key, required this.size}) : super(key: key);
+  const MarkComponent({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {

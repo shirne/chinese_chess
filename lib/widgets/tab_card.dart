@@ -12,7 +12,7 @@ class TabCard extends StatefulWidget {
   final Axis direction;
 
   const TabCard({
-    Key? key,
+    super.key,
     required this.titles,
     required this.bodies,
     this.direction = Axis.vertical,
@@ -23,7 +23,7 @@ class TabCard extends StatefulWidget {
     this.titleActiveDecoration = const BoxDecoration(color: Colors.white),
     this.titleFit = FlexFit.loose,
     this.bodyAlign = Alignment.topLeft,
-  }) : super(key: key);
+  });
 
   @override
   State<TabCard> createState() => TabCardState();
@@ -93,8 +93,7 @@ class TabCardTitleItem extends StatefulWidget {
   final int myIndex;
   final Widget child;
 
-  const TabCardTitleItem({Key? key, required this.myIndex, required this.child})
-      : super(key: key);
+  const TabCardTitleItem({super.key, required this.myIndex, required this.child});
 
   @override
   State<TabCardTitleItem> createState() => TabCardTitleItemState();

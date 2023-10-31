@@ -26,7 +26,7 @@ class ChessSkin {
     "C": "rc.png",
     "N": "rn.png",
     "R": "rr.png",
-    "P": "rp.png"
+    "P": "rp.png",
   };
   Map<String, String> blackMap = {
     "k": "bk.png",
@@ -35,7 +35,7 @@ class ChessSkin {
     "c": "bc.png",
     "n": "bn.png",
     "r": "br.png",
-    "p": "bp.png"
+    "p": "bp.png",
   };
 
   late ValueNotifier<bool> readyNotifier;

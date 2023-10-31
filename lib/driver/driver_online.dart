@@ -1,9 +1,8 @@
 import '../models/game_event.dart';
-import '../models/player.dart';
 import 'player_driver.dart';
 
 class DriverOnline extends PlayerDriver {
-  DriverOnline(Player player) : super(player) {
+  DriverOnline(super.player) {
     canBacktrace = false;
   }
 

@@ -8,7 +8,7 @@ import 'models/game_setting.dart';
 
 /// 设置页
 class SettingPage extends StatefulWidget {
-  const SettingPage({Key? key}) : super(key: key);
+  const SettingPage({super.key});
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -116,7 +116,7 @@ class _SettingPageState extends State<SettingPage> {
                                 horizontal: 12,
                               ),
                               child: Text('大师'),
-                            )
+                            ),
                           },
                         ),
                       ),

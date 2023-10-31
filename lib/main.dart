@@ -72,7 +72,7 @@ class MainApp extends StatelessWidget {
 }
 
 class MainWindowApp extends StatefulWidget {
-  const MainWindowApp({Key? key}) : super(key: key);
+  const MainWindowApp({super.key});
 
   @override
   State<MainWindowApp> createState() => _MainWindowAppState();

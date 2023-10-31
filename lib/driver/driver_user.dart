@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import '../models/game_event.dart';
-import '../models/player.dart';
 
 import 'player_driver.dart';
 
 class DriverUser extends PlayerDriver {
   late Completer<PlayerAction> requestMove;
 
-  DriverUser(Player player) : super(player);
+  DriverUser(super.player);
 
   @override
   Future<bool> tryDraw() {

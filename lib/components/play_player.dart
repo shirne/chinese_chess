@@ -9,7 +9,7 @@ import '../widgets/tab_card.dart';
 
 /// 组合玩家框及对局双方信息框
 class PlayPlayer extends StatefulWidget {
-  const PlayPlayer({Key? key}) : super(key: key);
+  const PlayPlayer({super.key});
 
   @override
   State<PlayPlayer> createState() => PlayPlayerState();
@@ -121,7 +121,7 @@ class PlayPlayerState extends State<PlayPlayer> {
                 titlePadding: const EdgeInsets.only(top: 10, bottom: 10),
                 titles: [
                   Text(context.l10n.currentInfo),
-                  Text(context.l10n.manual)
+                  Text(context.l10n.manual),
                 ],
                 bodies: [
                   Center(
@@ -154,25 +154,25 @@ class PlayPlayerState extends State<PlayPlayer> {
                         TableRow(
                           children: [
                             Text(context.l10n.theEvent),
-                            Text(gamer.manual.event)
+                            Text(gamer.manual.event),
                           ],
                         ),
                         TableRow(
                           children: [
                             Text(context.l10n.theSite),
-                            Text(gamer.manual.site)
+                            Text(gamer.manual.site),
                           ],
                         ),
                         TableRow(
                           children: [
                             Text(context.l10n.theDate),
-                            Text(gamer.manual.date)
+                            Text(gamer.manual.date),
                           ],
                         ),
                         TableRow(
                           children: [
                             Text(context.l10n.theRound),
-                            Text(gamer.manual.round)
+                            Text(gamer.manual.round),
                           ],
                         ),
                         TableRow(
@@ -193,11 +193,11 @@ class PlayPlayerState extends State<PlayPlayer> {
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

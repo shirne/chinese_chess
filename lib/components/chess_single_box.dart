@@ -15,12 +15,12 @@ class ChessSingleBox extends StatefulWidget {
   final int team;
 
   const ChessSingleBox({
-    Key? key,
+    super.key,
     required this.itemChrs,
     this.activeChr = '',
     required this.width,
     this.team = 0,
-  }) : super(key: key);
+  });
 
   @override
   State<ChessSingleBox> createState() => _ChessBoxState();
@@ -85,9 +85,9 @@ class _ChessBoxState extends State<ChessSingleBox> {
                   clearAll();
                 },
                 child: Text(context.l10n.clearAll),
-              )
+              ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -100,11 +100,11 @@ class ItemWidget extends StatelessWidget {
   final bool isActive;
 
   const ItemWidget({
-    Key? key,
+    super.key,
     required this.chr,
     required this.count,
     this.isActive = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +145,7 @@ class ItemWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

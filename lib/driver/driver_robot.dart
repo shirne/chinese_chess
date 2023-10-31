@@ -10,12 +10,11 @@ import 'package:flutter/foundation.dart';
 import '../global.dart';
 import '../models/game_event.dart';
 import '../models/game_setting.dart';
-import '../models/player.dart';
 
 import 'player_driver.dart';
 
 class DriverRobot extends PlayerDriver {
-  DriverRobot(Player player) : super(player);
+  DriverRobot(super.player);
   Completer<PlayerAction>? requestMove;
   bool isCleared = true;
 

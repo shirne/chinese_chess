@@ -5,7 +5,7 @@ import '../widgets/game_wrapper.dart';
 
 /// 棋盘
 class Board extends StatefulWidget {
-  const Board({Key? key}) : super(key: key);
+  const Board({super.key});
 
   @override
   State<Board> createState() => BoardState();

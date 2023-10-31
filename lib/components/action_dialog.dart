@@ -12,8 +12,7 @@ class ActionDialog extends StatefulWidget {
   final ActionType type;
   final double? delay;
   final void Function()? onHide;
-  const ActionDialog(this.type, {Key? key, this.delay, this.onHide})
-      : super(key: key);
+  const ActionDialog(this.type, {super.key, this.delay, this.onHide});
 
   @override
   State<ActionDialog> createState() => _ActionDialogState();

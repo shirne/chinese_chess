@@ -9,8 +9,7 @@ class PlayStep extends StatefulWidget {
   final BoxDecoration? decoration;
   final double width;
 
-  const PlayStep({Key? key, this.decoration, required this.width})
-      : super(key: key);
+  const PlayStep({super.key, this.decoration, required this.width});
 
   @override
   State<PlayStep> createState() => PlayStepState();

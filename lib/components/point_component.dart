@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class PointComponent extends StatelessWidget {
   final double size;
 
-  const PointComponent({Key? key, required this.size}) : super(key: key);
+  const PointComponent({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {

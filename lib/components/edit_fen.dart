@@ -13,7 +13,7 @@ import '../models/game_manager.dart';
 class EditFen extends StatefulWidget {
   final String fen;
 
-  const EditFen({Key? key, required this.fen}) : super(key: key);
+  const EditFen({super.key, required this.fen});
 
   @override
   State<EditFen> createState() => EditFenState();
@@ -163,7 +163,7 @@ class EditFenState extends State<EditFen> {
               context.l10n.save,
               style: const TextStyle(color: Colors.white),
             ),
-          )
+          ),
         ],
       ),
       body: Center(
@@ -204,7 +204,7 @@ class EditFenState extends State<EditFen> {
                   ChessPieces(
                     items: items,
                     activeItem: activeItem,
-                  )
+                  ),
                 ],
               ),
             ),
@@ -214,7 +214,7 @@ class EditFenState extends State<EditFen> {
             width: gamer!.skin.width * gamer!.scale,
             itemChrs: dieChrs,
             activeChr: activeChr,
-          )
+          ),
         ],
       ),
     );
@@ -244,7 +244,7 @@ class EditFenState extends State<EditFen> {
                   ChessPieces(
                     items: items,
                     activeItem: activeItem,
-                  )
+                  ),
                 ],
               ),
             ),
@@ -254,7 +254,7 @@ class EditFenState extends State<EditFen> {
             height: gamer!.skin.height,
             itemChrs: dieChrs,
             activeChr: activeChr,
-          )
+          ),
         ],
       ),
     );

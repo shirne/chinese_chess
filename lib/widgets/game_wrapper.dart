@@ -8,8 +8,7 @@ class GameWrapper extends StatefulWidget {
   final Widget child;
   final bool isMain;
 
-  const GameWrapper({Key? key, required this.child, this.isMain = false})
-      : super(key: key);
+  const GameWrapper({super.key, required this.child, this.isMain = false});
 
   static GameWrapperState of(BuildContext context) {
     return context.findAncestorStateOfType<GameWrapperState>()!;

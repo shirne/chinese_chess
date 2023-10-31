@@ -12,10 +12,10 @@ class PlaySinglePlayer extends StatefulWidget {
   final Alignment placeAt;
 
   const PlaySinglePlayer({
-    Key? key,
+    super.key,
     required this.team,
     this.placeAt = Alignment.topCenter,
-  }) : super(key: key);
+  });
 
   @override
   State<PlaySinglePlayer> createState() => PlaySinglePlayerState();

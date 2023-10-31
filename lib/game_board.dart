@@ -20,7 +20,7 @@ import 'components/edit_fen.dart';
 
 /// 游戏页面
 class GameBoard extends StatefulWidget {
-  const GameBoard({Key? key}) : super(key: key);
+  const GameBoard({super.key});
 
   @override
   State<GameBoard> createState() => _GameBoardState();
