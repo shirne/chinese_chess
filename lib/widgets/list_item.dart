@@ -8,13 +8,13 @@ class ListItem extends StatelessWidget {
   final CrossAxisAlignment titleAlign;
 
   const ListItem({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.leading,
     this.trailing,
     this.titleAlign = CrossAxisAlignment.start,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

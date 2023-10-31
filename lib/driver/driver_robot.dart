@@ -4,21 +4,32 @@ import 'dart:math';
 
 import 'package:cchess/cchess.dart';
 import 'package:cchess_engine/cchess_engine.dart';
+import 'package:engine/engine.dart';
 import 'package:flutter/foundation.dart';
 
 import '../global.dart';
-import '../models/engine_type.dart';
 import '../models/game_event.dart';
 import '../models/game_setting.dart';
-import '../models/engine.dart';
-import '../models/player.dart';
 
 import 'player_driver.dart';
 
 class DriverRobot extends PlayerDriver {
-  DriverRobot(Player player) : super(player);
-  late Completer<String> requestMove;
+  DriverRobot(super.player);
+  Completer<PlayerAction>? requestMove;
   bool isCleared = true;
+
+  // 创建一个独立的引擎
+  final engine = EngineInterface.instance.create();
+
+  @override
+  Future<void> init() async {
+    await engine.initEngine(engine.supported.first);
+  }
+
+  @override
+  Future<void> dispose() async {
+    await engine.quit();
+  }
 
   @override
   Future<bool> tryDraw() {
@@ -26,14 +37,13 @@ class DriverRobot extends PlayerDriver {
   }
 
   @override
-  Future<String?> move() {
-    requestMove = Completer<String>();
+  Future<PlayerAction?> move() async {
+    requestMove = Completer<PlayerAction>();
     player.manager.add(GameLockEvent(true));
 
     // 网页版用不了引擎
-    Future.delayed(const Duration(seconds: 1)).then((value) {
-      if (Engine.isSupportEngine &&
-          player.manager.setting.robotType == EngineType.elephantEye) {
+    Future.delayed(const Duration(milliseconds: 300)).then((value) {
+      if (player.manager.engineOK) {
         getMoveFromEngine();
       } else {
         // getMove();
@@ -41,66 +51,35 @@ class DriverRobot extends PlayerDriver {
       }
     });
 
-    return requestMove.future;
+    return requestMove?.future;
   }
 
-  Future<void> getMoveFromEngine() async {
-    player.manager.startEngine().then((v) {
-      if (v) {
-        player.manager.engine!
-            .requestMove(player.manager.fenStr, depth: 10)
-            .then(onEngineMessage);
-      } else {
-        getMove();
-      }
-    });
-  }
-
-  void onEngineMessage(String message) {
-    List<String> parts = message.split(' ');
-    switch (parts[0]) {
-      case 'ucciok':
-        break;
-      case 'nobestmove':
-      case 'isbusy':
-        if (!isCleared) {
-          isCleared = true;
-          return;
-        }
-        if (!requestMove.isCompleted) {
-          player.manager.engine!.removeListener(onEngineMessage);
-          getMove();
-        }
-        break;
-      case 'bestmove':
-        if (!isCleared) {
-          isCleared = true;
-          return;
-        }
-        player.manager.engine!.removeListener(onEngineMessage);
-        completeMove(parts[1]);
-        break;
-      case 'info':
-        break;
-      case 'id':
-      case 'option':
-      default:
-        return;
+  void getMoveFromEngine() {
+    if (engine.inited) {
+      engine
+        ..position(player.manager.fenStr)
+        ..go(depth: 10).then((move) {
+          completeMove(PlayerAction(move: move));
+        });
+    } else {
+      getMove();
     }
   }
 
   Future<void> getBuiltInMove() async {
     GameSetting setting = await GameSetting.getInstance();
-    XQIsoSearch.level = setting.robotLevel;
+    XQIsoSearch.level = setting.engineLevel;
 
     if (kIsWeb) {
       completeMove(
-        await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr)),
+        PlayerAction(
+          move: await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr)),
+        ),
       );
     } else {
       ReceivePort rPort = ReceivePort();
       rPort.listen((message) {
-        completeMove(message);
+        completeMove(PlayerAction(move: message));
       });
       Isolate.spawn<IsoMessage>(
         XQIsoSearch.getMove,
@@ -114,7 +93,7 @@ class DriverRobot extends PlayerDriver {
     int team = player.team == 'r' ? 0 : 1;
     List<String> moves = await getAbleMoves(player.manager.fen, team);
     if (moves.isEmpty) {
-      completeMove('giveup');
+      completeMove(PlayerAction(type: PlayerActionType.rstGiveUp));
       return;
     }
     //print(moves);
@@ -126,7 +105,7 @@ class DriverRobot extends PlayerDriver {
 
     String move = await pickMove(moveGroups);
     //print(move);
-    completeMove(move);
+    completeMove(PlayerAction(move: move));
   }
 
   /// 获取可以走的着法
@@ -421,10 +400,9 @@ class DriverRobot extends PlayerDriver {
   }
 
   @override
-  Future<void> completeMove(String move) async {
-    player.onMove(move).then((value) {
-      requestMove.complete(move);
-    });
+  Future<void> completeMove(PlayerAction move) async {
+    await player.onMove(move);
+    requestMove?.complete(move);
   }
 
   @override

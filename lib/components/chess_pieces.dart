@@ -10,10 +10,10 @@ class ChessPieces extends StatefulWidget {
   final ChessItem? activeItem;
 
   const ChessPieces({
-    Key? key,
+    super.key,
     required this.items,
     this.activeItem,
-  }) : super(key: key);
+  });
 
   @override
   State<ChessPieces> createState() => _ChessPiecesState();

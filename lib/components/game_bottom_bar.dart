@@ -8,7 +8,7 @@ import 'play_step.dart';
 class GameBottomBar extends StatefulWidget {
   final PlayMode mode;
 
-  const GameBottomBar(this.mode, {Key? key}) : super(key: key);
+  const GameBottomBar(this.mode, {super.key});
 
   @override
   State<GameBottomBar> createState() => GameBottomBarState();
@@ -71,7 +71,7 @@ class GameBottomBarState extends State<GameBottomBar> {
             icon: const Icon(Icons.navigate_before),
             onPressed: _goPrev,
           ),
-          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext),
         ],
       ),
     );
@@ -88,7 +88,7 @@ class GameBottomBarState extends State<GameBottomBar> {
             icon: const Icon(Icons.navigate_before),
             onPressed: _goPrev,
           ),
-          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext),
         ],
       ),
     );
@@ -105,7 +105,7 @@ class GameBottomBarState extends State<GameBottomBar> {
             icon: const Icon(Icons.navigate_before),
             onPressed: _goPrev,
           ),
-          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext)
+          IconButton(icon: const Icon(Icons.navigate_next), onPressed: _goNext),
         ],
       ),
     );

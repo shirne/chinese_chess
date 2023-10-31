@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cchess/cchess.dart';
-import 'package:chinese_chess/models/engine_type.dart';
+import 'package:engine/engine.dart';
 import 'package:fast_gbk/fast_gbk.dart';
 
 import '../driver/player_driver.dart';
@@ -11,7 +11,6 @@ import 'chess_skin.dart';
 import 'game_event.dart';
 import 'game_setting.dart';
 import 'sound.dart';
-import 'engine.dart';
 import 'player.dart';
 
 class GameManager {
@@ -19,10 +18,11 @@ class GameManager {
   double scale = 1;
 
   // 当前对局
-  late ChessManual manual;
+  late ChessManual manual = ChessManual();
 
   // 算法引擎
-  Engine? engine;
+  Engine engine = Engine();
+  StreamSubscription<EngineMessage>? listener;
   bool engineOK = false;
 
   // 是否重新请求招法时的强制stop
@@ -82,7 +82,7 @@ class GameManager {
 
   Future<bool> init() async {
     setting = await GameSetting.getInstance();
-    manual = ChessManual();
+    await engine.init();
     rule = ChessRule(manual.currentFen);
 
     hands.add(Player('r', this, title: manual.red));
@@ -94,6 +94,8 @@ class GameManager {
     skin.readyNotifier.addListener(() {
       add(GameLoadEvent(0));
     });
+
+    listener = engine.listen(parseMessage);
 
     return true;
   }
@@ -148,47 +150,48 @@ class GameManager {
   /// not last but current
   String get lastMove => manual.currentMove?.move ?? '';
 
-  void parseMessage(String message) {
-    List<String> parts = message.split(' ');
-    String instruct = parts.removeAt(0);
-    switch (instruct) {
-      case 'ucciok':
+  void parseMessage(EngineMessage message) {
+    String tMessage = message.message;
+    switch (message.type) {
+      case MessageType.uciok:
+      case MessageType.readyok:
         engineOK = true;
         add(GameEngineEvent('Engine is OK!'));
         break;
-      case 'nobestmove':
+      case MessageType.nobestmove:
         // 强行stop后的nobestmove忽略
         if (isStop) {
           isStop = false;
           return;
         }
         break;
-      case 'bestmove':
-        logger.info(message);
-        message = parseBaseMove(parts);
+      case MessageType.bestmove:
+        tMessage = parseBaseMove(tMessage.trim().split(' '));
         break;
-      case 'info':
-        logger.info(message);
-        message = parseInfo(parts);
+      case MessageType.info:
+        tMessage = parseInfo(tMessage.trim().split(' '));
         break;
-      case 'id':
-      case 'option':
+      case MessageType.id:
+      case MessageType.option:
       default:
         return;
     }
-    add(GameEngineEvent(message));
+    add(GameEngineEvent(tMessage));
   }
 
   String parseBaseMove(List<String> infos) {
+    if (infos.isEmpty) {
+      return '';
+    }
     return "推荐着法: ${fen.toChineseString(infos[0])}"
-        "${infos.length > 2 ? ' 猜测对方: ${fen.toChineseString(infos[2])}' : ''}";
+        "${infos.length > 2 ? ' 对方应招: ${fen.toChineseString(infos[2])}' : ''}";
   }
 
   String parseInfo(List<String> infos) {
     String first = infos.removeAt(0);
     switch (first) {
       case 'depth':
-        String msg = infos[0];
+        String msg = infos.removeAt(0);
         if (infos.isNotEmpty) {
           String sub = infos.removeAt(0);
           while (sub.isNotEmpty) {
@@ -217,7 +220,7 @@ class GameManager {
   void stop() {
     add(GameLoadEvent(-1));
     isStop = true;
-    engine?.stop();
+    engine.stop();
     //currentStep = 0;
 
     add(GameLockEvent(true));
@@ -228,7 +231,7 @@ class GameManager {
 
     add(GameStepEvent('clear'));
     add(GameEngineEvent('clear'));
-    manual = ChessManual(fen: fen);
+    manual.initFen(fen);
     rule = ChessRule(manual.currentFen);
     hands[0].title = manual.red;
     hands[0].driverType = DriverType.user;
@@ -250,7 +253,7 @@ class GameManager {
 
   bool _loadPGN(String pgn) {
     isStop = true;
-    engine?.stop();
+    engine.stop();
 
     String content = '';
     if (!pgn.contains('\n')) {
@@ -269,7 +272,6 @@ class GameManager {
     add(GameLoadEvent(0));
     // 加载步数
     if (manual.moveCount > 0) {
-      // print(manual.moves);
       add(
         GameStepEvent(
           manual.moves.map<String>((e) => e.toChineseString()).join('\n'),
@@ -321,6 +323,9 @@ class GameManager {
 
   /// 调用对应的玩家开始下一步
   Future<void> next() async {
+    // 请求提示
+    requestHelp();
+
     final move = await player.move();
     if (move == null) return;
 
@@ -334,32 +339,31 @@ class GameManager {
 
   /// 从用户落着 TODO 检查出发点是否有子，检查落点是否对方子
   void addStep(ChessPos from, ChessPos next) async {
-    player.completeMove('${from.toCode()}${next.toCode()}');
+    player.completeMove(PlayerAction(move: '${from.toCode()}${next.toCode()}'));
   }
 
-  void addMove(String move) {
-    logger.info('addmove $move');
-    if (PlayerDriver.isAction(move)) {
-      if (move == PlayerDriver.rstGiveUp) {
+  void addMove(PlayerAction action) {
+    logger.info('addmove $action');
+    String? move = action.move;
+    if (action.type != PlayerActionType.rstMove) {
+      if (action.type == PlayerActionType.rstGiveUp) {
         setResult(
           curHand == 0 ? ChessManual.resultFstLoose : ChessManual.resultFstWin,
           '${player.title}认输',
         );
       }
-      if (move == PlayerDriver.rstDraw) {
+      if (action.type == PlayerActionType.rstDraw) {
         setResult(ChessManual.resultFstDraw);
       }
-      if (move == PlayerDriver.rstRetract) {
+      if (action.type == PlayerActionType.rstRetract) {
         // todo 悔棋
       }
-      if (move.contains(PlayerDriver.rstRqstDraw)) {
-        move = move.replaceAll(PlayerDriver.rstRqstDraw, '').trim();
-        if (move.isEmpty) {
-          return;
-        }
-      } else {
-        return;
+      if (action.type == PlayerActionType.rstRqstDraw) {
+        // todo 和棋
       }
+    }
+    if (move == null || move.isEmpty) {
+      return;
     }
 
     if (!ChessManual.isPosMove(move)) {
@@ -477,11 +481,10 @@ class GameManager {
   }
 
   void dispose() {
-    if (engine != null) {
-      engine?.stop();
-      engine?.quit();
-      engine = null;
-    }
+    listener?.cancel();
+    engine.stop();
+    engine.quit();
+    hands.map((e) => e.driver?.dispose());
   }
 
   void switchPlayer() {
@@ -499,38 +502,18 @@ class GameManager {
   }
 
   Future<bool> startEngine() {
-    if (engine != null) {
-      return Future.value(true);
-    }
-    Completer<bool> engineFuture = Completer<bool>();
-    engine = Engine(EngineType.pikafish);
-    engineOK = false;
-    engine?.init().then((Process? v) {
-      engineOK = true;
-      engine?.addListener(parseMessage);
-      engineFuture.complete(true);
-    });
-    return engineFuture.future;
+    return engine.init();
   }
 
-  void requestHelp() {
-    if (engine == null) {
-      startEngine().then((v) {
-        if (v) {
-          requestHelp();
-        } else {
-          logger.info('engine is not support');
-        }
-      });
+  void requestHelp() async {
+    if (engine.started) {
+      logger.info('manager($hashCode) requested help');
+      isStop = true;
+      await engine.stop();
+      engine.position(fenStr);
+      await engine.go(depth: 10);
     } else {
-      if (engineOK) {
-        isStop = true;
-        engine?.stop();
-        engine?.position(fenStr);
-        engine?.go(depth: 10);
-      } else {
-        logger.info('engine is not ok');
-      }
+      logger.info('engine is not started');
     }
   }
 

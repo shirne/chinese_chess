@@ -1,0 +1,37 @@
+name: engine_darwin
+description: A new Flutter plugin project.
+version: 0.0.1
+homepage:
+
+publish_to: none
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  engine_interface:
+    path: ../engine_interface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  plugin:
+    implements: engine
+    platforms:
+      ios:
+        dartPluginClass: EngineDarwin
+      macos:
+        dartPluginClass: EngineDarwin
+  assets:
+    - assets/engines/eleeye/
+    - assets/engines/pikafish/

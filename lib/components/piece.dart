@@ -12,12 +12,12 @@ class Piece extends StatelessWidget {
   final bool isHover;
 
   const Piece({
-    Key? key,
+    super.key,
     required this.item,
     this.isActive = false,
     this.isHover = false,
     this.isAblePoint = false,
-  }) : super(key: key);
+  });
 
   Widget blankWidget(GameManager gamer) {
     double size = gamer.skin.size;
@@ -60,7 +60,7 @@ class Piece extends StatelessWidget {
                         offset: Offset(4, 6),
                         blurRadius: 2,
                         spreadRadius: 2,
-                      )
+                      ),
                     ],
                     //border: Border.all(color: Color.fromRGBO(255, 255, 255, .7), width: 2),
                     borderRadius: BorderRadius.all(

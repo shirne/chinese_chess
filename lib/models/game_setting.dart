@@ -1,22 +1,23 @@
 import 'dart:convert';
 
+import 'package:engine/engine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'engine_type.dart';
+const builtInEngine = EngineInfo(name: 'builtIn', data: '');
 
 class GameSetting {
   static SharedPreferences? storage;
   static GameSetting? _instance;
   static const cacheKey = 'setting';
 
-  EngineType robotType = EngineType.builtIn;
-  int robotLevel = 10;
+  EngineInfo info = builtInEngine;
+  int engineLevel = 10;
   bool sound = true;
   double soundVolume = 1;
 
   GameSetting({
-    this.robotType = EngineType.builtIn,
-    this.robotLevel = 10,
+    this.info = builtInEngine,
+    this.engineLevel = 10,
     this.sound = true,
     this.soundVolume = 1,
   });
@@ -24,20 +25,23 @@ class GameSetting {
   GameSetting.fromJson(String? jsonStr) {
     if (jsonStr == null || jsonStr.isEmpty) return;
     Map<String, dynamic> json = jsonDecode(jsonStr);
-    if (json.containsKey('robotType')) {
-      robotType = EngineType.fromName(json['robotType']) ?? EngineType.builtIn;
+    if (json.containsKey('engine_info')) {
+      info = Engine().getSupportedEngines().firstWhere(
+            (e) => e.name == json['engine_info'],
+            orElse: () => builtInEngine,
+          );
     }
-    if (json.containsKey('robotLevel')) {
-      robotLevel = json['robotLevel'];
-      if (robotLevel < 10 || robotLevel > 12) {
-        robotLevel = 10;
+    if (json.containsKey('engine_level')) {
+      engineLevel = json['engine_level'];
+      if (engineLevel < 10 || engineLevel > 12) {
+        engineLevel = 10;
       }
     }
     if (json.containsKey('sound')) {
       sound = json['sound'];
     }
-    if (json.containsKey('soundVolume')) {
-      soundVolume = json['soundVolume'];
+    if (json.containsKey('sound_volume')) {
+      soundVolume = json['sound_volume'];
     }
   }
 
@@ -60,9 +64,9 @@ class GameSetting {
 
   @override
   String toString() => jsonEncode({
-        'robotType': robotType.name,
-        'robotLevel': robotLevel,
+        'engine_info': info.name,
+        'engine_level': engineLevel,
         'sound': sound,
-        'soundVolume': soundVolume,
+        'sound_volume': soundVolume,
       });
 }

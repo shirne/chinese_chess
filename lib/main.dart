@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -14,7 +11,7 @@ import 'game_board.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+  if (isWindow) {
     await windowManager.ensureInitialized();
 
     const windowOptions = WindowOptions(
@@ -28,30 +25,21 @@ void main() async {
       await windowManager.show();
       await windowManager.focus();
     });
-    windowManager.addListener(MainWindowListener());
-  }
-  final gamer = GameManager();
-  await gamer.init();
-  runApp(const MainApp());
-}
-
-class MainWindowListener extends WindowListener {
-  @override
-  void onWindowClose() {
-    GameManager.instance.engine?.dispose();
+    runApp(const MainWindowApp());
+  } else {
+    runApp(const MainApp());
   }
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({Key? key}) : super(key: key);
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '',
       onGenerateTitle: (BuildContext context) {
-        if (!kIsWeb &&
-            (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+        if (isWindow) {
           windowManager.setTitle(context.l10n.appTitle);
         }
         return context.l10n.appTitle;
@@ -80,5 +68,55 @@ class MainApp extends StatelessWidget {
         child: GameBoard(),
       ),
     );
+  }
+}
+
+class MainWindowApp extends StatefulWidget {
+  const MainWindowApp({super.key});
+
+  @override
+  State<MainWindowApp> createState() => _MainWindowAppState();
+}
+
+class _MainWindowAppState extends State<MainWindowApp> with WindowListener {
+  @override
+  void initState() {
+    super.initState();
+    windowManager.addListener(this);
+    windowManager.setPreventClose(true).then((v) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    super.dispose();
+  }
+
+  @override
+  void onWindowClose() async {
+    bool isPreventClose = await windowManager.isPreventClose();
+    if (isPreventClose && context.mounted) {
+      final ctx = MyDialog.navigatorKey.currentContext!;
+      final sure = await MyDialog.confirm(
+        ctx.l10n.exitNow,
+        buttonText: ctx.l10n.yesExit,
+        cancelText: ctx.l10n.dontExit,
+      );
+
+      if (sure ?? false) {
+        GameManager.instance.dispose();
+        await windowManager.destroy();
+      }
+    }
+  }
+
+  @override
+  void onWindowFocus() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const MainApp();
   }
 }

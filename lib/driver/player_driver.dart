@@ -4,34 +4,33 @@ import 'driver_online.dart';
 import 'driver_robot.dart';
 import 'driver_user.dart';
 
+enum PlayerActionType {
+  rstMove, // 出招
+  rstGiveUp, // 认输
+  rstRqstDraw, // 提和
+  rstRqstRetract, // 悔棋
+  rstDraw, // 同意提和
+  rstRetract, // 同意悔棋
+  rjctDraw, // 拒绝提和
+  rjctRetract; // 拒绝悔棋
+}
+
+class PlayerAction {
+  PlayerAction({this.type = PlayerActionType.rstMove, this.move})
+      : assert(type == PlayerActionType.rstMove && move != null);
+
+  final PlayerActionType type;
+  final String? move;
+}
+
 abstract class PlayerDriver {
   final Player player;
   bool canBacktrace = true;
 
-  // 认输
-  static const rstGiveUp = 'giveup';
-  // 提和
-  static const rstRqstDraw = 'rqstrdraw';
-  // 悔棋
-  static const rstRqstRetract = 'rqstretract';
-  // 同意提和
-  static const rstDraw = 'draw';
-  // 同意悔棋
-  static const rstRetract = 'retract';
-
-  static const rstActions = [
-    rstGiveUp,
-    rstRqstDraw,
-    rstRqstRetract,
-    rstDraw,
-    rstRetract
-  ];
-
-  static bool isAction(String move) {
-    return rstActions.contains(move) || move.contains(rstRqstDraw);
-  }
-
   PlayerDriver(this.player);
+
+  Future<void> init();
+  Future<void> dispose();
 
   static PlayerDriver createDriver(
     Player manager, [
@@ -54,24 +53,23 @@ abstract class PlayerDriver {
   Future<bool> tryRetract();
 
   /// 获取走招
-  Future<String?> move();
+  Future<PlayerAction?> move();
 
   /// 思考
   Future<String> ponder();
 
   /// 完成走招
-  void completeMove(String move);
+  void completeMove(PlayerAction move);
 
   @override
   String toString() => "$runtimeType ${player.team}";
 }
 
-class DriverType {
+enum DriverType {
+  user('user'),
+  robot('robot'),
+  online('online');
+
   final String type;
-
-  static const user = DriverType('user');
-  static const robot = DriverType('robot');
-  static const online = DriverType('online');
-
   const DriverType(this.type);
 }

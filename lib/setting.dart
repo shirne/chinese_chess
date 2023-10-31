@@ -1,15 +1,14 @@
+import 'package:engine/engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 
 import 'global.dart';
-import 'models/engine_type.dart';
-import 'models/engine_level.dart';
 import 'models/game_setting.dart';
 
 /// 设置页
 class SettingPage extends StatefulWidget {
-  const SettingPage({Key? key}) : super(key: key);
+  const SettingPage({super.key});
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -68,29 +67,24 @@ class _SettingPageState extends State<SettingPage> {
                           onValueChanged: (value) {
                             if (value == null) return;
                             setState(() {
-                              setting!.robotType = value as EngineType;
+                              setting!.info = value as EngineInfo;
                             });
                           },
-                          groupValue: setting!.robotType,
-                          children: const {
-                            EngineType.builtIn: Padding(
+                          groupValue: setting!.info,
+                          children: {
+                            builtInEngine: const Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 10,
                               ),
                               child: Text('内置引擎'),
                             ),
-                            EngineType.elephantEye: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
+                            for (var engine in Engine().getSupportedEngines())
+                              engine: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                ),
+                                child: Text(engine.name),
                               ),
-                              child: Text('elephantEye'),
-                            ),
-                            EngineType.pikafish: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              child: Text('皮卡鱼'),
-                            ),
                           },
                         ),
                       ),
@@ -100,29 +94,29 @@ class _SettingPageState extends State<SettingPage> {
                           onValueChanged: (value) {
                             if (value == null) return;
                             setState(() {
-                              setting!.robotLevel = value as int;
+                              setting!.engineLevel = value as int;
                             });
                           },
-                          groupValue: setting!.robotLevel,
+                          groupValue: setting!.engineLevel,
                           children: const {
-                            EngineLevel.learn: Padding(
+                            10: Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: 10,
                               ),
                               child: Text('初级'),
                             ),
-                            EngineLevel.middle: Padding(
+                            11: Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 10,
+                                horizontal: 11,
                               ),
                               child: Text('中级'),
                             ),
-                            EngineLevel.master: Padding(
+                            12: Padding(
                               padding: EdgeInsets.symmetric(
-                                horizontal: 10,
+                                horizontal: 12,
                               ),
                               child: Text('大师'),
-                            )
+                            ),
                           },
                         ),
                       ),

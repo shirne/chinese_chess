@@ -1,0 +1,44 @@
+name: engine
+description: A new Flutter plugin project.
+version: 0.0.1
+homepage:
+publish_to: none
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  engine_interface:
+    path: ../engine_interface
+  engine_windows:
+    path: ../engine_windows
+  engine_linux:
+    path: ../engine_linux
+  engine_darwin:
+    path: ../engine_darwin
+  engine_android:
+    path: ../engine_android
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        default_package: engine_android
+      ios:
+        default_package: engine_darwin
+      linux:
+        default_package: engine_linux
+      macos:
+        default_package: engine_darwin
+      #web:
+      #  default_package: engine_web
+      windows:
+        default_package: engine_windows

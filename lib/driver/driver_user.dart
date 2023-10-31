@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import '../models/game_event.dart';
-import '../models/player.dart';
 
 import 'player_driver.dart';
 
 class DriverUser extends PlayerDriver {
-  late Completer<String> requestMove;
+  late Completer<PlayerAction> requestMove;
 
-  DriverUser(Player player) : super(player);
+  DriverUser(super.player);
 
   @override
   Future<bool> tryDraw() {
@@ -16,12 +15,9 @@ class DriverUser extends PlayerDriver {
   }
 
   @override
-  Future<String?> move() {
-    requestMove = Completer<String>();
+  Future<PlayerAction?> move() {
+    requestMove = Completer<PlayerAction>();
     player.manager.add(GameLockEvent(false));
-
-    // 招法提示
-    player.manager.requestHelp();
 
     return requestMove.future;
   }
@@ -33,7 +29,7 @@ class DriverUser extends PlayerDriver {
   }
 
   @override
-  void completeMove(String move) {
+  void completeMove(PlayerAction move) {
     if (!requestMove.isCompleted) {
       requestMove.complete(move);
     }
@@ -44,4 +40,9 @@ class DriverUser extends PlayerDriver {
     // TODO: implement tryRetract
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> init() async {}
+  @override
+  Future<void> dispose() async {}
 }

@@ -5,7 +5,7 @@ import '../models/game_manager.dart';
 
 /// 引擎提示框
 class PlayBot extends StatefulWidget {
-  const PlayBot({Key? key}) : super(key: key);
+  const PlayBot({super.key});
 
   @override
   State<PlayBot> createState() => PlayStepState();
