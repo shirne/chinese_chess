@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
-final logger = Logger.root
+final logger = Logger('ENGINE')
   ..level = kReleaseMode ? Level.WARNING : Level.ALL
   ..onRecord.listen((record) {
     log(

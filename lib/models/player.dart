@@ -15,7 +15,7 @@ class Player {
   int stepTime = 0;
 
   DriverType _driverType;
-  PlayerDriver? driver;
+  PlayerDriver? _driver;
 
   Player(
     this.team,
@@ -26,18 +26,19 @@ class Player {
 
   set driverType(DriverType type) {
     _driverType = type;
-    if (driver != null) driver!.dispose();
-    driver = PlayerDriver.createDriver(this, _driverType);
-    driver!.init();
+    if (_driver != null) _driver!.dispose();
+    _driver = PlayerDriver.createDriver(this, _driverType);
+    _driver!.init();
   }
 
   DriverType get driverType => _driverType;
+  PlayerDriver get driver => _driver!;
 
   bool get isUser => _driverType == DriverType.user;
 
   bool get isRobot => _driverType == DriverType.robot;
 
-  bool get canBacktrace => driver?.canBacktrace ?? false;
+  bool get canBacktrace => _driver?.canBacktrace ?? false;
 
   // 通知界面，从界面上过来的着法不需要调用
   Future<PlayerAction> onMove(PlayerAction move) {
@@ -47,11 +48,15 @@ class Player {
     return Future.value(move);
   }
 
-  Future<bool> onDraw() => driver?.tryDraw() ?? Future.value(false);
+  Future<bool> onDraw() => _driver?.tryDraw() ?? Future.value(false);
 
-  Future<PlayerAction?> move() => driver?.move() ?? Future.value(null);
+  Future<PlayerAction?> move() => _driver?.move() ?? Future.value(null);
 
   void completeMove(PlayerAction move) {
-    driver?.completeMove(move);
+    _driver?.completeMove(move);
+  }
+
+  void dispose() {
+    _driver?.dispose();
   }
 }

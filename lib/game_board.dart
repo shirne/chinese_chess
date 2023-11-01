@@ -283,7 +283,7 @@ class _GameBoardState extends State<GameBoard> {
       ),
     ).then((fenStr) {
       if (fenStr != null && fenStr.isNotEmpty) {
-        gamer.newGame(fenStr);
+        gamer.newGame(fen: fenStr);
       }
     });
   }
@@ -309,7 +309,7 @@ class _GameBoardState extends State<GameBoard> {
       if (RegExp(
         r'^[abcnrkpABCNRKP\d]{1,9}(?:/[abcnrkpABCNRKP\d]{1,9}){9}(\s[wb]\s-\s-\s\d+\s\d+)?$',
       ).hasMatch(fenStr)) {
-        gamer.newGame(fenStr);
+        gamer.newGame(fen: fenStr);
       } else {
         MyDialog.alert(l10n.invalidCode);
       }

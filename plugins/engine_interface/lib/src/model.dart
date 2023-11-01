@@ -1,15 +1,41 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
+
 enum MessageType {
   id,
   option,
-  uciok,
+  uciok('ucciok'),
   readyok,
   info,
   bestmove,
   nobestmove,
   bye,
-  unknown,
+  unknown;
+
+  final String? alia;
+  const MessageType([this.alia]);
+
+  static MessageType? fromName(String? name) {
+    if (name == null) return null;
+    return values.firstWhereOrNull((e) => e.name == name || e.alia == name);
+  }
+}
+
+enum EngineCommand {
+  setoption,
+  isready,
+  position,
+  banmoves,
+  go,
+  ponderhit,
+  stop,
+  quit;
+
+  static EngineCommand? fromName(String? name) {
+    if (name == null) return null;
+    return values.firstWhereOrNull((e) => e.name == name);
+  }
 }
 
 enum EngineState {
@@ -19,7 +45,7 @@ enum EngineState {
   idle,
   ponder,
   go,
-  quit,
+  quit;
 }
 
 class EngineMessage {
@@ -33,36 +59,7 @@ class EngineMessage {
   factory EngineMessage.parse(String message) {
     int firstBlank = message.indexOf(' ');
     final typeStr = firstBlank > 0 ? message.substring(0, firstBlank) : message;
-    MessageType type;
-    switch (typeStr) {
-      case 'id':
-        type = MessageType.id;
-        break;
-      case 'ucciok':
-      case 'uciok':
-        type = MessageType.uciok;
-        break;
-      case 'option':
-        type = MessageType.option;
-        break;
-      case 'readyok':
-        type = MessageType.readyok;
-        break;
-      case 'info':
-        type = MessageType.info;
-        break;
-      case 'bestmove':
-        type = MessageType.bestmove;
-        break;
-      case 'nobestmove':
-        type = MessageType.nobestmove;
-        break;
-      case 'bye':
-        type = MessageType.bye;
-        break;
-      default:
-        type = MessageType.unknown;
-    }
+    MessageType type = MessageType.fromName(typeStr) ?? MessageType.unknown;
 
     final msg = type == MessageType.unknown
         ? message
@@ -94,7 +91,7 @@ class EngineMessage {
 
 enum EngineType {
   uci,
-  ucci,
+  ucci;
 }
 
 class EngineInfo {

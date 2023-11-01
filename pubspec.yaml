@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
 
   cchess: 0.0.4
-  cchess_engine: 0.0.1
+  cchess_engine: ^0.0.1
   engine:
     path: plugins/engine
   
@@ -85,5 +85,4 @@ flutter:
   assets:
     - assets/skins/woods/
     - assets/images/
-    - assets/engines/
     - assets/sounds/

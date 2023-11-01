@@ -41,7 +41,8 @@ class GameManager {
   bool get isLock => _isLock;
 
   // 选手
-  List<Player> hands = [];
+  final hands = <Player>[];
+
   int curHand = 0;
 
   // 当前着法序号
@@ -228,17 +229,28 @@ class GameManager {
     add(GameLockEvent(true));
   }
 
-  void newGame([String fen = ChessManual.startFen]) {
+  void newGame({
+    DriverType amyType = DriverType.user,
+    int hand1 = 0,
+    String fen = ChessManual.startFen,
+  }) {
     stop();
 
     add(GameStepEvent('clear'));
     add(GameEngineEvent('clear'));
     manual.initFen(fen);
     rule = ChessRule(manual.currentFen);
+
     hands[0].title = manual.red;
-    hands[0].driverType = DriverType.user;
     hands[1].title = manual.black;
-    hands[1].driverType = DriverType.user;
+    if (hand1 == 1) {
+      hands[0].driverType = amyType;
+      hands[1].driverType = DriverType.user;
+    } else {
+      hands[0].driverType = DriverType.user;
+      hands[1].driverType = amyType;
+    }
+
     curHand = manual.startHand;
 
     add(GameLoadEvent(0));
@@ -289,7 +301,7 @@ class GameManager {
   }
 
   void loadFen(String fen) {
-    newGame(fen);
+    newGame(fen: fenStr);
   }
 
   // 重载历史局面
@@ -314,12 +326,13 @@ class GameManager {
 
   /// 切换驱动
   void switchDriver(int team, DriverType driverType) {
+    logger.info('切换驱动 $team ${driverType.name}');
     hands[team].driverType = driverType;
-    if (team == curHand && driverType == DriverType.robot) {
-      //add(GameLockEvent(true));
-      next();
-    } else if (driverType == DriverType.user) {
+
+    if (driverType == DriverType.user) {
       //add(GameLockEvent(false));
+    } else {
+      next();
     }
   }
 
@@ -486,7 +499,7 @@ class GameManager {
     listener?.cancel();
     engine.stop();
     engine.quit();
-    hands.map((e) => e.driver?.dispose());
+    hands.map((e) => e.dispose());
   }
 
   void switchPlayer() {
@@ -496,7 +509,7 @@ class GameManager {
     }
     add(GamePlayerEvent(curHand));
 
-    logger.info('切换选手:${player.title} ${player.team} ${player.driver}');
+    logger.info('切换选手: $curHand ${player.title} ${player.driverType.name}');
 
     logger.info(player.title);
     next();

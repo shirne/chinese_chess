@@ -20,6 +20,8 @@ dependencies:
     path: ../engine_darwin
   engine_android:
     path: ../engine_android
+  engine_web:
+    path: ../engine_web
 
 dev_dependencies:
   flutter_test:
@@ -38,7 +40,7 @@ flutter:
         default_package: engine_linux
       macos:
         default_package: engine_darwin
-      #web:
-      #  default_package: engine_web
+      web:
+        default_package: engine_web
       windows:
         default_package: engine_windows

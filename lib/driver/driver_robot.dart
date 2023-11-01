@@ -1,15 +1,11 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:math';
 
 import 'package:cchess/cchess.dart';
-import 'package:cchess_engine/cchess_engine.dart';
 import 'package:engine/engine.dart';
-import 'package:flutter/foundation.dart';
 
 import '../global.dart';
 import '../models/game_event.dart';
-import '../models/game_setting.dart';
 
 import 'player_driver.dart';
 
@@ -46,8 +42,7 @@ class DriverRobot extends PlayerDriver {
       if (player.manager.engineOK) {
         getMoveFromEngine();
       } else {
-        // getMove();
-        getBuiltInMove();
+        getMove();
       }
     });
 
@@ -63,28 +58,6 @@ class DriverRobot extends PlayerDriver {
         });
     } else {
       getMove();
-    }
-  }
-
-  Future<void> getBuiltInMove() async {
-    GameSetting setting = await GameSetting.getInstance();
-    XQIsoSearch.level = setting.engineLevel;
-
-    if (kIsWeb) {
-      completeMove(
-        PlayerAction(
-          move: await XQIsoSearch.getMove(IsoMessage(player.manager.fenStr)),
-        ),
-      );
-    } else {
-      ReceivePort rPort = ReceivePort();
-      rPort.listen((message) {
-        completeMove(PlayerAction(move: message));
-      });
-      Isolate.spawn<IsoMessage>(
-        XQIsoSearch.getMove,
-        IsoMessage(player.manager.fenStr, rPort.sendPort),
-      );
     }
   }
 
