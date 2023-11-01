@@ -32,12 +32,10 @@ class PlayPageState extends State<PlayPage> {
   }
 
   void initGame() async {
+    logger.info('初始化游戏 $inited');
     if (inited) return;
     inited = true;
-    if (widget.mode == PlayMode.modeRobot) {
-      gamer.switchDriver(1, DriverType.robot);
-    }
-    gamer.newGame();
+    gamer.newGame(amyType: DriverType.robot);
   }
 
   @override
