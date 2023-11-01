@@ -82,7 +82,9 @@ class GameManager {
 
   Future<bool> init() async {
     setting = await GameSetting.getInstance();
-    await engine.init();
+    try {
+      await engine.init();
+    } catch (_) {}
     rule = ChessRule(manual.currentFen);
 
     hands.add(Player('r', this, title: manual.red));

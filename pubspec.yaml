@@ -28,7 +28,7 @@ dependencies:
   shirne_dialog:  ^4.5.0
   fast_gbk: ^1.0.0-rc
   universal_html: ^2.0.8
-  shared_preferences: ^2.0.13
+  shared_preferences: ^2.2.0
   flutter_native_splash: ^2.2.7
   
   # soundpool: 2.3.0

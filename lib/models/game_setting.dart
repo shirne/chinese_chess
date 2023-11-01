@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:engine/engine.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../global.dart';
+
 const builtInEngine = EngineInfo(name: 'builtIn', data: '');
 
 class GameSetting {
@@ -51,14 +53,18 @@ class GameSetting {
   }
 
   static Future<GameSetting> init() async {
-    storage ??= await SharedPreferences.getInstance();
-    String? json = storage!.getString(cacheKey);
+    try {
+      storage ??= await SharedPreferences.getInstance();
+    } catch (e) {
+      logger.warning(e);
+    }
+    String? json = storage?.getString(cacheKey);
     return GameSetting.fromJson(json);
   }
 
   Future<bool> save() async {
     storage ??= await SharedPreferences.getInstance();
-    storage!.setString(cacheKey, toString());
+    storage?.setString(cacheKey, toString());
     return true;
   }
 
