@@ -45,10 +45,7 @@ class _SettingPageState extends State<SettingPage> {
                 MyDialog.toast('保存成功', iconType: IconType.success);
               });
             },
-            child: const Text(
-              '保存',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('保存'),
           ),
         ],
       ),

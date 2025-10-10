@@ -160,10 +160,7 @@ class EditFenState extends State<EditFen> {
             onPressed: () {
               editOK();
             },
-            child: Text(
-              context.l10n.save,
-              style: const TextStyle(color: Colors.white),
-            ),
+            child: Text(context.l10n.save),
           ),
         ],
       ),
