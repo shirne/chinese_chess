@@ -89,7 +89,7 @@ class GameManager {
     curHand = 0;
     // map = ChessMap.fromFen(ChessManual.startFen);
 
-    setting = await GameSetting.getInstance();
+    setting = GameSetting.getInstance();
 
     skin = ChessSkin("woods", this);
     skin.readyNotifier.addListener(() {

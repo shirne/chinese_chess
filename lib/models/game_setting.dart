@@ -47,24 +47,27 @@ class GameSetting {
     }
   }
 
-  static Future<GameSetting> getInstance() async {
-    _instance ??= await GameSetting.init();
+  static GameSetting getInstance() {
+    _instance ??= GameSetting.init();
     return _instance!;
   }
 
-  static Future<GameSetting> init() async {
+  static Future<void> initStorage() async {
     try {
       storage ??= await SharedPreferences.getInstance();
     } catch (e) {
       logger.warning(e);
     }
+  }
+
+  static GameSetting init() {
     String? json = storage?.getString(cacheKey);
     return GameSetting.fromJson(json);
   }
 
   Future<bool> save() async {
     storage ??= await SharedPreferences.getInstance();
-    storage?.setString(cacheKey, toString());
+    await storage?.setString(cacheKey, toString());
     return true;
   }
 

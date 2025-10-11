@@ -7,6 +7,7 @@ import 'package:engine/engine.dart';
 import '../global.dart';
 import '../models/game_event.dart';
 
+import '../models/game_setting.dart';
 import 'player_driver.dart';
 
 class DriverRobot extends PlayerDriver {
@@ -19,7 +20,8 @@ class DriverRobot extends PlayerDriver {
 
   @override
   Future<void> init() async {
-    await engine.initEngine(engine.supported.first);
+    final setting = GameSetting.getInstance();
+    await engine.initEngine(setting.info);
   }
 
   @override

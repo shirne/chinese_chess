@@ -26,7 +26,7 @@ class Sound {
   static GameSetting? setting;
 
   static Future<bool> play(String id) async {
-    setting ??= await GameSetting.getInstance();
+    setting ??= GameSetting.getInstance();
     if (!setting!.sound) return false;
 
     await audioPlayer.play(AssetSource(id), volume: setting!.soundVolume);

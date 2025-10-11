@@ -1,3 +1,4 @@
+import 'package:chinese_chess/models/game_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -11,6 +12,7 @@ import 'game_board.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GameSetting.initStorage();
   if (isWindow) {
     await windowManager.ensureInitialized();
 
