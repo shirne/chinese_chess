@@ -1,6 +1,6 @@
 name: chinese_chess
 description: A ChineseChess game developed by Flutter.
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -16,29 +16,29 @@ dependencies:
   cchess_engine: ^0.0.4
   engine:
     path: plugins/engine
-  
+
   intl:
   cupertino_icons:
   logging:
-  file_picker: ^6.0.0
-  window_manager: ^0.3.7
+  file_picker: ^10.3.3
+  window_manager: ^0.5.1
   #bitsdojo_window: ^0.1.2
   #filesystem_picker: ^2.0.1
   #file_selector: ^0.8.2
-  shirne_dialog:  ^4.5.0
+  shirne_dialog: ^4.5.0
   charset: ^2.0.1
   universal_html: ^2.0.8
   shared_preferences: ^2.2.0
   flutter_native_splash: ^2.2.7
-  
+
   # soundpool: 2.3.0
   # soundpool_windux: #2.3.0
   #   git:
   #     url: https://github.com/ukasz123/soundpool
   #     ref: windows_linux_support
   #     path: soundpool_windux
-      
-  audioplayers: ^5.2.0
+
+  audioplayers: ^6.5.1
   #assets_audio_player: ^3.0.4+3
   ffi:
   # win32: 2.6.1
@@ -46,7 +46,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  icons_launcher: ^2.1.4
+  icons_launcher: ^3.0.3
   flutter_lints:
 
 # flutter pub run icons_launcher:create
@@ -57,23 +57,22 @@ icons_launcher:
       enable: true
       adaptive_background_color: "#ffffff"
       adaptive_foreground_image: "assets/icon/icon_foreground.png"
-    ios: 
+    ios:
       enable: true
-    web: 
+    web:
       enable: true
       favicon_path: "assets/icon/icon.png"
-    macos: 
+    macos:
       enable: true
-    windows: 
+    windows:
       enable: true
-    linux: 
+    linux:
       enable: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   generate: true
 
   # The following line ensures that the Material Icons font is
