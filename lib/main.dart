@@ -107,7 +107,8 @@ class _MainWindowAppState extends State<MainWindowApp> with WindowListener {
 
       if (sure ?? false) {
         GameManager.instance.dispose();
-        await windowManager.destroy();
+        windowManager.hide();
+        windowManager.destroy();
       }
     }
   }
