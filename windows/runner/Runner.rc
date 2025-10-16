@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "chinese_chess" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "chinese_chess" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 com.shirne. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.shirne. All rights reserved." "\0"
             VALUE "OriginalFilename", "chinese_chess.exe" "\0"
             VALUE "ProductName", "chinese_chess" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
